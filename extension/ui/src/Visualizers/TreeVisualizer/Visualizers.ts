@@ -1,15 +1,15 @@
 import { TreeViewModel, TreeNodeViewModel } from "./Views";
-import { TreeNodeData } from "@hediet/debug-visualizer-data-extraction";
+import { CommonDataTypes } from "@hediet/debug-visualizer-data-extraction";
 
 export function createTreeViewModelFromTreeNodeData(
-	root: TreeNodeData["root"]
+	root: CommonDataTypes.TreeNodeData["root"]
 ): TreeViewModel {
 	const m = new TreeViewModel();
 	m.root = recurse(root, m);
 	return m;
 
 	function recurse(
-		root: TreeNodeData["root"],
+		root: CommonDataTypes.TreeNodeData["root"],
 		viewModel: TreeViewModel
 	): TreeNodeViewModel {
 		const children: TreeNodeViewModel[] = root.children.map(c =>
@@ -21,6 +21,7 @@ export function createTreeViewModelFromTreeNodeData(
 			root.name,
 			children
 		);
+		model.isMarked = root.isMarked;
 		for (const c of children) {
 			c.parent = model;
 		}

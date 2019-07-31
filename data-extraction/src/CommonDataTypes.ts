@@ -42,5 +42,5 @@ export interface TreeNode<TExtraData> {
 	name: string;
 	children: TreeNode<TExtraData>[];
 	data: TExtraData;
-	isSelected: boolean;
+	isMarked: boolean;
 }

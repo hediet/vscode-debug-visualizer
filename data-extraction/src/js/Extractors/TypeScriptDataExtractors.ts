@@ -14,13 +14,73 @@ export class TypeScriptAstDataExtractor
 			return;
 		}
 
-		const tsApi = require("typescript") as typeof ts | undefined;
+		const tsApi = require("typescript") as typeof ts;
 		if (!tsApi) {
 			return;
 		}
 
+		function findKey(value: any, object: any): string | null {
+			for (var key in object) {
+				if (key.startsWith("_")) continue;
+
+				var member = object[key];
+				if (member === value) return key;
+
+				if (Array.isArray(member) && member.indexOf(value) !== -1)
+					return key;
+			}
+
+			return null;
+		}
+
+		function toTreeNode(
+			node: ts.Node,
+			memberName: string,
+			marked: ts.Node
+		): CommonDataTypes.AstData["root"] {
+			const name = tsApi.SyntaxKind[node.kind];
+			const children = node
+				.getChildren()
+				.map((childNode, idx) => {
+					let parentPropertyName = findKey(childNode, node) || "";
+
+					if (childNode.kind == tsApi.SyntaxKind.SyntaxList) {
+						childNode.getChildren().some(c => {
+							parentPropertyName = findKey(c, node) || "";
+							return !!parentPropertyName;
+						});
+
+						if (childNode.getChildren().length === 0) return null!;
+					}
+
+					if (node.kind == tsApi.SyntaxKind.SyntaxList) {
+						parentPropertyName = "" + idx;
+					}
+
+					return toTreeNode(childNode, parentPropertyName, marked);
+				})
+				.filter(c => c !== null);
+
+			return {
+				name: name,
+				id: memberName,
+				children: children,
+				data: {
+					length: 0,
+					position: 0,
+				},
+				isMarked: node === marked,
+				// startPos: node.pos,
+				// endPos: node.end
+			};
+		}
+
 		if ((tsApi as any).isNode(data)) {
-			const n = data as ts.Node;
+			let root = data as ts.Node;
+			const marked = root;
+			while (root.parent) {
+				root = root.parent;
+			}
 			collector.addExtraction({
 				id: "ts-ast",
 				name: "TypeScript AST",
@@ -28,66 +88,12 @@ export class TypeScriptAstDataExtractor
 				extractData() {
 					return {
 						kind: { text: true, tree: true, ast: true },
-						root: toTreeNode(data, "root"),
-						text: n.getSourceFile().text,
+						root: toTreeNode(root, "root", marked),
+						text: root.getSourceFile().text,
 						fileType: "ts",
 					};
 				},
 			});
 		}
 	}
-}
-
-function findKey(value: any, object: any): string | null {
-	for (var key in object) {
-		if (key.startsWith("_")) continue;
-
-		var member = object[key];
-		if (member === value) return key;
-
-		if (Array.isArray(member) && member.indexOf(value) !== -1) return key;
-	}
-
-	return null;
-}
-
-function toTreeNode(
-	node: ts.Node,
-	memberName: string
-): CommonDataTypes.AstData["root"] {
-	const name = ts.SyntaxKind[node.kind];
-	const children = node
-		.getChildren()
-		.map((childNode, idx) => {
-			let parentPropertyName = findKey(childNode, node) || "";
-
-			if (childNode.kind == ts.SyntaxKind.SyntaxList) {
-				childNode.getChildren().some(c => {
-					parentPropertyName = findKey(c, node) || "";
-					return !!parentPropertyName;
-				});
-
-				if (childNode.getChildren().length === 0) return null!;
-			}
-
-			if (node.kind == ts.SyntaxKind.SyntaxList) {
-				parentPropertyName = "" + idx;
-			}
-
-			return toTreeNode(childNode, parentPropertyName);
-		})
-		.filter(c => c !== null);
-
-	return {
-		name: name,
-		id: memberName,
-		children: children,
-		data: {
-			length: 0,
-			position: 0,
-		},
-		isSelected: false,
-		// startPos: node.pos,
-		// endPos: node.end
-	};
 }
