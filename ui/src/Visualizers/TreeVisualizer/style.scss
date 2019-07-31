@@ -1,0 +1,100 @@
+.component-TreeView {
+	overflow: auto;
+	scroll-behavior: smooth;
+	height: 100%;
+	position: relative;
+	display: grid;
+
+	& > .part-svg,
+	& > .part-node {
+		height: 100%;
+		width: 100%;
+		grid-column: 1;
+		grid-row: 1;
+	}
+}
+
+.component-TreeNodeSvgView {
+	.path {
+		stroke: gray;
+		stroke-dasharray: 1;
+
+		&.childOrThisMarked {
+			stroke: orange;
+			stroke-width: 5;
+			stroke-dasharray: 0;
+			stroke-linecap: round;
+		}
+
+		&.childOrThisSelected {
+			stroke: black;
+			stroke-width: 2;
+			stroke-dasharray: 0;
+		}
+	}
+}
+
+.component-TreeNodeView {
+	font-family: -apple-system, BlinkMacSystemFont, Segoe WPC, Segoe UI,
+		HelveticaNeue-Light, Ubuntu, Droid Sans, sans-serif;
+
+	.part-header {
+		padding: 2px;
+		padding-left: 5px;
+		margin: 0;
+		display: flex;
+		align-items: center;
+
+		.part-collapser {
+			width: 10px;
+			height: 10px;
+			margin-right: 6px;
+		}
+
+		.part-text {
+			cursor: pointer;
+			.part-id {
+				color: blue;
+			}
+		}
+	}
+
+	.part-children {
+		margin-left: 0px;
+		margin-top: 0px;
+
+		padding: 5px;
+		padding-left: 15px;
+	}
+
+	&.selected {
+		& > .part-header {
+			font-weight: bold;
+		}
+	}
+	&.hovered {
+		& > .part-header > span {
+			font-weight: bold;
+		}
+		& > .part-children {
+			background: transparentize(gray, 0.8);
+		}
+	}
+}
+
+.component-TreeWithPathView {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+
+	.part-path {
+		overflow: hidden;
+		white-space: pre;
+		padding: 5px 10px;
+		border-bottom: solid gray 1px;
+	}
+	.part-tree {
+		overflow: auto;
+		flex: 1;
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "out",
+		"lib": ["es6"],
+		"sourceMap": true,
+		"rootDir": "src",
+		"strict": true,
+		"skipLibCheck": true,
+		"experimentalDecorators": true
+	},
+	"include": [
+		"src/**/*",
+		"../js-data-extractors/src/Extractors/TypeScriptDataExtractors.ts"
+	]
+}

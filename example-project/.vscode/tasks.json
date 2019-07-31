@@ -3,14 +3,13 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"label": "npm: dev - extension",
+			"label": "npm: dev",
 			"script": "dev",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never"
 			},
-			"path": "extension/",
 			"group": {
 				"kind": "build",
 				"isDefault": true
