@@ -4,6 +4,6 @@
 		"./shared",
 		"./data-extraction",
 		"./extension",
-		"./ui"
+		"./extension/ui"
 	]
 }

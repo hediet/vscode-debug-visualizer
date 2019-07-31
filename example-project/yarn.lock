@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@hediet/live-debug@^0.5.1":
+"@hediet/live-debug@^0.5.1", "@hediet/live-debug@^0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@hediet/live-debug/-/live-debug-0.5.2.tgz#f2ee0034f014836bfd68e26c35a168ab42b15486"
   integrity sha512-HBqVbyFez1oQlIPO9dzkFi7/9Gvt6ZpssgURzYaVFREl9Oq03nPd6V7Ay4bW03xFHPo3YT2Yff9mFmGQUX7JEg==

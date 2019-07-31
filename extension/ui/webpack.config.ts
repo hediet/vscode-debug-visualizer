@@ -3,6 +3,7 @@ import path = require("path");
 import HtmlWebpackPlugin = require("html-webpack-plugin");
 import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 import ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
 
 const r = (file: string) => path.resolve(__dirname, file);
 
@@ -10,7 +11,7 @@ module.exports = {
 	entry: [r("src/index.tsx")],
 	output: {
 		path: r("dist"),
-		filename: "[name]-[hash].js",
+		filename: "[name].js",
 		chunkFilename: "[name]-[hash].js",
 	},
 	resolve: {
@@ -36,5 +37,6 @@ module.exports = {
 		new HtmlWebpackPlugin(),
 		new MonacoWebpackPlugin(),
 		new ForkTsCheckerWebpackPlugin(),
+		new CleanWebpackPlugin(),
 	],
 } as webpack.Configuration;

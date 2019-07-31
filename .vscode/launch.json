@@ -8,7 +8,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"S:\\dev\\vscode\\vscode-debug-visualizer2\\example-project"
+				"${workspaceFolder}\\example-project"
 			],
 			"outFiles": ["${workspaceFolder}/extension/out/**/*.js"],
 			"preLaunchTask": "npm: dev - extension"

@@ -43,7 +43,7 @@ class WebView {
 const debugVisualizer = "debugVisualizer";
 
 function getHtml(server: Server) {
-	const isDev = true;
+	const isDev = false;
 	return `
         <html>
             <head>
@@ -168,7 +168,7 @@ class Server {
 
 	constructor(sources: Sources) {
 		const app = express();
-		app.use(serveStatic(join(__dirname, "../../ui/dist")));
+		app.use(serveStatic(join(__dirname, "../ui/dist")));
 
 		this.server = app.listen();
 
@@ -187,7 +187,7 @@ class Server {
 	}
 
 	public get mainBundle(): string {
-		return `http://localhost:${this.port}/main-efe6bdc4b62fdc7971ee.js`;
+		return `http://localhost:${this.port}/main.js`;
 	}
 
 	public get port(): number {
