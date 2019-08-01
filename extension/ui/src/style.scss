@@ -14,6 +14,18 @@ body {
 	padding: 0;
 }
 
+.bp3-input,
+.bp3-button {
+	border-radius: 0;
+}
+
+.bp3-icon {
+	svg {
+		color: lighten(black, 20);
+		width: 14px;
+	}
+}
+
 html,
 body,
 .target {

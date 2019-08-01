@@ -25,6 +25,7 @@ export function SampleTreeVisualizer() {
 			viewModel,
 			root.parentPropertyName,
 			root.name,
+			undefined,
 			children
 		);
 		for (const c of children) {

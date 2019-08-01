@@ -36,8 +36,9 @@ export class TreeViewModel {
 		if (this.lastUpdateVersion === this.version) {
 			return;
 		}
-		this.lastUpdateVersion = this.version;
 
+		this.lastUpdateVersion = this.version;
+		console.log("update");
 		this.root.updateOffsets();
 	}
 
@@ -80,6 +81,8 @@ export class TreeViewModel {
 		this.selectOnHoverEnabled = enable;
 	}
 }
+
+let i = 0;
 
 export class TreeNodeViewModel {
 	public parent: TreeNodeViewModel | null = null;
@@ -191,8 +194,8 @@ export class TreeWithPathView extends React.Component<{
 
 @observer
 export class TreeView extends React.Component<{ model: TreeViewModel }> {
-	componentWillUpdate() {
-		this.props.model.stop();
+	componentWillUpdate(newProps: this["props"]) {
+		newProps.model.stop();
 	}
 
 	componentWillMount() {

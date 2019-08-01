@@ -2,13 +2,16 @@ import React = require("react");
 import { Model } from "../Model";
 import { observer } from "mobx-react";
 import { observable, action, computed } from "mobx";
-import { Popover, Icon, Button } from "@blueprintjs/core";
+import { Popover, Icon, Button, Spinner, InputGroup } from "@blueprintjs/core";
 import classnames = require("classnames");
 import Measure from "react-measure";
 import { DotGraphViewer } from "./GraphViz";
 import { TreeView } from "../Visualizers/TreeVisualizer/Views";
 import { createTreeViewModelFromTreeNodeData } from "../Visualizers/TreeVisualizer/Visualizers";
-import { CommonDataTypes } from "@hediet/debug-visualizer-data-extraction";
+import {
+	CommonDataTypes,
+	DataExtractorInfo,
+} from "@hediet/debug-visualizer-data-extraction";
 @observer
 export class GUI extends React.Component<{ model: Model }> {
 	@observable text: string = "node";
@@ -27,6 +30,7 @@ export class GUI extends React.Component<{ model: Model }> {
 					<div className="part-header-content">
 						<div className="part-header-main">
 							<ExpressionInput model={m} />
+
 							<Button
 								minimal
 								small
@@ -49,32 +53,7 @@ export class GUI extends React.Component<{ model: Model }> {
 								onClick={() => m.useSelectionAsExpression()}
 							/>
 						</div>
-						{this.expanded && (
-							<>
-								<div style={{ height: 6 }} />
-								<div className="part-header-options">
-									<NamedSelect
-										name="Source"
-										selected={0}
-										options={[{ label: "js" }]}
-									/>
-									<div style={{ width: 10 }} />
-
-									<NamedSelect
-										name="Extractor"
-										selected={0}
-										options={[{ label: "literal" }]}
-									/>
-									<div style={{ width: 10 }} />
-
-									<NamedSelect
-										name="Visualizer"
-										selected={0}
-										options={[{ label: "literal" }]}
-									/>
-								</div>
-							</>
-						)}
+						{this.expanded && <ExpandedOptions model={m} />}
 					</div>
 				</div>
 				<div className="part-visualizer">
@@ -86,6 +65,54 @@ export class GUI extends React.Component<{ model: Model }> {
 
 	renderValue(value: string) {
 		return <div>{`${value.length}`}</div>;
+	}
+}
+
+@observer
+export class ExpandedOptions extends React.Component<{ model: Model }> {
+	render() {
+		const m = this.props.model;
+		let availableExtractors = new Array<DataExtractorInfo>();
+		let selected = -1;
+		if (m.state.kind === "data") {
+			const result = m.state.result;
+			availableExtractors = result.availableExtractors;
+			selected = result.availableExtractors.findIndex(
+				i => i.id === result.usedExtractor.id
+			);
+		}
+		return (
+			<>
+				<div style={{ height: 6 }} />
+				<div className="part-header-options">
+					<NamedSelect
+						name="Source"
+						selected={0}
+						options={[{ label: "js" }]}
+					/>
+					<div style={{ width: 10 }} />
+
+					<NamedSelect
+						name="Extractor"
+						selected={selected}
+						options={availableExtractors.map(e => ({
+							label: e.name,
+							id: e.id,
+						}))}
+						onSelected={item => {
+							m.setPreferredExtractorId(item.id);
+						}}
+					/>
+					<div style={{ width: 10 }} />
+
+					<NamedSelect
+						name="Visualizer"
+						selected={0}
+						options={[{ label: "literal" }]}
+					/>
+				</div>
+			</>
+		);
 	}
 }
 
@@ -113,11 +140,23 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 	}
 
 	render() {
+		const model = this.props.model;
 		return (
-			<input
-				className="part-expression-input"
+			<InputGroup
+				small
+				fill
+				rightElement={
+					model.loading ? (
+						<Spinner size={Icon.SIZE_STANDARD} />
+					) : (
+						undefined
+					)
+				}
 				value={this.currentExpression}
-				onChange={e => this.updateCurrentExpression(e.target.value)}
+				onChange={
+					((e: { target: { value: string } }) =>
+						this.updateCurrentExpression(e.target.value)) as any
+				}
 				onBlur={this.submit}
 				onKeyPress={e => {
 					if (e.charCode === 13) {
@@ -127,6 +166,12 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 				}}
 			/>
 		);
+		/*
+			<input
+				className="part-expression-input"
+
+			/>
+			*/
 	}
 }
 
@@ -137,7 +182,7 @@ export class Visualizer extends React.Component<{ model: Model }> {
 			<div className="component-Visualizer">{this.renderContent()}</div>
 		);
 		/*
-		
+
 
 		<DotGraphViewer
 					data={{
@@ -245,10 +290,11 @@ export class ExpandButton extends React.Component<{
 	}
 }
 
-function NamedSelect(props: {
+function NamedSelect<T extends SelectableItem>(props: {
 	name: string;
 	selected: number;
-	options: SelectableItem[];
+	onSelected: (item: T) => void;
+	options: T[];
 }) {
 	return (
 		<div className="component-NamedSelect">
@@ -265,11 +311,12 @@ interface SelectableItem {
 }
 
 @observer
-export class Select extends React.Component<{
+export class Select<T extends SelectableItem> extends React.Component<{
 	selected: number;
-	options: SelectableItem[];
+	onSelected: (item: T) => void;
+	options: T[];
 }> {
-	@computed get selected(): SelectableItem {
+	@computed get selected(): T {
 		return this.props.options[this.props.selected];
 	}
 
@@ -286,7 +333,12 @@ export class Select extends React.Component<{
 					</button>
 					<div className={"part-content"}>
 						{this.props.options.map((o, idx) => (
-							<div key={idx}>{o.label}</div>
+							<div
+								key={idx}
+								onClick={() => this.props.onSelected(o)}
+							>
+								{o.label}
+							</div>
 						))}
 					</div>
 				</Popover>

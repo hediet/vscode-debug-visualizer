@@ -1,12 +1,31 @@
 import { window, ViewColumn, WebviewPanel } from "vscode";
 import { Server } from "./Server";
+import { Disposable } from "@hediet/std/disposable";
 
 export const debugVisualizer = "debugVisualizer";
 
 export class WebViews {
 	private readonly debugVisualizations = new Map<WebviewPanel, WebView>();
 
-	constructor(private readonly server: Server) {}
+	public readonly dispose = Disposable.fn();
+
+	constructor(private readonly server: Server) {
+		this.dispose.track(
+			window.registerWebviewPanelSerializer(debugVisualizer, {
+				deserializeWebviewPanel: async (panel, state) => {
+					this.restore(panel);
+				},
+			})
+		);
+
+		this.dispose.track({
+			dispose: () => {
+				for (const panel of this.debugVisualizations.keys()) {
+					panel.dispose();
+				}
+			},
+		});
+	}
 
 	public createNew() {
 		const panel = window.createWebviewPanel(
@@ -31,12 +50,6 @@ export class WebViews {
 			this.debugVisualizations.delete(webviewPanel);
 		});
 	}
-
-	public dispose() {
-		for (const panel of this.debugVisualizations.keys()) {
-			panel.dispose();
-		}
-	}
 }
 
 export class WebView {
@@ -48,6 +61,7 @@ export class WebView {
 
 export function getHtml(server: Server) {
 	const isDev = true;
+	// uiae
 	return `
         <html>
             <head>
@@ -70,6 +84,22 @@ export function getHtml(server: Server) {
 								server.mainBundle
 						  }"></script>`
 				}
+                <script>
+                const api = window.api = acquireVsCodeApi();
+                window.addEventListener('message', event => {
+                    debugger;
+                    if (event.source === window.frames[0]) {
+                        if (event.data.command === "setState") {
+                            console.log("setState", event.data.state);
+                            api.setState(event.data.state);
+                        }
+                        if (event.data.command === "getState") {
+                            console.log("getState, sent ", api.getState());
+                            window.frames[0].postMessage({ command: "getStateResult", state: api.getState() }, "*");
+                        }
+                    }
+                });
+                </script>
             </body>
         </html>
     `;

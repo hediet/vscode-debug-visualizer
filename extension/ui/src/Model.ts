@@ -5,10 +5,59 @@ import {
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
 import { observable, action } from "mobx";
+import { Barrier } from "@hediet/std/synchronization";
+import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 
 declare const window: Window & {
 	serverPort?: number;
 };
+
+interface VSCodeApi<TState> {
+	getState(): Promise<TState | undefined>;
+	setState(state: TState): Promise<void>;
+}
+
+type IncomingCommand = {
+	command: "getStateResult";
+	state: unknown;
+};
+
+type OutgoingCommand =
+	| {
+			command: "setState";
+			state: unknown;
+	  }
+	| { command: "getState" };
+
+class IFrameVSCodeApi<TState> implements VSCodeApi<TState> {
+	private currentGetStatePromise: Barrier<TState> | undefined = undefined;
+
+	constructor() {
+		window.addEventListener("message", event => {
+			const data = event.data as IncomingCommand;
+			if (data.command === "getStateResult") {
+				this.currentGetStatePromise!.unlock(data.state as any);
+			}
+		});
+	}
+
+	private sendCommand(command: OutgoingCommand) {
+		window.parent.postMessage(command, "*");
+	}
+
+	getState(): Promise<TState | undefined> {
+		this.sendCommand({ command: "getState" });
+		if (this.currentGetStatePromise) {
+			throw new Error("Get state already in progress.");
+		}
+		this.currentGetStatePromise = new Barrier();
+		return this.currentGetStatePromise.onUnlocked;
+	}
+
+	async setState(state: TState): Promise<void> {
+		this.sendCommand({ command: "setState", state });
+	}
+}
 
 export class Model {
 	port: number;
@@ -21,6 +70,14 @@ export class Model {
 	private server:
 		| typeof debugVisualizerUIContract.TServerInterface
 		| undefined = undefined;
+
+	private readonly vsCodeApi = new IFrameVSCodeApi<{ expression: string }>();
+
+	@observable private _loading = false;
+
+	public get loading(): boolean {
+		return this._loading;
+	}
 
 	constructor() {
 		if (window.serverPort) {
@@ -35,6 +92,12 @@ export class Model {
 		}
 
 		this.stayConnected();
+
+		this.vsCodeApi.getState().then(state => {
+			if (state) {
+				this.setExpression(state.expression);
+			}
+		});
 	}
 
 	@action
@@ -42,6 +105,19 @@ export class Model {
 		this.expression = newExpression;
 		if (this.server) {
 			this.server.setExpression({ newExpression });
+		}
+
+		this.vsCodeApi.setState({
+			expression: newExpression,
+		});
+	}
+
+	setPreferredExtractorId(id: DataExtractorId) {
+		console.log(id);
+		if (this.server) {
+			this.server.setPreferredDataExtractor({
+				dataExtractorId: id,
+			});
 		}
 	}
 
@@ -65,7 +141,10 @@ export class Model {
 					new ConsoleRpcLogger(),
 					{
 						updateState: ({ newState }) => {
-							this.state = newState;
+							this._loading = newState.kind === "loading";
+							if (!this._loading) {
+								this.state = newState;
+							}
 						},
 					}
 				);

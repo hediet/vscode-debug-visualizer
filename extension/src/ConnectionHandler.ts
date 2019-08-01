@@ -37,6 +37,11 @@ export class ConnectionHandler {
 				openInBrowser: async ({}) => {
 					open(server.indexUrl);
 				},
+				setPreferredDataExtractor: async ({ dataExtractorId }) => {
+					if (this.watcher) {
+						this.watcher.setPreferredDataExtractor(dataExtractorId);
+					}
+				},
 			}
 		);
 

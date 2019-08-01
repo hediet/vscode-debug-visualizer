@@ -1,5 +1,8 @@
 import { contract, notificationContract, types } from "@hediet/typed-json-rpc";
-import { DataExtractionResult } from "@hediet/debug-visualizer-data-extraction";
+import {
+	DataExtractionResult,
+	DataExtractorId,
+} from "@hediet/debug-visualizer-data-extraction";
 
 function unchecked<T>(): types.Type<T, T, unknown> {
 	return new types.Type<T, T, unknown>(
@@ -28,6 +31,11 @@ export const debugVisualizerUIContract = contract({
 		}),
 	},
 	server: {
+		setPreferredDataExtractor: notificationContract({
+			params: types.type({
+				dataExtractorId: unchecked<DataExtractorId>(),
+			}),
+		}),
 		setExpression: notificationContract({
 			params: types.type({
 				newExpression: types.string,
