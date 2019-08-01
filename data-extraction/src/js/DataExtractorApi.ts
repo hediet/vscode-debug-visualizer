@@ -26,6 +26,7 @@ export interface DataExtractorApi {
 	): void;
 	getData(
 		value: unknown,
+		evalFn: <T>(expression: string) => T,
 		preferredDataExtractorId: string | undefined
 	): JSONString<DataResult>;
 }
@@ -54,7 +55,7 @@ export function selfContainedInitDataExtractorApi(): boolean {
 		registerExtractor(extractor) {
 			obj[prefix + extractor.id] = extractor;
 		},
-		getData(value, preferredDataExtractorId) {
+		getData(value, evalFn, preferredDataExtractorId) {
 			const extractions = new Array<DataExtraction<ExtractedData>>();
 			const collector: ExtractionCollector<ExtractedData> = {
 				addExtraction(extraction) {
@@ -62,7 +63,7 @@ export function selfContainedInitDataExtractorApi(): boolean {
 				},
 			};
 			for (const e of getExtractors()) {
-				e.getExtractions(value, collector);
+				e.getExtractions(value, collector, evalFn);
 			}
 			extractions.sort((a, b) => b.priority - a.priority);
 			let usedExtraction = extractions[0];
@@ -113,7 +114,7 @@ export function selfContainedInitDataExtractorApi(): boolean {
 						kind: {
 							text: true,
 						},
-						text: data.toString(),
+						text: "" + data,
 					};
 				},
 			});

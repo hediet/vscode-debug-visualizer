@@ -5,7 +5,7 @@ import {
 	registerUpdateReconciler,
 	getReloadCount,
 } from "@hediet/node-reload";
-enableHotReload({ entryModule: module });
+enableHotReload({ entryModule: module, loggingEnabled: true });
 import { Disposable } from "@hediet/std/disposable";
 
 import { createJsDebuggerSource } from "./DataSource/JsDebuggerSource";

@@ -40,6 +40,7 @@ export module CommonDataTypes {
 export interface TreeNode<TExtraData> {
 	id: string | undefined;
 	name: string;
+	value: string | undefined;
 	children: TreeNode<TExtraData>[];
 	data: TExtraData;
 	isMarked: boolean;

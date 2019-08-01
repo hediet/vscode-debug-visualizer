@@ -68,7 +68,7 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 			w._state = { kind: "loading" };
 			const expression = `(${selfContainedGetInitializedDataExtractorApi.toString()})().getData(${
 				w.expression
-			})`;
+			}, expr => eval(expr), undefined)`;
 
 			const reply = await session.customRequest("evaluate", {
 				expression,

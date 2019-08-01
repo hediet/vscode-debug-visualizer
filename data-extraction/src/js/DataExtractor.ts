@@ -3,8 +3,9 @@ import { ExtractedData } from "../DataExtractionResult";
 export interface DataExtractor<T extends ExtractedData> {
 	id: string;
 	getExtractions(
-		data: any,
-		extractionCollector: ExtractionCollector<T>
+		data: unknown,
+		extractionCollector: ExtractionCollector<T>,
+		evalFn: <TEval>(expression: string) => TEval
 	): void;
 }
 
@@ -18,4 +19,19 @@ export interface DataExtraction<TData extends ExtractedData> {
 	id: string;
 	name: string;
 	extractData(): TData;
+}
+
+export function getExtractions<T extends ExtractedData>(
+	extractor: DataExtractor<T>,
+	data: unknown,
+	evalFn: <T>(expression: string) => T
+): DataExtraction<T>[] {
+	const extractions = new Array<DataExtraction<T>>();
+	const collector: ExtractionCollector<T> = {
+		addExtraction(extraction) {
+			extractions.push(extraction);
+		},
+	};
+	extractor.getExtractions(data, collector, evalFn);
+	return extractions;
 }

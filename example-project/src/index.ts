@@ -33,7 +33,123 @@ class Main {
 class Test {
     public test() {
 		console.log("aaa");
-		const x =  ;
+		const x = e;
+    }
+}
+class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
+    }
+}class Test {
+    public test() {
+		console.log("aaa");
+		const x = e;
     }
 }
 `,
@@ -42,7 +158,7 @@ class Test {
 		);
 
 		console.log(sf);
-		//new TypeScriptAstDataExtractor().getExtractions(sf, );
+		debugger;
 	}
 
 	toString() {

@@ -47,7 +47,7 @@ export class WebView {
 }
 
 export function getHtml(server: Server) {
-	const isDev = false;
+	const isDev = true;
 	return `
         <html>
             <head>

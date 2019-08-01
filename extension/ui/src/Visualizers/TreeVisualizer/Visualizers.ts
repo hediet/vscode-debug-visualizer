@@ -9,19 +9,20 @@ export function createTreeViewModelFromTreeNodeData(
 	return m;
 
 	function recurse(
-		root: CommonDataTypes.TreeNodeData["root"],
+		node: CommonDataTypes.TreeNodeData["root"],
 		viewModel: TreeViewModel
 	): TreeNodeViewModel {
-		const children: TreeNodeViewModel[] = root.children.map(c =>
+		const children: TreeNodeViewModel[] = node.children.map(c =>
 			recurse(c, viewModel)
 		);
 		const model = new TreeNodeViewModel(
 			viewModel,
-			root.id,
-			root.name,
+			node.id,
+			node.name,
+			node.value,
 			children
 		);
-		model.isMarked = root.isMarked;
+		model.isMarked = node.isMarked;
 		for (const c of children) {
 			c.parent = model;
 		}

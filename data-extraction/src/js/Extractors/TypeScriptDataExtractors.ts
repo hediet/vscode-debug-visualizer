@@ -7,12 +7,15 @@ export class TypeScriptAstDataExtractor
 	readonly id = "TypeScriptAst";
 
 	getExtractions(
-		data: any,
-		collector: ExtractionCollector<CommonDataTypes.AstData>
+		data: unknown,
+		collector: ExtractionCollector<CommonDataTypes.AstData>,
+		evalFn: <TEval>(expression: string) => TEval
 	): void {
 		if (typeof data !== "object" || data === undefined) {
 			return;
 		}
+
+		const require = evalFn<(request: string) => unknown>("require");
 
 		const tsApi = require("typescript") as typeof ts;
 		if (!tsApi) {
@@ -61,6 +64,12 @@ export class TypeScriptAstDataExtractor
 				})
 				.filter(c => c !== null);
 
+			let value: string | undefined = undefined;
+
+			if (tsApi.isIdentifier(node)) {
+				value = node.text;
+			}
+
 			return {
 				name: name,
 				id: memberName,
@@ -70,6 +79,7 @@ export class TypeScriptAstDataExtractor
 					position: 0,
 				},
 				isMarked: node === marked,
+				value,
 				// startPos: node.pos,
 				// endPos: node.end
 			};

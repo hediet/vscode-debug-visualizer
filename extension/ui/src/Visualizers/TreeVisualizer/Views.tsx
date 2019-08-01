@@ -7,6 +7,15 @@ import { SvgLine } from "../../Components/SvgElements";
 import "./style.scss";
 
 export class TreeViewModel {
+	private started = true;
+	start() {
+		this.started = true;
+		this.updateOffsets();
+	}
+	stop() {
+		this.started = false;
+	}
+
 	private version = 0;
 	private lastUpdateVersion = -1;
 
@@ -18,6 +27,9 @@ export class TreeViewModel {
 
 	@action
 	public updateOffsets() {
+		if (!this.started) {
+			return;
+		}
 		if (!this.root) {
 			return;
 		}
@@ -76,6 +88,7 @@ export class TreeNodeViewModel {
 		public readonly treeViewModel: TreeViewModel,
 		public readonly id: string | undefined,
 		public readonly name: string,
+		public readonly value: string | undefined,
 		public readonly children: TreeNodeViewModel[]
 	) {}
 
@@ -178,6 +191,22 @@ export class TreeWithPathView extends React.Component<{
 
 @observer
 export class TreeView extends React.Component<{ model: TreeViewModel }> {
+	componentWillUpdate() {
+		this.props.model.stop();
+	}
+
+	componentWillMount() {
+		this.props.model.stop();
+	}
+
+	componentDidUpdate() {
+		this.props.model.start();
+	}
+
+	componentDidMount() {
+		this.props.model.start();
+	}
+
 	render() {
 		const model = this.props.model;
 		return (
@@ -393,6 +422,9 @@ export class TreeNodeView extends React.Component<{
 							</>
 						)}
 						<span className="part-name">{model.name}</span>
+						{model.value && (
+							<span className="part-value">{model.value}</span>
+						)}
 					</span>
 				</div>
 
