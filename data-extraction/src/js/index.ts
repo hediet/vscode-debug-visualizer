@@ -1,3 +1,3 @@
-export * from "./Extractors/TypeScriptDataExtractors";
+export * from "./Extractors";
 export * from "./DataExtractor";
 export * from "./DataExtractorApi";
