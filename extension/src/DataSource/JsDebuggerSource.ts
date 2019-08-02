@@ -1,4 +1,8 @@
-import { DataSource, EvaluationWatcher } from "./DataSource";
+import {
+	DataSource,
+	EvaluationWatcher,
+	EvaluationWatcherOptions,
+} from "./DataSource";
 import { observable } from "mobx";
 import * as vscode from "vscode";
 import { Disposable } from "@hediet/std/disposable";
@@ -46,8 +50,11 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 
 	registerDataExtractor(classExpression: JsCode): void {}
 
-	public createEvaluationWatcher(expression: string): EvaluationWatcher {
-		const w = new ObservableEvaluationWatcher(expression, this);
+	public createEvaluationWatcher(
+		expression: string,
+		options: EvaluationWatcherOptions
+	): EvaluationWatcher {
+		const w = new ObservableEvaluationWatcher(expression, this, options);
 		this.watchers.add(w);
 		this.refresh(w);
 		return w;
@@ -132,8 +139,11 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 class ObservableEvaluationWatcher implements EvaluationWatcher {
 	constructor(
 		public readonly expression: string,
-		private readonly source: JsDebuggerSourceImplementation
-	) {}
+		private readonly source: JsDebuggerSourceImplementation,
+		options: EvaluationWatcherOptions
+	) {
+		this._preferredDataExtractor = options.preferredDataExtractor;
+	}
 
 	@observable
 	_preferredDataExtractor: DataExtractorId | undefined = undefined;
@@ -142,7 +152,7 @@ class ObservableEvaluationWatcher implements EvaluationWatcher {
 		return this._preferredDataExtractor;
 	}
 
-	public setPreferredDataExtractor(id: DataExtractorId): void {
+	public setPreferredDataExtractor(id: DataExtractorId | undefined): void {
 		this._preferredDataExtractor = id;
 		this.refresh();
 	}

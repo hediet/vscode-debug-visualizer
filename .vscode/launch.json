@@ -12,6 +12,21 @@
 			],
 			"outFiles": ["${workspaceFolder}/extension/out/**/*.js"],
 			"preLaunchTask": "npm: dev - extension"
+		},
+		{
+			"name": "Run Extension (Dev UI)",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/extension",
+				"${workspaceFolder}\\example-project"
+			],
+			"env": {
+				"USE_DEV_UI": "true"
+			},
+			"outFiles": ["${workspaceFolder}/extension/out/**/*.js"],
+			"preLaunchTask": "npm: dev - extension"
 		}
 	]
 }

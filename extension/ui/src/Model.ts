@@ -4,9 +4,11 @@ import {
 } from "@hediet/debug-visualizer-vscode-shared";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import { observable, action } from "mobx";
+import { observable, action, computed } from "mobx";
 import { Barrier } from "@hediet/std/synchronization";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
+import { Visualization, VisualizationId } from "./Visualizers/Visualizer";
+import { knownVisualizations } from "./Visualizers";
 
 declare const window: Window & {
 	serverPort?: number;
@@ -67,6 +69,32 @@ export class Model {
 		kind: "noExpression",
 	};
 
+	@observable private preferredVisualizationId:
+		| VisualizationId
+		| undefined = undefined;
+
+	@action
+	public setPreferredVisualizationId(id: VisualizationId) {
+		this.preferredVisualizationId = id;
+	}
+
+	@computed get visualizations():
+		| {
+				visualization: Visualization | undefined;
+				allVisualizations: Visualization[];
+		  }
+		| undefined {
+		if (this.state.kind === "data") {
+			const vis = knownVisualizations.getBestVisualization(
+				this.state.result.data,
+				this.preferredVisualizationId
+			);
+			return vis;
+		} else {
+			return undefined;
+		}
+	}
+
 	private server:
 		| typeof debugVisualizerUIContract.TServerInterface
 		| undefined = undefined;
@@ -113,7 +141,6 @@ export class Model {
 	}
 
 	setPreferredExtractorId(id: DataExtractorId) {
-		console.log(id);
 		if (this.server) {
 			this.server.setPreferredDataExtractor({
 				dataExtractorId: id,

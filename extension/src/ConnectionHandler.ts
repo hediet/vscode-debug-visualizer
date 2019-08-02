@@ -27,11 +27,19 @@ export class ConnectionHandler {
 					}
 				},
 				setExpression: async ({ newExpression }) => {
+					let oldPreferredDataExtractor: EvaluationWatcher["preferredDataExtractor"];
 					if (this.watcher) {
+						oldPreferredDataExtractor = this.watcher
+							.preferredDataExtractor;
 						this.dispose.untrack(this.watcher).dispose();
 					}
 					this.watcher = this.dispose.track(
-						sources.jsSource.createEvaluationWatcher(newExpression)
+						sources.jsSource.createEvaluationWatcher(
+							newExpression,
+							{
+								preferredDataExtractor: oldPreferredDataExtractor,
+							}
+						)
 					);
 				},
 				openInBrowser: async ({}) => {

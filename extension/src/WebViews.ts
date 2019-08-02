@@ -60,8 +60,7 @@ export class WebView {
 }
 
 export function getHtml(server: Server) {
-	const isDev = true;
-	// uiae
+	const isDev = !!process.env.USE_DEV_UI;
 	return `
         <html>
             <head>

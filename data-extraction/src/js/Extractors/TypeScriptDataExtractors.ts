@@ -11,7 +11,7 @@ export class TypeScriptAstDataExtractor
 		collector: ExtractionCollector<CommonDataTypes.AstData>,
 		evalFn: <TEval>(expression: string) => TEval
 	): void {
-		if (typeof data !== "object" || data === undefined) {
+		if (!data) {
 			return;
 		}
 
@@ -39,7 +39,7 @@ export class TypeScriptAstDataExtractor
 		function toTreeNode(
 			node: ts.Node,
 			memberName: string,
-			marked: ts.Node
+			marked: Set<ts.Node>
 		): CommonDataTypes.AstData["root"] {
 			const name = tsApi.SyntaxKind[node.kind];
 			const children = node
@@ -78,19 +78,28 @@ export class TypeScriptAstDataExtractor
 					length: 0,
 					position: 0,
 				},
-				isMarked: node === marked,
+				isMarked: marked.has(node),
 				value,
 				// startPos: node.pos,
 				// endPos: node.end
 			};
 		}
 
-		if ((tsApi as any).isNode(data)) {
-			let root = data as ts.Node;
-			const marked = root;
-			while (root.parent) {
-				root = root.parent;
+		function isNode(node: unknown): node is ts.Node {
+			return typeof node === "object" && (tsApi as any).isNode(node);
+		}
+
+		if (isNode(data) || (Array.isArray(data) && data.every(isNode))) {
+			let root: ts.SourceFile;
+			let marked: Set<ts.Node>;
+			if (Array.isArray(data)) {
+				root = (data[0] as ts.Node).getSourceFile();
+				marked = new Set(data);
+			} else {
+				root = data.getSourceFile();
+				marked = new Set([data]);
 			}
+
 			collector.addExtraction({
 				id: "ts-ast",
 				name: "TypeScript AST",
@@ -99,7 +108,7 @@ export class TypeScriptAstDataExtractor
 					return {
 						kind: { text: true, tree: true, ast: true },
 						root: toTreeNode(root, "root", marked),
-						text: root.getSourceFile().text,
+						text: root.text,
 						fileType: "ts",
 					};
 				},

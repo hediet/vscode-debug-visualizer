@@ -1,0 +1,16 @@
+.component-monaco-editor {
+	min-height: 0;
+	min-width: 0;
+
+	height: 100%;
+	box-sizing: border-box;
+	display: flex;
+
+	// overflow: hidden;
+
+	.part-editor {
+		min-width: 0;
+		min-height: 0;
+		flex: 1;
+	}
+}

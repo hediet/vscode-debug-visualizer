@@ -5,8 +5,7 @@ import {
 	hotClass,
 } from "@hediet/node-reload";
 import {
-	getDataExtractorApi,
-	TypeScriptAstDataExtractor,
+	registerAll,
 	CommonDataTypes,
 } from "@hediet/debug-visualizer-data-extraction";
 enableHotReload();
@@ -15,7 +14,7 @@ import { liveLogId, liveLog } from "@hediet/live-debug";
 
 registerUpdateReconciler(module);
 
-getDataExtractorApi().registerExtractor(new TypeScriptAstDataExtractor());
+registerAll();
 
 let i = 0;
 setInterval(() => {
@@ -41,116 +40,6 @@ class Test {
 		console.log("aaa");
 		const x = e;
     }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
 }
 `,
 			ts.ScriptTarget.Latest,
@@ -161,8 +50,13 @@ class Test {
 		debugger;
 	}
 
-	toString() {
-		return "hihi";
+	test() {
+		// iue
+		return {
+			kind: { graph: true },
+			edges: [{ from: "1", to: "2", label: "aa" }],
+			nodes: [{ id: "1", label: "uiae" }, { id: "2", label: "bar" }],
+		} as CommonDataTypes.GraphData;
 	}
 }
 

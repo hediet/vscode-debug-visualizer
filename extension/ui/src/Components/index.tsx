@@ -5,13 +5,8 @@ import { observable, action, computed } from "mobx";
 import { Popover, Icon, Button, Spinner, InputGroup } from "@blueprintjs/core";
 import classnames = require("classnames");
 import Measure from "react-measure";
-import { DotGraphViewer } from "./GraphViz";
-import { TreeView } from "../Visualizers/TreeVisualizer/Views";
-import { createTreeViewModelFromTreeNodeData } from "../Visualizers/TreeVisualizer/Visualizers";
-import {
-	CommonDataTypes,
-	DataExtractorInfo,
-} from "@hediet/debug-visualizer-data-extraction";
+import { DataExtractorInfo } from "@hediet/debug-visualizer-data-extraction";
+import { knownVisualizations } from "../Visualizers";
 @observer
 export class GUI extends React.Component<{ model: Model }> {
 	@observable text: string = "node";
@@ -89,6 +84,7 @@ export class ExpandedOptions extends React.Component<{ model: Model }> {
 						name="Source"
 						selected={0}
 						options={[{ label: "js" }]}
+						onSelected={item => {}}
 					/>
 					<div style={{ width: 10 }} />
 
@@ -108,7 +104,17 @@ export class ExpandedOptions extends React.Component<{ model: Model }> {
 					<NamedSelect
 						name="Visualizer"
 						selected={0}
-						options={[{ label: "literal" }]}
+						onSelected={item => {
+							m.setPreferredVisualizationId(item.id);
+						}}
+						options={
+							m.visualizations
+								? m.visualizations.allVisualizations.map(v => ({
+										label: v.name,
+										id: v.id,
+								  }))
+								: []
+						}
 					/>
 				</div>
 			</>
@@ -166,12 +172,6 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 				}}
 			/>
 		);
-		/*
-			<input
-				className="part-expression-input"
-
-			/>
-			*/
 	}
 }
 
@@ -181,26 +181,6 @@ export class Visualizer extends React.Component<{ model: Model }> {
 		return (
 			<div className="component-Visualizer">{this.renderContent()}</div>
 		);
-		/*
-
-
-		<DotGraphViewer
-					data={{
-						kind: "GraphData",
-						edges: [
-							{
-								from: "1",
-								to: "2",
-								label: "test",
-							},
-						],
-						nodes: [
-							{ id: "1", label: "foo" },
-							{ id: "2", label: "bar" },
-						],
-					}}
-				/>
-		*/
 	}
 
 	renderContent(): JSX.Element {
@@ -214,15 +194,12 @@ export class Visualizer extends React.Component<{ model: Model }> {
 		} else if (s.kind === "noDebugSession") {
 			return <NoData label="No Debug Session" />;
 		} else if (s.kind === "data") {
-			const data = s.result.data;
-
-			if (data.kind.tree) {
-				const d = data as CommonDataTypes.TreeNodeData;
-				const m = createTreeViewModelFromTreeNodeData(d.root);
-				return <TreeView model={m} />;
-			} else {
-				return <pre>{JSON.stringify(s.result)}</pre>;
+			const vis = this.props.model.visualizations;
+			if (!vis || !vis.visualization) {
+				return <NoData label="No Visualization" />;
 			}
+
+			return vis.visualization.render();
 		} else {
 			const nvr: never = s;
 			return <div />;
@@ -316,7 +293,7 @@ export class Select<T extends SelectableItem> extends React.Component<{
 	onSelected: (item: T) => void;
 	options: T[];
 }> {
-	@computed get selected(): T {
+	@computed get selected(): T | undefined {
 		return this.props.options[this.props.selected];
 	}
 
@@ -329,12 +306,13 @@ export class Select<T extends SelectableItem> extends React.Component<{
 					usePortal={false}
 				>
 					<button className="part-button">
-						{this.selected.label}
+						{this.selected ? this.selected.label : "(none)"}
 					</button>
 					<div className={"part-content"}>
 						{this.props.options.map((o, idx) => (
 							<div
 								key={idx}
+								className="part-option"
 								onClick={() => this.props.onSelected(o)}
 							>
 								{o.label}
