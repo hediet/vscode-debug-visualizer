@@ -73,6 +73,19 @@ export function getHtml(server: Server) {
 			<body>
 				<script>
 					window.serverPort = ${server.port};
+					const api = window.VsCodeApi = acquireVsCodeApi();
+					window.addEventListener('message', event => {
+						if (event.source === window.frames[0]) {
+							if (event.data.command === "setState") {
+								console.log("setState", event.data.state);
+								api.setState(event.data.state);
+							}
+							if (event.data.command === "getState") {
+								console.log("getState, sent ", api.getState());
+								window.frames[0].postMessage({ command: "getStateResult", state: api.getState() }, "*");
+							}
+						}
+					});
 				</script>
 				${
 					isDev
@@ -83,22 +96,6 @@ export function getHtml(server: Server) {
 								server.mainBundle
 						  }"></script>`
 				}
-                <script>
-                const api = window.api = acquireVsCodeApi();
-                window.addEventListener('message', event => {
-                    debugger;
-                    if (event.source === window.frames[0]) {
-                        if (event.data.command === "setState") {
-                            console.log("setState", event.data.state);
-                            api.setState(event.data.state);
-                        }
-                        if (event.data.command === "getState") {
-                            console.log("getState, sent ", api.getState());
-                            window.frames[0].postMessage({ command: "getStateResult", state: api.getState() }, "*");
-                        }
-                    }
-                });
-                </script>
             </body>
         </html>
     `;

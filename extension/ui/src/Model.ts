@@ -10,8 +10,14 @@ import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 import { Visualization, VisualizationId } from "./Visualizers/Visualizer";
 import { knownVisualizations } from "./Visualizers";
 
+interface VsCodeApi {
+	getState<TState>(): TState | undefined;
+	setState(state: unknown): void;
+}
+
 declare const window: Window & {
 	serverPort?: number;
+	VsCodeApi?: VsCodeApi;
 };
 
 interface VSCodeApi<TState> {
@@ -61,6 +67,18 @@ class IFrameVSCodeApi<TState> implements VSCodeApi<TState> {
 	}
 }
 
+class DirectVSCodeApi<TState> implements VSCodeApi<TState> {
+	constructor(private readonly vsCodeApi: VsCodeApi) {}
+
+	async getState(): Promise<TState | undefined> {
+		return this.vsCodeApi.getState<TState | undefined>();
+	}
+
+	async setState(state: TState): Promise<void> {
+		this.vsCodeApi.setState(state);
+	}
+}
+
 export class Model {
 	port: number;
 
@@ -99,7 +117,9 @@ export class Model {
 		| typeof debugVisualizerUIContract.TServerInterface
 		| undefined = undefined;
 
-	private readonly vsCodeApi = new IFrameVSCodeApi<{ expression: string }>();
+	private readonly vsCodeApi = window.VsCodeApi
+		? new DirectVSCodeApi<{ expression: string }>(window.VsCodeApi)
+		: new IFrameVSCodeApi<{ expression: string }>();
 
 	@observable private _loading = false;
 
