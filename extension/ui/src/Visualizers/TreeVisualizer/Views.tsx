@@ -92,6 +92,7 @@ export class TreeNodeViewModel {
 		public readonly id: string | undefined,
 		public readonly name: string,
 		public readonly value: string | undefined,
+		public readonly emphasizedValue: string | undefined,
 		public readonly children: TreeNodeViewModel[]
 	) {}
 
@@ -167,6 +168,20 @@ export class TreeNodeViewModel {
 	}
 }
 
+const isValidFunctionName = (function() {
+	var validName = /^[$A-Z_][0-9A-Z_$]*$/i;
+	var reserved = {
+		abstract: true,
+		boolean: true,
+		// ...
+		with: true,
+	} as any;
+	return function(s: string) {
+		// Ensure a valid name and not reserved.
+		return validName.test(s) && !reserved[s];
+	};
+})();
+
 @observer
 export class TreeWithPathView extends React.Component<{
 	model: TreeViewModel;
@@ -178,7 +193,39 @@ export class TreeWithPathView extends React.Component<{
 				<div className="part-path">
 					<span>
 						{model.selected ? (
-							<span>{model.selected.path.join(" / ")}</span>
+							<span>
+								{model.selected.path.reduce((acc, v) => {
+									acc = acc.slice();
+									function add() {
+										acc.push(
+											<span
+												className="part-path-item"
+												key={acc.length}
+											>
+												{v}
+											</span>
+										);
+									}
+									if (isValidFunctionName(v)) {
+										if (acc.length > 0) {
+											acc.push(
+												<span key={acc.length}>.</span>
+											);
+										}
+										add();
+									} else {
+										acc.push(
+											<span key={acc.length}>[</span>
+										);
+										add();
+										acc.push(
+											<span key={acc.length}>]</span>
+										);
+									}
+
+									return acc;
+								}, new Array<React.ReactElement>())}
+							</span>
 						) : (
 							"(Nothing Selected)"
 						)}
@@ -427,6 +474,11 @@ export class TreeNodeView extends React.Component<{
 						<span className="part-name">{model.name}</span>
 						{model.value && (
 							<span className="part-value">{model.value}</span>
+						)}
+						{model.emphasizedValue && (
+							<span className="part-emphasized-value">
+								{model.emphasizedValue}
+							</span>
 						)}
 					</span>
 				</div>

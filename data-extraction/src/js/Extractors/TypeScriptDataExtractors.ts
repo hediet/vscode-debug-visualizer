@@ -29,8 +29,9 @@ export class TypeScriptAstDataExtractor
 				var member = object[key];
 				if (member === value) return key;
 
-				if (Array.isArray(member) && member.indexOf(value) !== -1)
+				if (Array.isArray(member) && member.indexOf(value) !== -1) {
 					return key;
+				}
 			}
 
 			return null;
@@ -39,14 +40,14 @@ export class TypeScriptAstDataExtractor
 		function toTreeNode(
 			node: ts.Node,
 			memberName: string,
-			marked: Set<ts.Node>
+			marked: Set<ts.Node>,
+			emphasizedValueFn: (node: ts.Node) => string | undefined
 		): CommonDataTypes.AstData["root"] {
 			const name = tsApi.SyntaxKind[node.kind];
 			const children = node
 				.getChildren()
 				.map((childNode, idx) => {
 					let parentPropertyName = findKey(childNode, node) || "";
-
 					if (childNode.kind == tsApi.SyntaxKind.SyntaxList) {
 						childNode.getChildren().some(c => {
 							parentPropertyName = findKey(c, node) || "";
@@ -60,13 +61,20 @@ export class TypeScriptAstDataExtractor
 						parentPropertyName = "" + idx;
 					}
 
-					return toTreeNode(childNode, parentPropertyName, marked);
+					return toTreeNode(
+						childNode,
+						parentPropertyName,
+						marked,
+						emphasizedValueFn
+					);
 				})
 				.filter(c => c !== null);
 
 			let value: string | undefined = undefined;
 
 			if (tsApi.isIdentifier(node)) {
+				value = node.text;
+			} else if (tsApi.isLiteralExpression(node)) {
 				value = node.text;
 			}
 
@@ -78,6 +86,7 @@ export class TypeScriptAstDataExtractor
 					length: 0,
 					position: 0,
 				},
+				emphasizedValue: emphasizedValueFn(node),
 				isMarked: marked.has(node),
 				value,
 				// startPos: node.pos,
@@ -89,15 +98,36 @@ export class TypeScriptAstDataExtractor
 			return typeof node === "object" && (tsApi as any).isNode(node);
 		}
 
-		if (isNode(data) || (Array.isArray(data) && data.every(isNode))) {
+		if (
+			isNode(data) ||
+			(Array.isArray(data) && data.every(isNode)) ||
+			(typeof data === "object" &&
+				data &&
+				Object.entries(data).every(([k, v]) => k === "fn" || isNode(v)))
+		) {
 			let root: ts.SourceFile;
 			let marked: Set<ts.Node>;
+			let fn: (n: ts.Node) => string | undefined = (n: ts.Node) =>
+				undefined;
 			if (Array.isArray(data)) {
 				root = (data[0] as ts.Node).getSourceFile();
 				marked = new Set(data);
-			} else {
+			} else if (isNode(data)) {
 				root = data.getSourceFile();
 				marked = new Set([data]);
+			} else {
+				marked = new Set();
+				const map = new Map<ts.Node, string>();
+				fn = (n: ts.Node) => map.get(n);
+				for (const [k, v] of Object.entries(data)) {
+					if (k === "fn") {
+						fn = v;
+					} else {
+						root = v.getSourceFile();
+						marked.add(v);
+						map.set(v, k);
+					}
+				}
 			}
 
 			collector.addExtraction({
@@ -107,7 +137,7 @@ export class TypeScriptAstDataExtractor
 				extractData() {
 					return {
 						kind: { text: true, tree: true, ast: true },
-						root: toTreeNode(root, "root", marked),
+						root: toTreeNode(root, "root", marked, fn),
 						text: root.text,
 						fileType: "ts",
 					};

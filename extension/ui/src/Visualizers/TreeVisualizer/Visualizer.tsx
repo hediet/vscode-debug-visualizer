@@ -1,4 +1,9 @@
-import { TreeViewModel, TreeNodeViewModel, TreeView } from "./Views";
+import {
+	TreeViewModel,
+	TreeNodeViewModel,
+	TreeView,
+	TreeWithPathView,
+} from "./Views";
 import {
 	CommonDataTypes,
 	ExtractedData,
@@ -31,6 +36,7 @@ export function createTreeViewModelFromTreeNodeData(
 			node.id,
 			node.name,
 			node.value,
+			node.emphasizedValue,
 			children
 		);
 		model.isMarked = node.isMarked;
@@ -53,7 +59,7 @@ export class TreeVisualizer extends VisualizationProvider {
 				priority: 100,
 				render() {
 					const m = createTreeViewModelFromTreeNodeData(data.root);
-					return <TreeView model={m} />;
+					return <TreeWithPathView model={m} />;
 				},
 			});
 		}

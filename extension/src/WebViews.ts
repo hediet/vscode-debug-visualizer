@@ -53,9 +53,6 @@ export class WebViews {
 }
 
 export class WebView {
-	private expression: string | null = null;
-	private lastFrameId: number | null = null;
-
 	constructor(private readonly webviewPanel: WebviewPanel) {}
 }
 
@@ -89,11 +86,9 @@ export function getHtml(server: Server) {
 				</script>
 				${
 					isDev
-						? `<iframe src="http://localhost:8080/?serverPort=${
-								server.port
-						  }" tabindex="0"></iframe>`
+						? `<iframe src="${server.indexUrl}"></iframe>`
 						: `<script type="text/javascript" src="${
-								server.mainBundle
+								server.mainBundleUrl
 						  }"></script>`
 				}
             </body>

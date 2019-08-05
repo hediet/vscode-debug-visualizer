@@ -5,7 +5,11 @@ import {
 	registerUpdateReconciler,
 	getReloadCount,
 } from "@hediet/node-reload";
-enableHotReload({ entryModule: module, loggingEnabled: true });
+
+if (process.env.USE_DEV_UI) {
+	enableHotReload({ entryModule: module, loggingEnabled: true });
+}
+
 import { Disposable } from "@hediet/std/disposable";
 
 import { createJsDebuggerSource } from "./DataSource/JsDebuggerSource";
@@ -27,9 +31,11 @@ export class Extension {
 	private readonly views = this.dispose.track(new WebViews(this.server));
 
 	constructor() {
-		const i = this.dispose.track(window.createStatusBarItem());
-		i.text = "reload" + getReloadCount(module);
-		i.show();
+		if (getReloadCount(module) > 0) {
+			const i = this.dispose.track(window.createStatusBarItem());
+			i.text = "reload" + getReloadCount(module);
+			i.show();
+		}
 		this.views.createNew();
 	}
 }

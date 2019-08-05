@@ -58,6 +58,19 @@
 			}
 
 			.part-value {
+				color: darkgreen;
+				text-decoration: underline;
+
+				/*&::before,
+				&::after {
+					content: '"';
+				}*/
+
+				padding: 1px 3px;
+				margin-left: 5px;
+			}
+
+			.part-emphasized-value {
 				color: darkred;
 				border: black solid 1px;
 				padding: 1px 3px;
@@ -99,6 +112,14 @@
 		white-space: pre;
 		padding: 5px 10px;
 		border-bottom: solid gray 1px;
+
+		color: lightgray;
+
+		.part-path-item {
+			color: black;
+			margin-left: 1px;
+			margin-right: 1px;
+		}
 	}
 	.part-tree {
 		overflow: auto;

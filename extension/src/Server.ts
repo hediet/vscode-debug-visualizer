@@ -26,12 +26,11 @@ export class Server {
 	}
 
 	public get indexUrl(): string {
-		return `http://localhost:${this.port}/index.html?serverPort=${
-			this.port
-		}`;
+		const port = process.env.USE_DEV_UI ? 8080 : this.port;
+		return `http://localhost:${port}/index.html?serverPort=${this.port}`;
 	}
 
-	public get mainBundle(): string {
+	public get mainBundleUrl(): string {
 		return `http://localhost:${this.port}/main.js`;
 	}
 

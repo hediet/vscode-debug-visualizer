@@ -43,7 +43,11 @@ export class ConnectionHandler {
 					);
 				},
 				openInBrowser: async ({}) => {
-					open(server.indexUrl);
+					try {
+						await launchChrome(server.indexUrl);
+					} catch (e) {
+						open(server.indexUrl);
+					}
 				},
 				setPreferredDataExtractor: async ({ dataExtractorId }) => {
 					if (this.watcher) {
@@ -69,4 +73,14 @@ export class ConnectionHandler {
 			this.dispose();
 		});
 	}
+}
+
+import chromeLauncher = require("chrome-launcher");
+
+async function launchChrome(url: string): Promise<void> {
+	const chrome = await chromeLauncher.launch({
+		startingUrl: url,
+		// `--window-size=${width},${height}`
+		chromeFlags: ["--app=" + url],
+	});
 }

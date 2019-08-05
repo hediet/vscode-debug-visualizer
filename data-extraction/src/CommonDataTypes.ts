@@ -70,6 +70,7 @@ export interface TreeNode<TExtraData> {
 	id: string | undefined;
 	name: string;
 	value: string | undefined;
+	emphasizedValue: string | undefined;
 	children: TreeNode<TExtraData>[];
 	data: TExtraData;
 	isMarked: boolean;
