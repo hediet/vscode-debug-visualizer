@@ -33,5 +33,8 @@ module.exports = {
 			},
 		],
 	},
+	node: {
+		__dirname: false,
+	},
 	plugins: [new CleanWebpackPlugin()],
 } as webpack.Configuration;
