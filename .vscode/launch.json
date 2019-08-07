@@ -10,7 +10,7 @@
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
 				"${workspaceFolder}\\example-project"
 			],
-			"outFiles": ["${workspaceFolder}/extension/out/**/*.js"],
+			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
 			"preLaunchTask": "npm: dev - extension"
 		},
 		{
@@ -25,7 +25,7 @@
 			"env": {
 				"USE_DEV_UI": "true"
 			},
-			"outFiles": ["${workspaceFolder}/extension/out/**/*.js"],
+			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
 			"preLaunchTask": "npm: dev - extension"
 		}
 	]
