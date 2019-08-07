@@ -7,11 +7,12 @@ import { Sources } from "./extension";
 import * as express from "express";
 import * as http from "http";
 import * as serveStatic from "serve-static";
+import { Config } from "./Config";
 
 export class Server {
 	private server: http.Server;
 
-	constructor(sources: Sources) {
+	constructor(sources: Sources, config: Config) {
 		const app = express();
 		app.use(serveStatic(join(__dirname, "../ui/dist")));
 
@@ -20,7 +21,7 @@ export class Server {
 		const wss = new WebSocket.Server({ server: this.server });
 		wss.on("connection", ws => {
 			const stream = new WebSocketStream(ws);
-			new ConnectionHandler(sources, stream, this);
+			new ConnectionHandler(sources, stream, this, config);
 		});
 		console.log(this.port);
 	}

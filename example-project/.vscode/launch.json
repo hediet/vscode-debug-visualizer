@@ -5,7 +5,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "node",
+			"type": "node2-with-pause-event",
 			"request": "launch",
 			"name": "Launch Program",
 			"program": "${workspaceFolder}\\dist\\index.js",

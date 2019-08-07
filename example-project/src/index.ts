@@ -10,20 +10,10 @@ import {
 } from "@hediet/debug-visualizer-data-extraction";
 enableHotReload();
 import * as ts from "typescript";
-//import { liveLogId, liveLog } from "@hediet/live-debug";
 
 registerUpdateReconciler(module);
 
 registerAll();
-
-/*
-let i = 0;
-setInterval(() => {
-	i++;
-	liveLog("bla" + i * 2);
-	liveLog("test" + i);
-}, 1000);
-*/
 
 @hotClass(module)
 class Main {
@@ -31,26 +21,25 @@ class Main {
 		const sf = ts.createSourceFile(
 			"test",
 			`
-class uiae {
-
+class Test1 {
 }
-
+class Test2 {
+}
 `,
 			ts.ScriptTarget.Latest,
 			true
 		);
-
-		console.log(sf);
-		debugger;
-	}
-
-	test() {
-		// iue
-		return {
-			kind: { graph: true },
-			edges: [{ from: "1", to: "2", label: "aa" }],
-			nodes: [{ id: "1", label: "uiae" }, { id: "2", label: "bar" }],
-		} as CommonDataTypes.GraphData;
+		let myValue: any = sf.statements[0];
+		myValue = sf.statements[1];
+		myValue = sf.getText();
+		myValue = {
+			kind: { text: true, svg: true },
+			text: `<svg height="210" width="500">
+		<polygon points="100,10 40,198 190,78 10,78 160,198" style="fill:lime;stroke:purple;stroke-width:5;fill-rule:nonzero;"/>
+		Sorry, your browser does not support inline SVG.
+	  </svg>
+	  `,
+		};
 	}
 }
 

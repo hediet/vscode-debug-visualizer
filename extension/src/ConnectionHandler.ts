@@ -13,7 +13,12 @@ export class ConnectionHandler {
 	@observable
 	private watcher: EvaluationWatcher | undefined = undefined;
 
-	constructor(sources: Sources, stream: WebSocketStream, server: Server) {
+	constructor(
+		sources: Sources,
+		stream: WebSocketStream,
+		server: Server,
+		config: Config
+	) {
 		const {
 			client,
 			channel,
@@ -43,10 +48,13 @@ export class ConnectionHandler {
 					);
 				},
 				openInBrowser: async ({}) => {
-					try {
-						//await launchChrome(server.indexUrl);
+					let opened = false;
+					if (config.useChromeKioskModeKey()) {
+						opened = await launchChrome(server.indexUrl);
+					}
+					if (!opened) {
 						open(server.indexUrl);
-					} catch (e) {}
+					}
 				},
 				setPreferredDataExtractor: async ({ dataExtractorId }) => {
 					if (this.watcher) {
@@ -84,11 +92,17 @@ export class ConnectionHandler {
 }
 
 import chromeLauncher = require("chrome-launcher");
+import { Config } from "./Config";
 
-async function launchChrome(url: string): Promise<void> {
-	const chrome = await chromeLauncher.launch({
-		startingUrl: url,
-		// `--window-size=${width},${height}`
-		chromeFlags: ["--app=" + url],
-	});
+async function launchChrome(url: string): Promise<boolean> {
+	try {
+		const chrome = await chromeLauncher.launch({
+			startingUrl: url,
+			// `--window-size=${width},${height}`
+			chromeFlags: ["--app=" + url],
+		});
+		return true;
+	} catch (e) {
+		return false;
+	}
 }
