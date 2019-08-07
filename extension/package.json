@@ -16,7 +16,7 @@
 	"readme": "./README.md",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/hediet/vscode-rpc-server.git"
+		"url": "https://github.com/hediet/vscode-debug-visualizer.git"
 	},
 	"categories": [
 		"Other"
@@ -27,7 +27,7 @@
 		"onDebug",
 		"onWebviewPanel:debugVisualizer"
 	],
-	"main": "./out/extension.js",
+	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -47,7 +47,7 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "yarn run build",
+		"vscode:prepublish": "webpack --mode production",
 		"build": "tsc -p ./",
 		"dev": "tsc -watch -p ./"
 	},
