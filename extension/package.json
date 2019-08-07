@@ -23,7 +23,9 @@
 	],
 	"preview": true,
 	"activationEvents": [
-		"*"
+		"onCommand:vscode-debug-visualizer.new-visualizer",
+		"onDebug",
+		"onWebviewPanel:debugVisualizer"
 	],
 	"main": "./out/extension.js",
 	"contributes": {

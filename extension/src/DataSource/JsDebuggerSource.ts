@@ -12,6 +12,8 @@ import {
 	DataExtractorId,
 	ApiHasNotBeenInitializedCode,
 	selfContainedInitDataExtractorApi,
+	TypeScriptAstDataExtractor,
+	AsIsDataExtractor,
 } from "@hediet/debug-visualizer-data-extraction";
 import {
 	DataExtractionState,
@@ -144,7 +146,13 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 		session: vscode.DebugSession
 	): Promise<boolean> {
 		try {
-			const expression = `(${selfContainedInitDataExtractorApi.toString()})()`;
+			let expression = `(${selfContainedInitDataExtractorApi.toString()})();`;
+
+			const es = [TypeScriptAstDataExtractor, AsIsDataExtractor].map(
+				e => `new (${e.toString()})()`
+			);
+			expression += `(${selfContainedGetInitializedDataExtractorApi.toString()})()`;
+			expression += `.registerExtractors([${es.join(",")}])`;
 
 			const reply = await session.customRequest("evaluate", {
 				expression,

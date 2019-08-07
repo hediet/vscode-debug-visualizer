@@ -4,7 +4,7 @@
 
 Provides infrastructure to visualize values while debugging.
 
-This extension is still in development. Some VS Code APIs are still missing for the best experience.
+This extension is still in development. Also, for the best user experience some VS Code APIs are missing.
 
 ![](docs/demo.gif)
 

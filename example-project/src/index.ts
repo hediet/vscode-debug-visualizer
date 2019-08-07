@@ -1,19 +1,21 @@
+import * as ts from "typescript";
 import {
 	enableHotReload,
 	registerUpdateReconciler,
 	getReloadCount,
 	hotClass,
 } from "@hediet/node-reload";
+enableHotReload();
+
+/*
 import {
 	registerAll,
 	CommonDataTypes,
 } from "@hediet/debug-visualizer-data-extraction";
-enableHotReload();
-import * as ts from "typescript";
+registerAll();
+*/
 
 registerUpdateReconciler(module);
-
-registerAll();
 
 @hotClass(module)
 class Main {

@@ -24,6 +24,7 @@ export interface DataExtractorApi {
 	registerExtractor<TExtractedData extends ExtractedData>(
 		extractor: DataExtractor<TExtractedData>
 	): void;
+	registerExtractors(extractors: DataExtractor<ExtractedData>[]): void;
 	getData(
 		value: unknown,
 		evalFn: <T>(expression: string) => T,
@@ -55,6 +56,11 @@ export function selfContainedInitDataExtractorApi(): boolean {
 	obj[key] = api = {
 		registerExtractor(extractor) {
 			obj[prefix + extractor.id] = extractor;
+		},
+		registerExtractors(extractors: DataExtractor<ExtractedData>[]) {
+			for (const e of extractors) {
+				this.registerExtractor(e);
+			}
 		},
 		getData(value, evalFn, preferredDataExtractorId) {
 			const extractions = new Array<DataExtraction<ExtractedData>>();

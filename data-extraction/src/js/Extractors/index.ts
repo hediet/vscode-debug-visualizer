@@ -2,7 +2,7 @@ import { getDataExtractorApi } from "../DataExtractorApi";
 import { TypeScriptAstDataExtractor } from "./TypeScriptDataExtractors";
 import { AsIsDataExtractor } from "./AsIsDataExtractor";
 
-export * from "./TypeScriptDataExtractors";
+export { AsIsDataExtractor, TypeScriptAstDataExtractor };
 
 export function registerAll() {
 	const api = getDataExtractorApi();
