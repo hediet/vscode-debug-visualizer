@@ -4,80 +4,16 @@ import {
 } from "@hediet/debug-visualizer-vscode-shared";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import { observable, action, computed } from "mobx";
-import { Barrier } from "@hediet/std/synchronization";
+import { observable, action, computed, when } from "mobx";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import { Visualization, VisualizationId } from "./Visualizers/Visualizer";
-import { knownVisualizations } from "./Visualizers";
-
-interface VsCodeApi {
-	getState<TState>(): TState | undefined;
-	setState(state: unknown): void;
-}
+import { Visualization, VisualizationId } from "../Visualizers/Visualizer";
+import { knownVisualizations } from "../Visualizers";
+import { getApi as getVsCodeApi } from "./VsCodeApi";
+import { MonacoBridge } from "./MonacoBridge";
 
 declare const window: Window & {
 	serverPort?: number;
-	VsCodeApi?: VsCodeApi;
 };
-
-interface VSCodeApi<TState> {
-	getState(): Promise<TState | undefined>;
-	setState(state: TState): Promise<void>;
-}
-
-type IncomingCommand = {
-	command: "getStateResult";
-	state: unknown;
-};
-
-type OutgoingCommand =
-	| {
-			command: "setState";
-			state: unknown;
-	  }
-	| { command: "getState" };
-
-class IFrameVSCodeApi<TState> implements VSCodeApi<TState> {
-	private currentGetStatePromise: Barrier<TState> | undefined = undefined;
-
-	constructor() {
-		window.addEventListener("message", event => {
-			const data = event.data as IncomingCommand;
-			if (data.command === "getStateResult") {
-				this.currentGetStatePromise!.unlock(data.state as any);
-			}
-		});
-	}
-
-	private sendCommand(command: OutgoingCommand) {
-		window.parent.postMessage(command, "*");
-	}
-
-	getState(): Promise<TState | undefined> {
-		this.sendCommand({ command: "getState" });
-		if (this.currentGetStatePromise) {
-			throw new Error("Get state already in progress.");
-		}
-		this.currentGetStatePromise = new Barrier();
-		return this.currentGetStatePromise.onUnlocked;
-	}
-
-	async setState(state: TState): Promise<void> {
-		this.sendCommand({ command: "setState", state });
-	}
-}
-
-class DirectVSCodeApi<TState> implements VSCodeApi<TState> {
-	constructor(private readonly vsCodeApi: VsCodeApi) {}
-
-	async getState(): Promise<TState | undefined> {
-		return this.vsCodeApi.getState<TState | undefined>();
-	}
-
-	async setState(state: TState): Promise<void> {
-		this.vsCodeApi.setState(state);
-	}
-}
 
 export class Model {
 	port: number;
@@ -113,19 +49,20 @@ export class Model {
 		}
 	}
 
-	private server:
+	@observable.ref
+	public server:
 		| typeof debugVisualizerUIContract.TServerInterface
 		| undefined = undefined;
 
-	private readonly vsCodeApi = window.VsCodeApi
-		? new DirectVSCodeApi<{ expression: string }>(window.VsCodeApi)
-		: new IFrameVSCodeApi<{ expression: string }>();
+	private readonly vsCodeApi = getVsCodeApi<{ expression: string }>();
 
 	@observable private _loading = false;
 
 	public get loading(): boolean {
 		return this._loading;
 	}
+
+	private readonly bridge = new MonacoBridge(this);
 
 	constructor() {
 		if (window.serverPort) {
@@ -137,6 +74,11 @@ export class Model {
 				throw new Error("No port given.");
 			}
 			this.port = parseInt(portStr);
+
+			const expr = url.searchParams.get("expression");
+			if (expr) {
+				this.setExpression(expr);
+			}
 		}
 
 		this.stayConnected();
@@ -151,13 +93,17 @@ export class Model {
 	@action
 	setExpression(newExpression: string) {
 		this.expression = newExpression;
-		if (this.server) {
-			this.server.setExpression({ newExpression });
-		}
+		when(() => !!this.server).then(() => {
+			this.server!.setExpression({ newExpression });
+		});
 
 		this.vsCodeApi.setState({
 			expression: newExpression,
 		});
+
+		const url = new URL(window.location.href);
+		url.searchParams.set("expression", newExpression);
+		history.replaceState(null, document.title, url.toString());
 	}
 
 	setPreferredExtractorId(id: DataExtractorId) {
@@ -187,7 +133,7 @@ export class Model {
 					stream,
 					new ConsoleRpcLogger(),
 					{
-						updateState: ({ newState }) => {
+						updateState: async ({ newState }) => {
 							this._loading = newState.kind === "loading";
 							if (!this._loading) {
 								this.state = newState;

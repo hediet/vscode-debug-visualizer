@@ -10,18 +10,20 @@ import {
 } from "@hediet/debug-visualizer-data-extraction";
 enableHotReload();
 import * as ts from "typescript";
-import { liveLogId, liveLog } from "@hediet/live-debug";
+//import { liveLogId, liveLog } from "@hediet/live-debug";
 
 registerUpdateReconciler(module);
 
 registerAll();
 
+/*
 let i = 0;
 setInterval(() => {
 	i++;
 	liveLog("bla" + i * 2);
 	liveLog("test" + i);
 }, 1000);
+*/
 
 @hotClass(module)
 class Main {
@@ -29,18 +31,10 @@ class Main {
 		const sf = ts.createSourceFile(
 			"test",
 			`
-class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
+class uiae {
+
 }
-class Test {
-    public test() {
-		console.log("aaa");
-		const x = e;
-    }
-}
+
 `,
 			ts.ScriptTarget.Latest,
 			true

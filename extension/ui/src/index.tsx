@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./style.scss";
-import { Model } from "./Model";
+import { Model } from "./Model/Model";
 import Components = require("./Components");
 
 const model = new Model();

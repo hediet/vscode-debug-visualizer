@@ -1,12 +1,13 @@
 import React = require("react");
-import { Model } from "../Model";
+import { Model } from "../Model/Model";
 import { observer } from "mobx-react";
-import { observable, action, computed } from "mobx";
-import { Popover, Icon, Button, Spinner, InputGroup } from "@blueprintjs/core";
+import { observable, computed } from "mobx";
+import { Popover, Button, Spinner } from "@blueprintjs/core";
 import classnames = require("classnames");
-import Measure from "react-measure";
 import { DataExtractorInfo } from "@hediet/debug-visualizer-data-extraction";
-import { knownVisualizations } from "../Visualizers";
+import { Visualizer } from "./Visualizer";
+import { ExpressionInput } from "./ExpressionInput";
+
 @observer
 export class GUI extends React.Component<{ model: Model }> {
 	@observable text: string = "node";
@@ -24,15 +25,23 @@ export class GUI extends React.Component<{ model: Model }> {
 					/>
 					<div className="part-header-content">
 						<div className="part-header-main">
-							<ExpressionInput model={m} />
-
-							<Button
-								minimal
-								small
-								className="part-icon"
-								icon="refresh"
-								onClick={() => m.refresh()}
-							/>
+							<div className="part-expression-input ">
+								<ExpressionInput model={m} />
+							</div>
+							<div style={{ width: 4 }} />
+							{m.loading ? (
+								<div style={{ padding: "0 4px" }}>
+									<Spinner size={Spinner.SIZE_SMALL} />
+								</div>
+							) : (
+								<Button
+									minimal
+									small
+									className="part-icon"
+									icon="refresh"
+									onClick={() => m.refresh()}
+								/>
+							)}
 							<Button
 								minimal
 								small
@@ -118,134 +127,6 @@ export class ExpandedOptions extends React.Component<{ model: Model }> {
 					/>
 				</div>
 			</>
-		);
-	}
-}
-
-@observer
-export class ExpressionInput extends React.Component<{ model: Model }> {
-	@observable editedExpression: string | undefined;
-	@computed get currentExpression(): string {
-		return this.editedExpression !== undefined
-			? this.editedExpression
-			: this.props.model.expression;
-	}
-
-	@action.bound
-	updateCurrentExpression(newValue: string) {
-		this.editedExpression = newValue;
-	}
-
-	@action.bound
-	submit() {
-		if (!this.editedExpression) {
-			return;
-		}
-		this.props.model.setExpression(this.editedExpression);
-		this.editedExpression = undefined;
-	}
-
-	render() {
-		const model = this.props.model;
-		return (
-			<InputGroup
-				small
-				fill
-				rightElement={
-					model.loading ? (
-						<Spinner size={Icon.SIZE_STANDARD} />
-					) : (
-						undefined
-					)
-				}
-				value={this.currentExpression}
-				onChange={
-					((e: { target: { value: string } }) =>
-						this.updateCurrentExpression(e.target.value)) as any
-				}
-				onBlur={this.submit}
-				onKeyPress={e => {
-					if (e.charCode === 13) {
-						// enter
-						this.submit();
-					}
-				}}
-			/>
-		);
-	}
-}
-
-@observer
-export class Visualizer extends React.Component<{ model: Model }> {
-	render() {
-		return (
-			<div className="component-Visualizer">{this.renderContent()}</div>
-		);
-	}
-
-	renderContent(): JSX.Element {
-		const s = this.props.model.state;
-		if (s.kind === "loading") {
-			return <NoData label="Loading" />;
-		} else if (s.kind === "error") {
-			return <NoData label={"Error: " + s.message} />;
-		} else if (s.kind === "noExpression") {
-			return <NoData label="No Expression" />;
-		} else if (s.kind === "noDebugSession") {
-			return <NoData label="No Debug Session" />;
-		} else if (s.kind === "data") {
-			const vis = this.props.model.visualizations;
-			if (!vis || !vis.visualization) {
-				return <NoData label="No Visualization" />;
-			}
-
-			return vis.visualization.render();
-		} else {
-			const nvr: never = s;
-			return <div />;
-		}
-	}
-}
-
-@observer
-class NoData extends React.Component<{ label: string }> {
-	@observable height = 0;
-	@observable width = 0;
-
-	render() {
-		const { width, height } = this;
-		return (
-			<Measure
-				client={true}
-				onResize={e => {
-					if (e.client) {
-						this.height = e.client.height;
-						this.width = e.client.width;
-					}
-				}}
-			>
-				{({ measureRef }) => (
-					<div className="component-NoData" ref={measureRef}>
-						<svg>
-							<line x1={0} y1={0} x2={width} y2={height} />
-							<line x1={width} y1={0} x2={0} y2={height} />
-							<rect
-								x={width / 2 - 50}
-								y={height / 2 - 20}
-								width={100}
-								height={40}
-							/>
-							<text
-								x={width / 2}
-								y={height / 2}
-								textAnchor="middle"
-								alignmentBaseline="central"
-								children={this.props.label}
-							/>
-						</svg>
-					</div>
-				)}
-			</Measure>
 		);
 	}
 }

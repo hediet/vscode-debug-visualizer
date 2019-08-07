@@ -80,6 +80,7 @@ body,
 
 		.part-header-content {
 			flex: 1;
+			min-width: 0;
 
 			transition: flex 0.3s ease-out;
 
@@ -89,8 +90,9 @@ body,
 				align-items: center;
 
 				.part-expression-input {
+					min-width: 0;
 					//color: rgb(155, 70, 176);
-					font-family: var(--vscode-editor-font-family);
+					//font-family: var(--vscode-editor-font-family);
 					flex: 1;
 				}
 			}
@@ -115,6 +117,31 @@ body,
 		min-height: 0px;
 
 		height: 100%;
+	}
+}
+
+.component-monaco-editor2 {
+	height: 23px;
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	display: flex;
+	padding: 2px;
+	background-color: white;
+
+	// overflow: hidden;
+
+	.part-editor {
+		min-width: 0;
+		min-height: 0;
+		flex: 1;
+
+		.current-line {
+			border: none !important;
+		}
+		.selectionHighlight {
+			background: transparent !important;
+		}
 	}
 }
 

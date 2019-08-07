@@ -51,6 +51,7 @@ export function selfContainedInitDataExtractorApi(): boolean {
 			.filter(([key, value]) => key.startsWith(prefix))
 			.map(([key, value]) => value as DataExtractor<ExtractedData>);
 	}
+	obj["$asData"] = (x: unknown) => x;
 	obj[key] = api = {
 		registerExtractor(extractor) {
 			obj[prefix + extractor.id] = extractor;

@@ -2,6 +2,7 @@ import * as ts from "typescript";
 import { DataExtractor, ExtractionCollector } from "../DataExtractor";
 import { CommonDataTypes } from "../../CommonDataTypes";
 
+// This class is self contained and can be injected into both nodejs and browser environments.
 export class TypeScriptAstDataExtractor
 	implements DataExtractor<CommonDataTypes.AstData> {
 	readonly id = "TypeScriptAst";
@@ -83,14 +84,12 @@ export class TypeScriptAstDataExtractor
 				id: memberName,
 				children: children,
 				data: {
-					length: 0,
-					position: 0,
+					length: node.end - node.pos,
+					position: node.pos,
 				},
 				emphasizedValue: emphasizedValueFn(node),
 				isMarked: marked.has(node),
 				value,
-				// startPos: node.pos,
-				// endPos: node.end
 			};
 		}
 
@@ -139,7 +138,7 @@ export class TypeScriptAstDataExtractor
 						kind: { text: true, tree: true, ast: true },
 						root: toTreeNode(root, "root", marked, fn),
 						text: root.text,
-						fileType: "ts",
+						fileName: "index.ts",
 					};
 				},
 			});

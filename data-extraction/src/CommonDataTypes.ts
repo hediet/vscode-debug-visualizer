@@ -24,11 +24,11 @@ export type CommonDataType =
 	| CommonDataTypes.GraphData;
 
 export module CommonDataTypes {
-	export interface Text extends ExtractedData {
+	export interface Text {
 		kind: { text: true };
 		text: string;
-		// what should be used here? File type (.ts, .txt) or mime type?
-		fileType?: string;
+		mimeType?: string;
+		fileName?: string;
 	}
 
 	export interface GraphData {
@@ -52,7 +52,7 @@ export module CommonDataTypes {
 		text: string;
 	}
 
-	export interface TreeNodeData extends ExtractedData {
+	export interface TreeNodeData {
 		kind: { tree: true };
 		root: TreeNode<{}>;
 	}

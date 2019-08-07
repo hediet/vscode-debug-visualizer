@@ -44,15 +44,23 @@ export class ConnectionHandler {
 				},
 				openInBrowser: async ({}) => {
 					try {
-						await launchChrome(server.indexUrl);
-					} catch (e) {
+						//await launchChrome(server.indexUrl);
 						open(server.indexUrl);
-					}
+					} catch (e) {}
 				},
 				setPreferredDataExtractor: async ({ dataExtractorId }) => {
 					if (this.watcher) {
 						this.watcher.setPreferredDataExtractor(dataExtractorId);
 					}
+				},
+				getCompletions: async ({ text, column }) => {
+					const completions = await sources.jsSource.getCompletions(
+						text,
+						column
+					);
+					return {
+						completions,
+					};
 				},
 			}
 		);

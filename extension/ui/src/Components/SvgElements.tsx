@@ -88,15 +88,3 @@ export function SvgRect(
 		/>
 	);
 }
-
-/*
-export function Svg(props: { position: Point } & SvgAttributes<SVGSVGElement>) {
-	return (
-		<svg
-			x={props.position.x}
-			y={props.position.y}
-			{...omit(props, ["position"])}
-		/>
-	);
-}
-*/

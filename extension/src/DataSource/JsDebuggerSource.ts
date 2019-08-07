@@ -13,7 +13,10 @@ import {
 	ApiHasNotBeenInitializedCode,
 	selfContainedInitDataExtractorApi,
 } from "@hediet/debug-visualizer-data-extraction";
-import { DataExtractionState } from "@hediet/debug-visualizer-vscode-shared";
+import {
+	DataExtractionState,
+	CompletionItem,
+} from "@hediet/debug-visualizer-vscode-shared";
 
 export function createJsDebuggerSource(): JsDataSource {
 	return new JsDebuggerSourceImplementation();
@@ -50,6 +53,28 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 
 	registerDataExtractor(classExpression: JsCode): void {}
 
+	async getCompletions(
+		text: string,
+		column: number
+	): Promise<CompletionItem[]> {
+		const session = vscode.debug.activeDebugSession;
+		if (!session) {
+			return [];
+		}
+
+		try {
+			const reply = await session.customRequest("completions", {
+				text,
+				frameId: this.lastFrameId,
+				column,
+			});
+			return reply.targets;
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
+	}
+
 	public createEvaluationWatcher(
 		expression: string,
 		options: EvaluationWatcherOptions
@@ -79,10 +104,10 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 				? `"${w.preferredDataExtractor}"`
 				: "undefined";
 
-			const expression = `(${fnSrc})().getData(${
-				w.expression
-			}, expr => eval(expr), ${preferredExtractor})`;
-			// uia
+			const expression =
+				`(${fnSrc})().getData(${w.expression},` +
+				`expr => eval(expr), ${preferredExtractor})`;
+
 			const reply = await session.customRequest("evaluate", {
 				expression,
 				frameId: this.lastFrameId,
