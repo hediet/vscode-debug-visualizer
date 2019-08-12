@@ -62,7 +62,7 @@ export class Model {
 		return this._loading;
 	}
 
-	private readonly bridge = new MonacoBridge(this);
+	private readonly _bridge = new MonacoBridge(this);
 
 	constructor() {
 		if (window.serverPort) {

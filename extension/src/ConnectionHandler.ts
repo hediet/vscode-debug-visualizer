@@ -4,9 +4,11 @@ import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
 import { EvaluationWatcher } from "./DataSource/DataSource";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { observable, autorun } from "mobx";
-import { Sources } from "./extension";
+import { Sources } from "./DataSource";
 import { Server } from "./Server";
 import * as open from "open";
+import chromeLauncher = require("chrome-launcher");
+import { Config } from "./Config";
 
 export class ConnectionHandler {
 	public readonly dispose = Disposable.fn();
@@ -49,7 +51,7 @@ export class ConnectionHandler {
 				},
 				openInBrowser: async ({}) => {
 					let opened = false;
-					if (config.useChromeKioskModeKey()) {
+					if (config.useChromeKioskMode()) {
 						opened = await launchChrome(server.indexUrl);
 					}
 					if (!opened) {
@@ -91,12 +93,9 @@ export class ConnectionHandler {
 	}
 }
 
-import chromeLauncher = require("chrome-launcher");
-import { Config } from "./Config";
-
 async function launchChrome(url: string): Promise<boolean> {
 	try {
-		const chrome = await chromeLauncher.launch({
+		const _chrome = await chromeLauncher.launch({
 			startingUrl: url,
 			// `--window-size=${width},${height}`
 			chromeFlags: ["--app=" + url],

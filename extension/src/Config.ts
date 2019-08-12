@@ -17,7 +17,7 @@ export class Config {
 		);
 	}
 
-	public useChromeKioskModeKey(): boolean {
+	public useChromeKioskMode(): boolean {
 		const c = workspace.getConfiguration();
 		const b = c.get<boolean>(useChromeKioskModeKey);
 		if (b === undefined) {

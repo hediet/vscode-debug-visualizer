@@ -3,7 +3,7 @@ import { AddressInfo } from "net";
 import WebSocket = require("ws");
 import { join } from "path";
 import { ConnectionHandler } from "./ConnectionHandler";
-import { Sources } from "./extension";
+import { Sources } from "./DataSource";
 import * as express from "express";
 import * as http from "http";
 import * as serveStatic from "serve-static";
@@ -14,7 +14,8 @@ export class Server {
 
 	constructor(sources: Sources, config: Config) {
 		const app = express();
-		app.use(serveStatic(join(__dirname, "../ui/dist")));
+		const distPath = join(__dirname, "../ui/dist");
+		app.use(serveStatic(distPath));
 
 		this.server = app.listen();
 
@@ -23,7 +24,6 @@ export class Server {
 			const stream = new WebSocketStream(ws);
 			new ConnectionHandler(sources, stream, this, config);
 		});
-		console.log(this.port);
 	}
 
 	public get indexUrl(): string {

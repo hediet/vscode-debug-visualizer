@@ -1,4 +1,5 @@
 import { window, ExtensionContext, WebviewPanel, commands } from "vscode";
+import { Disposable } from "@hediet/std/disposable";
 import {
 	enableHotReload,
 	hotRequireExportedFn,
@@ -10,19 +11,12 @@ if (process.env.USE_DEV_UI) {
 	enableHotReload({ entryModule: module, loggingEnabled: true });
 }
 
-import { Disposable } from "@hediet/std/disposable";
-
-import { createJsDebuggerSource } from "./DataSource/JsDebuggerSource";
-
 import { WebViews } from "./WebViews";
 import { Server } from "./Server";
 import { Config } from "./Config";
+import { Sources } from "./DataSource";
 
 registerUpdateReconciler(module);
-
-export class Sources {
-	public readonly jsSource = createJsDebuggerSource();
-}
 
 export class Extension {
 	public dispose = Disposable.fn();
@@ -39,11 +33,13 @@ export class Extension {
 			i.show();
 		}
 
-		commands.registerCommand(
-			"vscode-debug-visualizer.new-visualizer",
-			() => {
-				this.views.createNew();
-			}
+		this.dispose.track(
+			commands.registerCommand(
+				"vscode-debug-visualizer.new-visualizer",
+				() => {
+					this.views.createNew();
+				}
+			)
 		);
 	}
 }
