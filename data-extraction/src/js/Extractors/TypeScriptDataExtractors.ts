@@ -16,9 +16,14 @@ export class TypeScriptAstDataExtractor
 			return;
 		}
 
-		const require = evalFn<(request: string) => unknown>("require");
+		let tsApi: typeof ts = undefined as any;
+		if (typeof data === "object" && "typescript" in (data as object)) {
+			tsApi = (data as any).typescript;
+		} else {
+			const require = evalFn<(request: string) => unknown>("require");
+			tsApi = require("typescript") as typeof ts;
+		}
 
-		const tsApi = require("typescript") as typeof ts;
 		if (!tsApi) {
 			return;
 		}
@@ -102,7 +107,9 @@ export class TypeScriptAstDataExtractor
 			(Array.isArray(data) && data.every(isNode)) ||
 			(typeof data === "object" &&
 				data &&
-				Object.entries(data).every(([k, v]) => k === "fn" || isNode(v)))
+				Object.entries(data).every(
+					([k, v]) => k === "fn" || k === "typescript" || isNode(v)
+				))
 		) {
 			let root: ts.SourceFile;
 			let marked: Set<ts.Node>;
@@ -121,6 +128,7 @@ export class TypeScriptAstDataExtractor
 				for (const [k, v] of Object.entries(data)) {
 					if (k === "fn") {
 						fn = v;
+					} else if (k === "typescript") {
 					} else {
 						root = v.getSourceFile();
 						marked.add(v);
