@@ -99,7 +99,11 @@ export class TypeScriptAstDataExtractor
 		}
 
 		function isNode(node: unknown): node is ts.Node {
-			return typeof node === "object" && (tsApi as any).isNode(node);
+			return (
+				typeof node === "object" &&
+				node !== null &&
+				(tsApi.isToken(node as any) || (tsApi as any).isNode(node))
+			);
 		}
 
 		if (
