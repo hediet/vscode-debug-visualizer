@@ -106,54 +106,62 @@ export class TypeScriptAstDataExtractor
 			);
 		}
 
-		if (
-			isNode(data) ||
-			(Array.isArray(data) && data.every(isNode)) ||
-			(typeof data === "object" &&
-				data &&
-				Object.entries(data).every(
-					([k, v]) => k === "fn" || k === "typescript" || isNode(v)
-				))
-		) {
-			let root: ts.SourceFile;
-			let marked: Set<ts.Node>;
-			let fn: (n: ts.Node) => string | undefined = (n: ts.Node) =>
-				undefined;
-			if (Array.isArray(data)) {
-				root = (data[0] as ts.Node).getSourceFile();
-				marked = new Set(data);
-			} else if (isNode(data)) {
-				root = data.getSourceFile();
-				marked = new Set([data]);
-			} else {
-				marked = new Set();
-				const map = new Map<ts.Node, string>();
-				fn = (n: ts.Node) => map.get(n);
-				for (const [k, v] of Object.entries(data)) {
-					if (k === "fn") {
-						fn = v;
-					} else if (k === "typescript") {
+		let root: ts.SourceFile | undefined = undefined;
+		let marked: Set<ts.Node>;
+		let fn: (n: ts.Node) => string | undefined = (n: ts.Node) => undefined;
+		if (Array.isArray(data) && data.every(isNode)) {
+			root = (data[0] as ts.Node).getSourceFile();
+			marked = new Set(data);
+		} else if (isNode(data)) {
+			root = data.getSourceFile();
+			marked = new Set([data]);
+		} else if (typeof data === "object" && data) {
+			marked = new Set();
+			const map = new Map<ts.Node, string>();
+			fn = (n: ts.Node) => map.get(n);
+			for (const [key, item] of Object.entries(data)) {
+				if (key === "fn") {
+					fn = item;
+				} else if (key === "typescript") {
+				} else {
+					let nodes: Array<ts.Node>;
+					if (isNode(item)) {
+						nodes = [item];
+					} else if (Array.isArray(item) && item.every(isNode)) {
+						nodes = item;
 					} else {
-						root = v.getSourceFile();
-						marked.add(v);
-						map.set(v, k);
+						return;
+					}
+					if (nodes.length > 0 && !root) {
+						root = nodes[0].getSourceFile();
+					}
+					for (const n of nodes) {
+						marked.add(n);
+						map.set(n, key);
 					}
 				}
 			}
-
-			collector.addExtraction({
-				id: "ts-ast",
-				name: "TypeScript AST",
-				priority: 1000,
-				extractData() {
-					return {
-						kind: { text: true, tree: true, ast: true },
-						root: toTreeNode(root, "root", marked, fn),
-						text: root.text,
-						fileName: "index.ts",
-					};
-				},
-			});
+		} else {
+			return;
 		}
+
+		if (!root) {
+			return;
+		}
+		const finalRoot = root;
+
+		collector.addExtraction({
+			id: "ts-ast",
+			name: "TypeScript AST",
+			priority: 1000,
+			extractData() {
+				return {
+					kind: { text: true, tree: true, ast: true },
+					root: toTreeNode(finalRoot, "root", marked, fn),
+					text: finalRoot.text,
+					fileName: "index.ts",
+				};
+			},
+		});
 	}
 }
