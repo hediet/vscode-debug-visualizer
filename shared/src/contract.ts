@@ -3,14 +3,13 @@ import {
 	notificationContract,
 	types,
 	requestContract,
-	JSONObject,
 } from "@hediet/typed-json-rpc";
 import {
 	DataExtractionResult,
 	DataExtractorId,
 } from "@hediet/debug-visualizer-data-extraction";
 
-function unchecked<T>(): types.Type<T, T, unknown> {
+function unchecked<T>(): types.Type<T, any, unknown> {
 	return new types.Type<T, T, unknown>(
 		"unchecked",
 		(u): u is T => true,
