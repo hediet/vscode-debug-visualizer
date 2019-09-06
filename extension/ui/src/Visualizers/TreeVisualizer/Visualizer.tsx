@@ -8,36 +8,37 @@ import {
 	CommonDataTypes,
 	ExtractedData,
 	isCommonDataType,
+	TreeNode,
 } from "@hediet/debug-visualizer-data-extraction";
 import {
 	VisualizationProvider,
 	VisualizationCollector,
-	VisualizationId,
 	asVisualizationId,
 } from "../Visualizer";
 import React = require("react");
 
-export function createTreeViewModelFromTreeNodeData(
-	root: CommonDataTypes.TreeNodeData["root"]
-): TreeViewModel {
-	const m = new TreeViewModel();
+export function createTreeViewModelFromTreeNodeData<TData>(
+	root: TreeNode<TData>
+): TreeViewModel<TData> {
+	const m = new TreeViewModel<TData>();
 	m.root = recurse(root, m);
 	return m;
 
 	function recurse(
-		node: CommonDataTypes.TreeNodeData["root"],
-		viewModel: TreeViewModel
-	): TreeNodeViewModel {
-		const children: TreeNodeViewModel[] = node.children.map(c =>
+		node: TreeNode<TData>,
+		viewModel: TreeViewModel<TData>
+	): TreeNodeViewModel<TData> {
+		const children: TreeNodeViewModel<TData>[] = node.children.map(c =>
 			recurse(c, viewModel)
 		);
-		const model = new TreeNodeViewModel(
+		const model = new TreeNodeViewModel<TData>(
 			viewModel,
 			node.id,
 			node.name,
 			node.value,
 			node.emphasizedValue,
-			children
+			children,
+			node.data
 		);
 		model.isMarked = node.isMarked;
 		for (const c of children) {

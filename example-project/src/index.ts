@@ -27,6 +27,58 @@ class Test1 {
 }
 class Test2 {
 }
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
+class Test1 {
+}
+class Test2 {
+}
 `,
 			ts.ScriptTarget.Latest,
 			true

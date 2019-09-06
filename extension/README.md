@@ -4,7 +4,8 @@
 
 Provides infrastructure to visualize values while debugging.
 
-This extension is still in development. Also, for the best user experience some VS Code APIs are missing.
+This extension is still in development. Also, for the best user experience some VS Code APIs are missing -
+[please give your thumbs up here](https://github.com/microsoft/vscode/issues/78663) so that these APIs might be provided at some time.
 
 ![](docs/demo.gif)
 

@@ -6,7 +6,7 @@ import { Rectangle, Point } from "../../Components/Point";
 import { SvgLine } from "../../Components/SvgElements";
 import "./style.scss";
 
-export class TreeViewModel {
+export class TreeViewModel<TData = unknown> {
 	private started = true;
 	start() {
 		this.started = true;
@@ -19,7 +19,7 @@ export class TreeViewModel {
 	private version = 0;
 	private lastUpdateVersion = -1;
 
-	@observable public root: TreeNodeViewModel | undefined = undefined;
+	@observable public root: TreeNodeViewModel<TData> | undefined = undefined;
 
 	public invalidateOffsets() {
 		this.version++;
@@ -42,9 +42,25 @@ export class TreeViewModel {
 		this.root.updateOffsets();
 	}
 
-	@observable selected: TreeNodeViewModel | undefined = undefined;
+	public get marked(): TreeNodeViewModel<TData>[] {
+		const result = new Array<TreeNodeViewModel<TData>>();
+		function recurse(node: TreeNodeViewModel<TData>) {
+			if (node.isMarked) {
+				result.push(node);
+			}
+			for (const c of node.children) {
+				recurse(c);
+			}
+		}
+		if (this.root) {
+			recurse(this.root);
+		}
+		return result;
+	}
 
-	@action public select(current: TreeNodeViewModel | undefined) {
+	@observable selected: TreeNodeViewModel<TData> | undefined = undefined;
+
+	@action public select(current: TreeNodeViewModel<TData> | undefined) {
 		if (this.selected) {
 			this.selected.isSelected = false;
 		}
@@ -54,10 +70,20 @@ export class TreeViewModel {
 		this.selected = current;
 	}
 
-	private selectOnHoverEnabled = false;
-	private selectedBeforeHover: TreeNodeViewModel | undefined = undefined;
+	@action public toggleSelect(current: TreeNodeViewModel<TData>) {
+		if (this.selected === current) {
+			this.select(undefined);
+		} else {
+			this.select(current);
+		}
+	}
 
-	@action public hover(current: TreeNodeViewModel | undefined) {
+	private selectOnHoverEnabled = false;
+	private selectedBeforeHover:
+		| TreeNodeViewModel<TData>
+		| undefined = undefined;
+
+	@action public hover(current: TreeNodeViewModel<TData> | undefined) {
 		if (this.selectOnHoverEnabled) {
 			if (current) {
 				this.select(current);
@@ -84,16 +110,17 @@ export class TreeViewModel {
 
 let i = 0;
 
-export class TreeNodeViewModel {
-	public parent: TreeNodeViewModel | null = null;
+export class TreeNodeViewModel<TData = unknown> {
+	public parent: TreeNodeViewModel<TData> | null = null;
 
 	constructor(
-		public readonly treeViewModel: TreeViewModel,
+		public readonly treeViewModel: TreeViewModel<TData>,
 		public readonly id: string | undefined,
 		public readonly name: string,
 		public readonly value: string | undefined,
 		public readonly emphasizedValue: string | undefined,
-		public readonly children: TreeNodeViewModel[]
+		public readonly children: TreeNodeViewModel<TData>[],
+		public readonly data: TData
 	) {}
 
 	@observable expanderOffsetRect: Rectangle | undefined = undefined;
@@ -393,7 +420,7 @@ export class TreeNodeView extends React.Component<{
 }> {
 	@action.bound
 	private clickHandler() {
-		this.props.model.treeViewModel.select(this.props.model);
+		this.props.model.treeViewModel.toggleSelect(this.props.model);
 	}
 
 	private mouseEnterOrLeaveHandler(enter: boolean) {

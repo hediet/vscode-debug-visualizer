@@ -6,6 +6,7 @@ import { SvgVisualizer } from "./SvgVisualizer";
 import { DotVisualizer } from "./DotVisualizer";
 import { TextVisualizer } from "./TextVisualizer";
 import { MonacoTextVisualizer } from "./MonacoTextVisualizer";
+import { AstVisualizer } from "./AstViewer";
 
 export const knownVisualizations = new ComposedVisualizationProvider([
 	new TreeVisualizer(),
@@ -14,4 +15,5 @@ export const knownVisualizations = new ComposedVisualizationProvider([
 	new DotVisualizer(),
 	new TextVisualizer(),
 	new MonacoTextVisualizer(),
+	new AstVisualizer(),
 ]);

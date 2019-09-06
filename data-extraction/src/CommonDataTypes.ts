@@ -52,17 +52,18 @@ export module CommonDataTypes {
 		text: string;
 	}
 
-	export interface TreeNodeData {
+	export interface TreeNodeData<TData = unknown> {
 		kind: { tree: true };
-		root: TreeNode<{}>;
+		root: TreeNode<TData>;
 	}
 
-	export interface AstData extends TreeNodeData, Text {
+	export interface AstData
+		extends TreeNodeData<{
+				position: number;
+				length: number;
+			}>,
+			Text {
 		kind: { text: true; tree: true; ast: true };
-		root: TreeNode<{
-			position: number;
-			length: number;
-		}>;
 	}
 }
 

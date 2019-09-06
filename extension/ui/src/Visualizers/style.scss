@@ -14,3 +14,46 @@
 		flex: 1;
 	}
 }
+
+.component-AstTree {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	.part-tree2 {
+		flex: 2;
+		min-height: 0;
+		min-width: 0;
+	}
+	.part-editor {
+		flex: 1;
+		min-height: 0;
+		min-width: 0;
+		border-top: solid gray 1px;
+
+		.marked {
+			background: orange;
+		}
+
+		.selected {
+			background: yellow;
+			opacity: 0.7;
+		}
+	}
+
+	/*display: flex;
+	flex-direction: column;
+	min-height: 0;
+	min-width: 0;
+
+	.part-tree2 {
+		flex: 1 0;
+	}
+
+	.part-editor {
+		min-height: 0;
+		min-width: 0;
+		flex: 1;
+		background: red;
+	}*/
+}

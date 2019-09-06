@@ -35,7 +35,7 @@ export class MonacoTextVisualizer extends VisualizationProvider {
 	}
 }
 
-function getLanguageId(fileName: string): string {
+export function getLanguageId(fileName: string): string {
 	const l = monaco.languages.getLanguages();
 	const result = l.find(l => {
 		if (l.filenamePatterns) {
