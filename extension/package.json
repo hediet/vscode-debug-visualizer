@@ -2,7 +2,7 @@
 	"name": "debug-visualizer",
 	"displayName": "Debug Visualizer",
 	"description": "An extension that visualizes values while debugging.",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.35.0"
@@ -46,8 +46,8 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "webpack --mode production",
-		"build": "tsc -p ./",
+		"vscode:prepublish": "yarn build",
+		"build": "webpack --mode production",
 		"dev": "tsc -watch -p ./"
 	},
 	"dependencies": {
