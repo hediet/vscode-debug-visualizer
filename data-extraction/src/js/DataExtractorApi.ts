@@ -14,7 +14,8 @@ export type DataResult =
 			kind: "Data";
 			extractionResult: DataExtractionResult;
 	  }
-	| { kind: "NoExtractors" };
+	| { kind: "NoExtractors" }
+	| { kind: "Error"; message: string };
 
 export interface JSONString<T> extends String {
 	__brand: { json: T };
