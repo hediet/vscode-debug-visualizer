@@ -61,6 +61,9 @@ export class TreeViewModel<TData = unknown> {
 	@observable selected: TreeNodeViewModel<TData> | undefined = undefined;
 
 	@action public select(current: TreeNodeViewModel<TData> | undefined) {
+		if (this.selected === current) {
+			return;
+		}
 		if (this.selected) {
 			this.selected.isSelected = false;
 		}
@@ -83,7 +86,9 @@ export class TreeViewModel<TData = unknown> {
 		| TreeNodeViewModel<TData>
 		| undefined = undefined;
 
-	@action public hover(current: TreeNodeViewModel<TData> | undefined) {
+	@action public handleHoverEvent(
+		current: TreeNodeViewModel<TData> | undefined
+	) {
 		if (this.selectOnHoverEnabled) {
 			if (current) {
 				this.select(current);
@@ -93,7 +98,7 @@ export class TreeViewModel<TData = unknown> {
 		}
 	}
 
-	selectOnHover(enable: boolean) {
+	setSelectOnHover(enable: boolean) {
 		if (this.selectOnHoverEnabled === enable) {
 			return;
 		}
@@ -295,7 +300,7 @@ export class TreeView extends React.Component<{ model: TreeViewModel }> {
 						// alt
 						e.preventDefault();
 						e.stopPropagation();
-						model.selectOnHover(true);
+						model.setSelectOnHover(true);
 					}
 				}}
 				onKeyUp={e => {
@@ -303,7 +308,7 @@ export class TreeView extends React.Component<{ model: TreeViewModel }> {
 						// alt
 						e.preventDefault();
 						e.stopPropagation();
-						model.selectOnHover(false);
+						model.setSelectOnHover(false);
 					}
 				}}
 			>
@@ -423,8 +428,8 @@ export class TreeNodeView extends React.Component<{
 		this.props.model.treeViewModel.toggleSelect(this.props.model);
 	}
 
-	private mouseEnterOrLeaveHandler(enter: boolean) {
-		this.props.model.treeViewModel.hover(
+	private handleMouseEnterOrLeave(enter: boolean) {
+		this.props.model.treeViewModel.handleHoverEvent(
 			enter ? this.props.model : undefined
 		);
 	}
@@ -454,7 +459,7 @@ export class TreeNodeView extends React.Component<{
 	public render(): JSX.Element {
 		const model = this.props.model;
 		const collapsed = model.expanded;
-
+		console.log("render");
 		return (
 			<div
 				className={classNames(
@@ -470,16 +475,18 @@ export class TreeNodeView extends React.Component<{
 						"parentHovered"
 				)}
 				ref={this.setRootDiv}
-				onMouseOver={e => {
-					this.mouseEnterOrLeaveHandler(true);
-					e.stopPropagation();
-				}}
-				onMouseOut={e => {
-					this.mouseEnterOrLeaveHandler(false);
-					e.stopPropagation();
-				}}
 			>
-				<div className="part-header">
+				<div
+					className="part-header"
+					onMouseOver={e => {
+						this.handleMouseEnterOrLeave(true);
+						e.stopPropagation();
+					}}
+					onMouseOut={e => {
+						this.handleMouseEnterOrLeave(false);
+						e.stopPropagation();
+					}}
+				>
 					<div
 						ref={model.setExpanderDiv}
 						onClick={() => model.toggleExpanded()}
