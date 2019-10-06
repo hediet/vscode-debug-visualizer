@@ -16,14 +16,16 @@ export class TypeScriptAstDataExtractor
 			return;
 		}
 
-		let tsApi: typeof ts = undefined as any;
-		if (typeof data === "object" && "typescript" in (data as object)) {
-			tsApi = (data as any).typescript;
-		} else {
-			const require = evalFn<(request: string) => unknown>("require");
-			tsApi = require("typescript") as typeof ts;
+		function getApi(): typeof ts {
+			if (typeof data === "object" && "typescript" in (data as object)) {
+				return (data as any).typescript;
+			} else {
+				const require = evalFn<(request: string) => unknown>("require");
+				return require("typescript") as typeof ts;
+			}
 		}
 
+		const tsApi = getApi();
 		if (!tsApi) {
 			return;
 		}
@@ -43,6 +45,14 @@ export class TypeScriptAstDataExtractor
 			return null;
 		}
 
+		function getChildren(node: ts.Node): ts.Node[] {
+			const result = new Array<ts.Node>();
+			tsApi.forEachChild(node, n => {
+				result.push(n);
+			});
+			return result;
+		}
+
 		function toTreeNode(
 			node: ts.Node,
 			memberName: string,
@@ -50,17 +60,17 @@ export class TypeScriptAstDataExtractor
 			emphasizedValueFn: (node: ts.Node) => string | undefined
 		): CommonDataTypes.AstData["root"] {
 			const name = tsApi.SyntaxKind[node.kind];
-			const children = node
-				.getChildren()
+			const children = getChildren(node)
 				.map((childNode, idx) => {
 					let parentPropertyName = findKey(childNode, node) || "";
 					if (childNode.kind == tsApi.SyntaxKind.SyntaxList) {
-						childNode.getChildren().some(c => {
+						const children = getChildren(childNode);
+						children.some(c => {
 							parentPropertyName = findKey(c, node) || "";
 							return !!parentPropertyName;
 						});
 
-						if (childNode.getChildren().length === 0) return null!;
+						if (children.length === 0) return null!;
 					}
 
 					if (node.kind == tsApi.SyntaxKind.SyntaxList) {
@@ -79,7 +89,7 @@ export class TypeScriptAstDataExtractor
 			let value: string | undefined = undefined;
 
 			if (tsApi.isIdentifier(node)) {
-				value = node.text;
+				value = node.text || (node.escapedText as string);
 			} else if (tsApi.isLiteralExpression(node)) {
 				value = node.text;
 			}
@@ -106,14 +116,28 @@ export class TypeScriptAstDataExtractor
 			);
 		}
 
-		let root: ts.SourceFile | undefined = undefined;
+		function getSourceFile(node: ts.Node | any): ts.SourceFile {
+			if (!node) {
+				throw new Error("Detached node");
+			}
+			if (tsApi.isSourceFile(node)) {
+				return node;
+			}
+			if (!("getSourceFile" in node)) {
+				return getSourceFile(node.parent);
+			}
+			return node.getSourceFile();
+		}
+
+		let rootSourceFile: ts.SourceFile | undefined = undefined;
+		let rootNode: ts.Node | undefined = undefined;
 		let marked: Set<ts.Node>;
 		let fn: (n: ts.Node) => string | undefined = (n: ts.Node) => undefined;
 		if (Array.isArray(data) && data.every(isNode)) {
-			root = (data[0] as ts.Node).getSourceFile();
+			rootSourceFile = getSourceFile(data[0] as ts.Node);
 			marked = new Set(data);
 		} else if (isNode(data)) {
-			root = data.getSourceFile();
+			rootSourceFile = getSourceFile(data);
 			marked = new Set([data]);
 		} else if (typeof data === "object" && data) {
 			marked = new Set();
@@ -124,6 +148,9 @@ export class TypeScriptAstDataExtractor
 					fn = item;
 				} else if (key === "typescript") {
 				} else {
+					if (key === "rootNode") {
+						rootNode = item;
+					}
 					let nodes: Array<ts.Node>;
 					if (isNode(item)) {
 						nodes = [item];
@@ -132,8 +159,8 @@ export class TypeScriptAstDataExtractor
 					} else {
 						return;
 					}
-					if (nodes.length > 0 && !root) {
-						root = nodes[0].getSourceFile();
+					if (nodes.length > 0 && !rootSourceFile) {
+						rootSourceFile = getSourceFile(nodes[0]);
 					}
 					for (const n of nodes) {
 						marked.add(n);
@@ -145,10 +172,10 @@ export class TypeScriptAstDataExtractor
 			return;
 		}
 
-		if (!root) {
+		if (!rootSourceFile) {
 			return;
 		}
-		const finalRoot = root;
+		const finalRootSourceFile = rootSourceFile;
 
 		collector.addExtraction({
 			id: "ts-ast",
@@ -157,8 +184,13 @@ export class TypeScriptAstDataExtractor
 			extractData() {
 				return {
 					kind: { text: true, tree: true, ast: true },
-					root: toTreeNode(finalRoot, "root", marked, fn),
-					text: finalRoot.text,
+					root: toTreeNode(
+						rootNode || finalRootSourceFile,
+						"root",
+						marked,
+						fn
+					),
+					text: finalRootSourceFile.text,
 					fileName: "index.ts",
 				};
 			},
