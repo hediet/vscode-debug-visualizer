@@ -60,7 +60,9 @@ export function getHtml(server: Server) {
 	const isDev = !!process.env.USE_DEV_UI;
 	return `
         <html>
-            <head>
+			<head>
+			<meta charset="UTF-8">
+			<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
             <style>
                 html { height: 100%; width: 100%; padding: 0; margin: 0; }
                 body { height: 100%; width: 100%; padding: 0; margin: 0; }
@@ -86,10 +88,8 @@ export function getHtml(server: Server) {
 				</script>
 				${
 					isDev
-						? `<iframe src="${server.indexUrl}"></iframe>`
-						: `<script type="text/javascript" src="${
-								server.mainBundleUrl
-						  }"></script>`
+						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.indexUrl}"></iframe>`
+						: `<script type="text/javascript" src="${server.mainBundleUrl}"></script>`
 				}
             </body>
         </html>
