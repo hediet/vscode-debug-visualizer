@@ -16,7 +16,7 @@ export class AsIsDataExtractor implements DataExtractor<ExtractedData> {
 				);
 				if (areAllTrue) {
 					extractionCollector.addExtraction({
-						id: "as-is",
+						id: this.id,
 						name: "As Is",
 						priority: 500,
 						extractData() {
