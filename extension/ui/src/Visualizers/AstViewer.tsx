@@ -19,6 +19,7 @@ import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, autorun, trace } from "mobx";
 import * as monaco from "monaco-editor";
 import { getLanguageId } from "./MonacoTextVisualizer";
+import * as LineColumn from "line-column";
 
 export class AstVisualizer extends VisualizationProvider {
 	getVisualizations(
@@ -32,7 +33,32 @@ export class AstVisualizer extends VisualizationProvider {
 				priority: 110,
 				render() {
 					const m = createTreeViewModelFromTreeNodeData(data.root);
-					return <AstTree model={m} data={data} />;
+					const l = LineColumn(data.text);
+					function translatePosition(pos: number): monaco.IPosition {
+						const r = l.fromIndex(pos) as {
+							line: number;
+							col: number;
+						};
+						return {
+							column: r.col,
+							lineNumber: r.line,
+						};
+					}
+					const nodeInfoToRange = (info: NodeInfo): monaco.IRange => {
+						const start = translatePosition(info.position);
+						const end = translatePosition(
+							info.position + info.length
+						);
+						const range = monaco.Range.fromPositions(start, end);
+						return range;
+					};
+					return (
+						<AstTree
+							model={m}
+							data={data}
+							nodeInfoToRange={nodeInfoToRange}
+						/>
+					);
 				},
 			});
 		}
@@ -48,6 +74,7 @@ interface NodeInfo {
 export class AstTree extends React.Component<{
 	model: TreeViewModel<NodeInfo>;
 	data: CommonDataTypes.AstData;
+	nodeInfoToRange: (info: NodeInfo) => monaco.IRange;
 }> {
 	render() {
 		const model = this.props.model;
@@ -63,6 +90,7 @@ export class AstTree extends React.Component<{
 				</div>
 				<div className="part-editor">
 					<MonacoEditor
+						nodeInfoToRange={this.props.nodeInfoToRange}
 						model={model}
 						languageId={languageId}
 						text={data.text}
@@ -73,21 +101,12 @@ export class AstTree extends React.Component<{
 	}
 }
 
-function nodeInfoToRange(
-	info: NodeInfo,
-	model: monaco.editor.ITextModel
-): monaco.IRange {
-	const start = model.getPositionAt(info.position);
-	const end = model.getPositionAt(info.position + info.length);
-	const range = monaco.Range.fromPositions(start, end);
-	return range;
-}
-
 @observer
 export class MonacoEditor extends React.Component<{
 	text: string;
 	languageId: string;
 	model: TreeViewModel<NodeInfo>;
+	nodeInfoToRange: (info: NodeInfo) => monaco.IRange;
 }> {
 	@observable private editor: monaco.editor.IStandaloneCodeEditor | undefined;
 
@@ -112,7 +131,7 @@ export class MonacoEditor extends React.Component<{
 			if (this.editor && this.model) {
 				const editorModel = this.model;
 				const ranges = this.props.model.marked.map(s =>
-					nodeInfoToRange(s.data, editorModel)
+					this.props.nodeInfoToRange(s.data)
 				);
 				this.markedDecorations = this.editor.deltaDecorations(
 					this.markedDecorations,
@@ -138,7 +157,7 @@ export class MonacoEditor extends React.Component<{
 			if (this.editor && this.model) {
 				const selected = this.props.model.selected;
 				if (selected) {
-					const range = nodeInfoToRange(selected.data, this.model);
+					const range = this.props.nodeInfoToRange(selected.data);
 					this.selectedDecorations = this.editor.deltaDecorations(
 						this.selectedDecorations,
 						[
