@@ -22,7 +22,8 @@
 		"react-dom": "^16.8.6",
 		"react-measure": "^2.3.0",
 		"react-svg-pan-zoom": "^3.1.0",
-		"viz.js": "^2.1.2"
+		"viz.js": "^2.1.2",
+		"line-column": "^1.0.2"
 	},
 	"devDependencies": {
 		"@types/classnames": "^2.2.8",
