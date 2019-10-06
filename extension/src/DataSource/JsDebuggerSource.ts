@@ -19,6 +19,7 @@ import {
 	DataExtractionState,
 	CompletionItem,
 } from "@hediet/debug-visualizer-vscode-shared";
+import { hotClass } from "@hediet/node-reload";
 
 export function createJsDebuggerSource(): JsDataSource {
 	return new JsDebuggerSourceImplementation();
@@ -32,7 +33,8 @@ export interface JsDataSource extends DataSource {
 	registerDataExtractor(classExpression: JsCode): void;
 }
 
-class JsDebuggerSourceImplementation implements JsDataSource {
+@hotClass(module)
+export class JsDebuggerSourceImplementation implements JsDataSource {
 	private lastFrameId: number | null = null;
 	private readonly watchers = new Set<ObservableEvaluationWatcher>();
 
@@ -106,9 +108,8 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 				? `"${w.preferredDataExtractor}"`
 				: "undefined";
 
-			const expression =
-				`(${fnSrc})().getData(${w.expression},` +
-				`expr => eval(expr), ${preferredExtractor})`;
+			const body = `(${fnSrc})().getData(${w.expression}, expr => eval(expr), ${preferredExtractor})`;
+			const expression = `(() => { try { return ${body}; } catch (e) { return JSON.stringify({ kind: "Error", message: e.message, stack: e.stack }); } })()`;
 
 			const reply = await session.customRequest("evaluate", {
 				expression,
@@ -120,6 +121,8 @@ class JsDebuggerSourceImplementation implements JsDataSource {
 			const result = JSON.parse(jsonData) as DataResult;
 			if (result.kind === "NoExtractors") {
 				throw new Error("No extractors");
+			} else if (result.kind === "Error") {
+				throw new Error(result.message);
 			}
 
 			w._state = {
