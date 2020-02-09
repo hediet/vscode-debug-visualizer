@@ -4,34 +4,13 @@
 
 Provides infrastructure to visualize values while debugging.
 
-This extension is still in development. Also, for the best user experience some VS Code APIs are missing -
-[please give your thumbs up here](https://github.com/microsoft/vscode/issues/78663) so that these APIs might be provided at some time.
+This extension is still in development.
 
 ![](docs/demo.gif)
 
 ## Usage
 
-Install this extension and the extension `Node Debug With Pause Events`
-which is required for technical reasons for now.
-Then use a debug configuration like this:
-
-```json
-{
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"type": "node2-with-pause-event",
-			"request": "launch",
-			"name": "Launch Program",
-			"program": "${workspaceFolder}\\dist\\index.js",
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
-			"preLaunchTask": "npm: dev"
-		}
-	]
-}
-```
-
-Use the command `Open a new Debug Visualizer View` to open a new visualizer view.
+After installing this extension, use the command `Open a new Debug Visualizer View` to open a new visualizer view.
 There you can enter an expression that is visualized when debugging your application.
 
 ## Integrated Visualizers
@@ -42,14 +21,15 @@ They are mostly React-Components and live in the webview.
 These visualizers are integrated:
 
 -   Tree Viewer
-
-![](./docs/tree-viewer.png)
+    ![](./docs/tree-viewer.png)
 
 -   Svg Viewer
 -   Dot Graph Viewer
--   Graph Viewer
+-   VisJs Graph Viewer
+    ![](./docs/linked-list-demo.png)
 
-![](./docs/graph-viewer.png)
+-   Graph Viewer
+    ![](./docs/graph-viewer.png)
 
 -   Text Viewer
     -   Plain Text
