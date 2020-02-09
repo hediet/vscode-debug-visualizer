@@ -35,10 +35,7 @@ export class AstVisualizer extends VisualizationProvider {
 					const m = createTreeViewModelFromTreeNodeData(data.root);
 					const l = LineColumn(data.text);
 					function translatePosition(pos: number): monaco.IPosition {
-						const r = l.fromIndex(pos) as {
-							line: number;
-							col: number;
-						};
+						const r = l.fromIndex(pos);
 						return {
 							column: r.col,
 							lineNumber: r.line,
