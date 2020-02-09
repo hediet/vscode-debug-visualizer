@@ -4,7 +4,7 @@ export type DataExtractionResult = {
 	availableExtractors: DataExtractorInfo[];
 };
 
-// is json
+// Instances must be valid json values.
 export type ExtractedData = {
 	kind: Record<string, true>;
 };

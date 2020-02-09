@@ -3,7 +3,7 @@ import {
 	EvaluationWatcher,
 	EvaluationWatcherOptions,
 } from "./DataSource";
-import { observable } from "mobx";
+import { observable, autorun } from "mobx";
 import * as vscode from "vscode";
 import { Disposable } from "@hediet/std/disposable";
 import {
@@ -14,15 +14,19 @@ import {
 	selfContainedInitDataExtractorApi,
 	TypeScriptAstDataExtractor,
 	AsIsDataExtractor,
+	GetDebugVisualizationDataExtractor,
 } from "@hediet/debug-visualizer-data-extraction";
 import {
 	DataExtractionState,
 	CompletionItem,
 } from "@hediet/debug-visualizer-vscode-shared";
 import { hotClass } from "@hediet/node-reload";
+import { VsCodeDebuggerView, VsCodeDebugSession } from "../VsCodeDebugger";
 
-export function createJsDebuggerSource(): JsDataSource {
-	return new JsDebuggerSourceImplementation();
+export function createJsDebuggerSource(args: {
+	vsCodeDebuggerView: VsCodeDebuggerView;
+}): JsDataSource {
+	return new JsDebuggerSourceImplementation(args.vsCodeDebuggerView);
 }
 
 export interface JsCode extends String {
@@ -35,48 +39,41 @@ export interface JsDataSource extends DataSource {
 
 @hotClass(module)
 export class JsDebuggerSourceImplementation implements JsDataSource {
-	private lastFrameId: number | null = null;
+	public readonly dispose = Disposable.fn();
 	private readonly watchers = new Set<ObservableEvaluationWatcher>();
 
-	public readonly dispose = Disposable.fn();
-
-	constructor() {
-		this.dispose.track(
-			vscode.debug.onDidReceiveDebugSessionCustomEvent(e => {
-				if (e.event === "paused") {
-					const frameId = e.body.currentFrameId;
-					this.lastFrameId = frameId;
-
+	constructor(private readonly vsCodeDebuggerView: VsCodeDebuggerView) {
+		this.dispose.track({
+			dispose: autorun(() => {
+				if (
+					vsCodeDebuggerView.activeDebugSession &&
+					vsCodeDebuggerView.activeFrameId !== undefined
+				) {
 					for (const w of this.watchers) {
 						w.refresh();
 					}
 				}
-			})
-		);
+			}),
+		});
 	}
 
-	registerDataExtractor(classExpression: JsCode): void {}
+	registerDataExtractor(classExpression: JsCode): void {
+		// TODO implement
+	}
 
-	async getCompletions(
+	public async getCompletions(
 		text: string,
 		column: number
 	): Promise<CompletionItem[]> {
-		const session = vscode.debug.activeDebugSession;
+		const session = this.vsCodeDebuggerView.activeDebugSession;
 		if (!session) {
 			return [];
 		}
-
-		try {
-			const reply = await session.customRequest("completions", {
-				text,
-				frameId: this.lastFrameId,
-				column,
-			});
-			return reply.targets;
-		} catch (error) {
-			console.error(error);
-			return [];
-		}
+		return await session.getCompletions({
+			text,
+			frameId: this.vsCodeDebuggerView.activeFrameId,
+			column,
+		});
 	}
 
 	public createEvaluationWatcher(
@@ -94,11 +91,13 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 	}
 
 	public async refresh(w: ObservableEvaluationWatcher): Promise<void> {
-		const session = vscode.debug.activeDebugSession;
+		const session = this.vsCodeDebuggerView.activeDebugSession;
 		if (!session) {
 			w._state = { kind: "noDebugSession" };
 			return;
 		}
+
+		const frameId = this.vsCodeDebuggerView.activeFrameId;
 
 		try {
 			w._state = { kind: "loading" };
@@ -111,12 +110,11 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 			const body = `(${fnSrc})().getData(${w.expression}, expr => eval(expr), ${preferredExtractor})`;
 			const expression = `(() => { try { return ${body}; } catch (e) { return JSON.stringify({ kind: "Error", message: e.message, stack: e.stack }); } })()`;
 
-			const reply = await session.customRequest("evaluate", {
+			const reply = await session.evaluate({
 				expression,
-				frameId: this.lastFrameId,
-				context: "watch",
+				frameId,
 			});
-			const resultStr = reply.result as string;
+			const resultStr = reply.result;
 			const jsonData = resultStr.substr(1, resultStr.length - 2);
 			const result = JSON.parse(jsonData) as DataResult;
 			if (result.kind === "NoExtractors") {
@@ -132,7 +130,7 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 		} catch (error) {
 			const msg = error.message as string | undefined;
 			if (msg && msg.includes(ApiHasNotBeenInitializedCode)) {
-				if (await this.initializeApi(session)) {
+				if (await this.initializeApi(session, frameId)) {
 					await this.refresh(w);
 					return;
 				}
@@ -146,21 +144,23 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 	}
 
 	private async initializeApi(
-		session: vscode.DebugSession
+		session: VsCodeDebugSession,
+		frameId: number | undefined
 	): Promise<boolean> {
 		try {
 			let expression = `(${selfContainedInitDataExtractorApi.toString()})();`;
 
-			const es = [TypeScriptAstDataExtractor, AsIsDataExtractor].map(
-				e => `new (${e.toString()})()`
-			);
+			const es = [
+				TypeScriptAstDataExtractor,
+				AsIsDataExtractor,
+				GetDebugVisualizationDataExtractor,
+			].map(e => `new (${e.toString()})()`);
 			expression += `(${selfContainedGetInitializedDataExtractorApi.toString()})()`;
 			expression += `.registerExtractors([${es.join(",")}])`;
 
-			const reply = await session.customRequest("evaluate", {
+			const reply = await session.evaluate({
 				expression,
-				frameId: this.lastFrameId,
-				context: "watch",
+				frameId,
 			});
 			if (reply.result === "true") {
 				// register extractors

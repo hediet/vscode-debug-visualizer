@@ -233,6 +233,11 @@
     "@types/tapable" "*"
     "@types/webpack" "*"
 
+"@types/line-column@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/line-column/-/line-column-1.0.0.tgz#fa5a59c21e885fef3739a273b43dacf55b63437f"
+  integrity sha512-wbw+IDRw/xY/RGy+BL6f4Eey4jsUgHQrMuA4Qj0CSG3x/7C2Oc57pmRoM2z3M4DkylWRz+G1pfX06sCXQm0J+w==
+
 "@types/mime@*":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.1.tgz#dc488842312a7f075149312905b5e3c0b054c79d"
@@ -5911,6 +5916,29 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+vis-data@^6.3.5:
+  version "6.3.5"
+  resolved "https://registry.yarnpkg.com/vis-data/-/vis-data-6.3.5.tgz#db53cb0828601aa0908f86eca1cfe80f69f17873"
+  integrity sha512-H8lD1NTmC5HimYeqTouxhbUya5qrYQGjpJhIHkxsm5R34EEdcm/D1cLTMLFFyIoZC6SQkADQj+dlFKf5DOnSww==
+  optionalDependencies:
+    vis-util "2.0.1"
+    vis-uuid "1.1.3"
+
+vis-network@^7.3.4:
+  version "7.3.4"
+  resolved "https://registry.yarnpkg.com/vis-network/-/vis-network-7.3.4.tgz#818ccf7d82afffae7059e6b2cb520cd28ea01070"
+  integrity sha512-4hfB1DDnzclUUdniBh2WN2agcCmrL2ERmWsRB8wv8XtiiQ+Gg6HNzx5v7xySRWK+yH88LVnrrzaM+mDb5jcQtg==
+
+vis-util@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/vis-util/-/vis-util-2.0.1.tgz#4538aee119795bde1f7996a3ee8e0148baf71124"
+  integrity sha512-VBQ6zCT+Iaum70uzLbjk0nLMOjp9NhPzU42j0gaM6q6tg0eTcgIWNXzAqamhQtmm1kDj0jMLzKvkFOPENYv34w==
+
+vis-uuid@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/vis-uuid/-/vis-uuid-1.1.3.tgz#2f53ff35e9e026b0ec93bc433ce685c40c2f784c"
+  integrity sha512-2B6XdY1bkzbUh+TugmnAaFa61KO9R5pzBzIuFIm8a9FrkbxIdSmQXV+FbfkL8QunkQV/bT0JDLQ2puqCS2+0Og==
 
 viz.js@^2.1.2:
   version "2.1.2"

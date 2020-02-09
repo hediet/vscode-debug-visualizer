@@ -10,88 +10,13 @@ enableHotReload();
 import {
 	registerAll,
 	CommonDataTypes,
+	getClosure,
 } from "@hediet/debug-visualizer-data-extraction";
 import { MockLanguageServiceHost } from "./MockLanguageServiceHost";
 
 registerAll();
 
 registerUpdateReconciler(module);
-
-function getClosure<T>(
-	root: T,
-	edgeSelector: (item: T) => { item: T; edgeLabel: string }[],
-	labelSelector: (item: T) => string
-): CommonDataTypes.GraphData {
-	const r: CommonDataTypes.GraphData = {
-		kind: {
-			graph: true,
-		},
-		nodes: [],
-		edges: [],
-	};
-	let idCounter = 1;
-	const ids = new Map<T, string>();
-	function getId(item: T): string {
-		let id = ids.get(item);
-		if (!id) {
-			id = (idCounter++).toString();
-			ids.set(item, id);
-		}
-		return id;
-	}
-
-	const queue = new Array<T>(root);
-	const processed = new Set<T>();
-
-	while (queue.length > 0) {
-		const item = queue.shift()!;
-		if (processed.has(item)) {
-			continue;
-		}
-		processed.add(item);
-		const edges = edgeSelector(item);
-		const fromId = getId(item);
-		r.nodes.push({ id: fromId, label: labelSelector(item) });
-		for (const e of edges) {
-			const toId = getId(e.item);
-			r.edges.push({
-				from: fromId,
-				to: toId,
-				label: e.edgeLabel,
-			});
-			if (!processed.has(e.item)) {
-				queue.push(e.item);
-			}
-		}
-	}
-	return r;
-}
-
-let id = 0;
-class DoubleLinkedList {
-	public readonly id = (id++).toString();
-	constructor(public name: string) {}
-
-	next: DoubleLinkedList | undefined;
-	prev: DoubleLinkedList | undefined;
-
-	public setNext(val: DoubleLinkedList): void {
-		val.prev = this;
-		this.next = val;
-	}
-
-	toData(): CommonDataTypes.GraphData {
-		return getClosure<DoubleLinkedList>(
-			this,
-			r =>
-				[
-					{ item: r.next!, edgeLabel: "next" },
-					{ item: r.prev!, edgeLabel: "prev" },
-				].filter(r => !!r.item),
-			item => item.name
-		);
-	}
-}
 
 @hotClass(module)
 class Main {
@@ -149,25 +74,10 @@ class Test1 {
 			},
 		};
 
-		debugger;
 		for (const ident of identifiers) {
 			const s = c.getSymbolAtLocation(ident);
 			myValue = ident;
 		}
-
-		const first = (myValue = new DoubleLinkedList("1"));
-		myValue.setNext(new DoubleLinkedList("2"));
-		myValue.next!.setNext(new DoubleLinkedList("3"));
-		myValue.next!.next!.setNext(new DoubleLinkedList("4"));
-
-		let last: DoubleLinkedList | undefined = undefined;
-		while (myValue) {
-			myValue.prev = myValue.next;
-			myValue.next = last;
-			last = myValue;
-			myValue = myValue.prev;
-		}
-		myValue = first;
 
 		myValue = {
 			kind: { text: true, svg: true },

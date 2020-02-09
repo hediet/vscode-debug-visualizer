@@ -19,6 +19,24 @@ const viz: any = new Viz({
 	render,
 });
 
+export class DotVisualizer extends VisualizationProvider {
+	getVisualizations(
+		data: ExtractedData,
+		collector: VisualizationCollector
+	): void {
+		if (isCommonDataType(data, { dotGraph: true })) {
+			collector.addVisualization({
+				id: asVisualizationId("dot-graph"),
+				name: "Dot Graph",
+				priority: 100,
+				render() {
+					return <DotViewer dotCode={data.text} />;
+				},
+			});
+		}
+	}
+}
+
 @observer
 export class DotViewer extends React.Component<{
 	dotCode: string;
@@ -38,23 +56,5 @@ export class DotViewer extends React.Component<{
 			return <div>Loading...</div>;
 		}
 		return <SvgViewer svgRef={this.props.svgRef} svgContent={this.svg} />;
-	}
-}
-
-export class DotVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
-		if (isCommonDataType(data, { dotGraph: true })) {
-			collector.addVisualization({
-				id: asVisualizationId("dot-graph"),
-				name: "Dot Graph",
-				priority: 100,
-				render() {
-					return <DotViewer dotCode={data.text} />;
-				},
-			});
-		}
 	}
 }

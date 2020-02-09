@@ -23,12 +23,15 @@
 		"react-measure": "^2.3.0",
 		"react-svg-pan-zoom": "^3.1.0",
 		"viz.js": "^2.1.2",
-		"line-column": "^1.0.2"
+		"line-column": "^1.0.2",
+		"vis-network": "^7.3.4",
+		"vis-data": "^6.3.5"
 	},
 	"devDependencies": {
 		"@types/classnames": "^2.2.8",
 		"@types/react": "^16.8.21",
 		"@types/react-dom": "^16.8.4",
+		"@types/line-column": "^1.0.0",
 		"clean-webpack-plugin": "^3.0.0",
 		"css-loader": "^3.0.0",
 		"file-loader": "^4.0.0",

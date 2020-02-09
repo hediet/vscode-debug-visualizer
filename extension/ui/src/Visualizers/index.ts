@@ -7,10 +7,12 @@ import { DotVisualizer } from "./DotVisualizer";
 import { TextVisualizer } from "./TextVisualizer";
 import { MonacoTextVisualizer } from "./MonacoTextVisualizer";
 import { AstVisualizer } from "./AstViewer";
+import { VisJsGraphVisualizer } from "./VisJsGraphVisualizer";
 
 export const knownVisualizations = new ComposedVisualizationProvider([
 	new TreeVisualizer(),
 	new DotGraphVisualizer(),
+	new VisJsGraphVisualizer(),
 	new SvgVisualizer(),
 	new DotVisualizer(),
 	new TextVisualizer(),

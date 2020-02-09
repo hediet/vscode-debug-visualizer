@@ -19,7 +19,7 @@ import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, autorun, trace } from "mobx";
 import * as monaco from "monaco-editor";
 import { getLanguageId } from "./MonacoTextVisualizer";
-import * as LineColumn from "line-column";
+import LineColumn = require("line-column");
 
 export class AstVisualizer extends VisualizationProvider {
 	getVisualizations(

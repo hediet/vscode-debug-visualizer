@@ -2,7 +2,7 @@
 	"name": "debug-visualizer",
 	"displayName": "Debug Visualizer",
 	"description": "An extension that visualizes values while debugging.",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.35.0"

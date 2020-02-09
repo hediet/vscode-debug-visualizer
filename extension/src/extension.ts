@@ -1,4 +1,4 @@
-import { window, ExtensionContext, WebviewPanel, commands } from "vscode";
+import { window, ExtensionContext, commands } from "vscode";
 import { Disposable } from "@hediet/std/disposable";
 import {
 	enableHotReload,
@@ -7,22 +7,21 @@ import {
 	getReloadCount,
 } from "@hediet/node-reload";
 
-if (process.env.USE_DEV_UI) {
+if (process.env.HOT_RELOAD) {
 	enableHotReload({ entryModule: module, loggingEnabled: true });
 }
+registerUpdateReconciler(module);
 
 import { WebViews } from "./WebViews";
 import { Server } from "./Server";
 import { Config } from "./Config";
 import { Sources } from "./DataSource";
 
-registerUpdateReconciler(module);
-
 export class Extension {
 	public dispose = Disposable.fn();
 
 	private readonly config = new Config();
-	private readonly sources = new Sources();
+	private readonly sources = this.dispose.track(new Sources());
 	private readonly server = new Server(this.sources, this.config);
 	private readonly views = this.dispose.track(new WebViews(this.server));
 

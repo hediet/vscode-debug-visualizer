@@ -13,6 +13,24 @@ import {
 	isCommonDataType,
 } from "@hediet/debug-visualizer-data-extraction";
 
+export class SvgVisualizer extends VisualizationProvider {
+	getVisualizations(
+		data: ExtractedData,
+		collector: VisualizationCollector
+	): void {
+		if (isCommonDataType(data, { svg: true })) {
+			collector.addVisualization({
+				id: asVisualizationId("svg"),
+				name: "Svg",
+				priority: 100,
+				render() {
+					return <SvgViewer svgContent={data.text} />;
+				},
+			});
+		}
+	}
+}
+
 function widthOrDefault(r: ContentRect): number {
 	if (r.bounds && r.bounds.width) {
 		return r.bounds.width;
@@ -94,23 +112,5 @@ export class SvgViewer extends React.Component<{
 				)}
 			</Measure>
 		);
-	}
-}
-
-export class SvgVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
-		if (isCommonDataType(data, { svg: true })) {
-			collector.addVisualization({
-				id: asVisualizationId("svg"),
-				name: "Svg",
-				priority: 100,
-				render() {
-					return <SvgViewer svgContent={data.text} />;
-				},
-			});
-		}
 	}
 }

@@ -11,6 +11,26 @@ import {
 	isCommonDataType,
 } from "@hediet/debug-visualizer-data-extraction";
 
+export class DotGraphVisualizer extends VisualizationProvider {
+	getVisualizations(
+		data: ExtractedData,
+		collector: VisualizationCollector
+	): void {
+		if (isCommonDataType(data, { graph: true })) {
+			collector.addVisualization({
+				id: asVisualizationId("dot-graph"),
+				name: "Dot Graph",
+				priority: 100,
+				render() {
+					return (
+						<DotGraphViewer edges={data.edges} nodes={data.nodes} />
+					);
+				},
+			});
+		}
+	}
+}
+
 @observer
 export class DotGraphViewer extends React.Component<{
 	nodes: { id: string; label: string }[];
@@ -34,25 +54,5 @@ export class DotGraphViewer extends React.Component<{
             }
         `;
 		return <DotViewer dotCode={dotContent} />;
-	}
-}
-
-export class DotGraphVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
-		if (isCommonDataType(data, { graph: true })) {
-			collector.addVisualization({
-				id: asVisualizationId("dot-graph"),
-				name: "Dot Graph",
-				priority: 100,
-				render() {
-					return (
-						<DotGraphViewer edges={data.edges} nodes={data.nodes} />
-					);
-				},
-			});
-		}
 	}
 }
