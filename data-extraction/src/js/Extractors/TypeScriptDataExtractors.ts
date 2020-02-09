@@ -25,8 +25,13 @@ export class TypeScriptAstDataExtractor
 			}
 		}
 
-		const tsApi = getApi();
-		if (!tsApi) {
+		let tsApi: typeof ts;
+		try {
+			tsApi = getApi();
+			if (!tsApi) {
+				return;
+			}
+		} catch (e) {
 			return;
 		}
 
