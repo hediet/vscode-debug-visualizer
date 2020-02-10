@@ -19,9 +19,9 @@ export type CommonDataType =
 	| CommonDataTypes.Svg
 	| CommonDataTypes.Html
 	| CommonDataTypes.DotGraph
-	| CommonDataTypes.TreeNodeData
-	| CommonDataTypes.AstData
-	| CommonDataTypes.GraphData;
+	| CommonDataTypes.Tree
+	| CommonDataTypes.Ast
+	| CommonDataTypes.Graph;
 
 export module CommonDataTypes {
 	export interface Text {
@@ -31,34 +31,31 @@ export module CommonDataTypes {
 		fileName?: string;
 	}
 
-	export interface GraphData {
+	export interface Graph {
 		kind: { graph: true };
-		nodes: { id: string; label: string }[];
-		edges: { from: string; to: string; label: string }[];
+		nodes: NodeGraphData[];
+		edges: EdgeGraphData[];
 	}
 
 	export interface Svg extends Text {
 		kind: { text: true; svg: true };
-		text: string;
 	}
 
 	export interface Html extends Text {
 		kind: { text: true; html: true };
-		text: string;
 	}
 
 	export interface DotGraph extends Text {
 		kind: { text: true; dotGraph: true };
-		text: string;
 	}
 
-	export interface TreeNodeData<TData = unknown> {
+	export interface Tree<TData = unknown> {
 		kind: { tree: true };
 		root: TreeNode<TData>;
 	}
 
-	export interface AstData
-		extends TreeNodeData<{
+	export interface Ast
+		extends Tree<{
 				position: number;
 				length: number;
 			}>,
@@ -68,11 +65,26 @@ export module CommonDataTypes {
 }
 
 export interface TreeNode<TExtraData> {
-	id: string | undefined;
 	name: string;
-	value: string | undefined;
-	emphasizedValue: string | undefined;
 	children: TreeNode<TExtraData>[];
 	data: TExtraData;
-	isMarked: boolean;
+	id?: string;
+	value?: string;
+	emphasizedValue?: string;
+	isMarked?: boolean;
+}
+
+export interface NodeGraphData {
+	id: string;
+	label: string;
+	color?: string;
+}
+
+export interface EdgeGraphData {
+	from: string;
+	to: string;
+	label: string;
+	id?: string;
+	color?: string;
+	weight?: number;
 }

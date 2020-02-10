@@ -1,6 +1,6 @@
 import { Disposable } from "@hediet/std/disposable";
 import { debugVisualizerUIContract } from "@hediet/debug-visualizer-vscode-shared";
-import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
+import { ConsoleRpcLogger, RequestHandlingError } from "@hediet/typed-json-rpc";
 import { EvaluationWatcher } from "./DataSource/DataSource";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { observable, autorun } from "mobx";
@@ -19,8 +19,17 @@ export class ConnectionHandler {
 		sources: Sources,
 		stream: WebSocketStream,
 		server: Server,
-		config: Config
+		config: Config,
+		serverSecret: string
 	) {
+		let authenticated = false;
+
+		function throwIfNotAuthenticated() {
+			if (!authenticated) {
+				throw new RequestHandlingError("Not authenticated");
+			}
+		}
+
 		const {
 			client,
 			channel,
@@ -28,12 +37,23 @@ export class ConnectionHandler {
 			stream,
 			new ConsoleRpcLogger(),
 			{
+				authenticate: async ({ secret }, { newErr }) => {
+					if (secret !== serverSecret) {
+						return newErr({ errorMessage: "Invalid Secret" });
+					} else {
+						authenticated = true;
+					}
+				},
 				refresh: async () => {
+					throwIfNotAuthenticated();
+
 					if (this.watcher) {
 						this.watcher.refresh();
 					}
 				},
 				setExpression: async ({ newExpression }) => {
+					throwIfNotAuthenticated();
+
 					let oldPreferredDataExtractor: EvaluationWatcher["preferredDataExtractor"];
 					if (this.watcher) {
 						oldPreferredDataExtractor = this.watcher
@@ -50,6 +70,8 @@ export class ConnectionHandler {
 					);
 				},
 				openInBrowser: async ({}) => {
+					throwIfNotAuthenticated();
+
 					let opened = false;
 					if (config.useChromeKioskMode()) {
 						opened = await launchChrome(server.indexUrl);
@@ -59,11 +81,15 @@ export class ConnectionHandler {
 					}
 				},
 				setPreferredDataExtractor: async ({ dataExtractorId }) => {
+					throwIfNotAuthenticated();
+
 					if (this.watcher) {
 						this.watcher.setPreferredDataExtractor(dataExtractorId);
 					}
 				},
 				getCompletions: async ({ text, column }) => {
+					throwIfNotAuthenticated();
+
 					const completions = await sources.jsSource.getCompletions(
 						text,
 						column

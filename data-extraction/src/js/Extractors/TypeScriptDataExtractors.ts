@@ -4,12 +4,12 @@ import { CommonDataTypes } from "../../CommonDataTypes";
 
 // This class is self contained and can be injected into both nodejs and browser environments.
 export class TypeScriptAstDataExtractor
-	implements DataExtractor<CommonDataTypes.AstData> {
+	implements DataExtractor<CommonDataTypes.Ast> {
 	readonly id = "TypeScriptAst";
 
 	getExtractions(
 		data: unknown,
-		collector: ExtractionCollector<CommonDataTypes.AstData>,
+		collector: ExtractionCollector<CommonDataTypes.Ast>,
 		evalFn: <TEval>(expression: string) => TEval
 	): void {
 		if (!data) {
@@ -63,7 +63,7 @@ export class TypeScriptAstDataExtractor
 			memberName: string,
 			marked: Set<ts.Node>,
 			emphasizedValueFn: (node: ts.Node) => string | undefined
-		): CommonDataTypes.AstData["root"] {
+		): CommonDataTypes.Ast["root"] {
 			const name = tsApi.SyntaxKind[node.kind];
 			const children = getChildren(node)
 				.map((childNode, idx) => {

@@ -4,10 +4,12 @@ import {
 	VisualizationProvider,
 	VisualizationCollector,
 	asVisualizationId,
-} from "./Visualizer";
+} from "../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
+	NodeGraphData,
+	EdgeGraphData,
 } from "@hediet/debug-visualizer-data-extraction";
 import { DataSet, Network } from "vis-network";
 
@@ -19,7 +21,7 @@ export class VisJsGraphVisualizer extends VisualizationProvider {
 		if (isCommonDataType(data, { graph: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("vis-js-graph"),
-				name: "VisJs Graph",
+				name: "vis.js",
 				priority: 1001,
 				render() {
 					return (
@@ -34,34 +36,26 @@ export class VisJsGraphVisualizer extends VisualizationProvider {
 	}
 }
 
-interface GraphNode {
-	id: string;
-	label: string;
-}
-
-interface GraphEdge {
-	id?: string;
-	label: string;
-	from: string;
-	to: string;
-}
-
 @observer
 export class VisJsGraphViewer extends React.Component<{
-	nodes: GraphNode[];
-	edges: GraphEdge[];
+	nodes: NodeGraphData[];
+	edges: EdgeGraphData[];
 }> {
 	private readonly divRef = React.createRef<HTMLDivElement>();
-	private readonly nodes = new DataSet<{ id: string; label: string }>();
+	private readonly nodes = new DataSet<{
+		id: string;
+		label: string;
+		color?: string;
+	}>();
 	private readonly edges = new DataSet<{
 		id: string;
 		label: string;
 		from: string;
 		to: string;
+		color?: string;
 	}>();
 
 	render() {
-		//const { nodes, edges } = this.props;
 		return <div style={{ height: "100%" }} ref={this.divRef} />;
 	}
 
@@ -69,7 +63,11 @@ export class VisJsGraphViewer extends React.Component<{
 		const newNodes = new Set<string>();
 		for (const n of this.props.nodes) {
 			newNodes.add(n.id);
-			this.nodes.update({ id: n.id, label: n.label });
+			this.nodes.update({
+				id: n.id,
+				label: n.label,
+				color: n.color,
+			});
 		}
 		this.nodes.forEach(item => {
 			if (!newNodes.has(item.id)) {
@@ -77,11 +75,11 @@ export class VisJsGraphViewer extends React.Component<{
 			}
 		});
 
-		function getIdOfEdge(e: GraphEdge): string {
+		function getIdOfEdge(e: EdgeGraphData): string {
 			if (e.id) {
 				return e.id;
 			}
-			return e.from + "####" + e.to;
+			return e.from + "####" + e.to + "|" + e.label;
 		}
 
 		const newEdges = new Set<string>();
@@ -93,6 +91,7 @@ export class VisJsGraphViewer extends React.Component<{
 				label: n.label,
 				from: n.from,
 				to: n.to,
+				color: n.color,
 			});
 		}
 		this.edges.forEach(item => {
@@ -121,6 +120,5 @@ export class VisJsGraphViewer extends React.Component<{
 			},
 		};
 		const network = new Network(this.divRef.current!, data, options);
-		//network.stabilize();
 	}
 }

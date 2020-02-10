@@ -8,9 +8,11 @@ import * as express from "express";
 import * as http from "http";
 import * as serveStatic from "serve-static";
 import { Config } from "./Config";
+import cryptoRandomString = require("crypto-random-string");
 
 export class Server {
 	private server: http.Server;
+	public readonly secret = cryptoRandomString({ length: 20 });
 
 	constructor(sources: Sources, config: Config) {
 		const app = express();
@@ -22,13 +24,13 @@ export class Server {
 		const wss = new WebSocket.Server({ server: this.server });
 		wss.on("connection", ws => {
 			const stream = new WebSocketStream(ws);
-			new ConnectionHandler(sources, stream, this, config);
+			new ConnectionHandler(sources, stream, this, config, this.secret);
 		});
 	}
 
 	public get indexUrl(): string {
 		const port = process.env.USE_DEV_UI ? 8080 : this.port;
-		return `http://localhost:${port}/index.html?serverPort=${this.port}`;
+		return `http://localhost:${port}/index.html?serverPort=${this.port}&serverSecret=${this.secret}`;
 	}
 
 	public get mainBundleUrl(): string {

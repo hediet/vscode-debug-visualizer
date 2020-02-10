@@ -2,12 +2,12 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./style.scss";
 import { Model } from "./Model/Model";
-import Components = require("./Components");
+import Components = require("./Components/GUI");
 
 const model = new Model();
 
 function render(target: HTMLDivElement) {
-	const c = require("./Components") as typeof Components;
+	const c = require("./Components/GUI") as typeof Components;
 	ReactDOM.render(<c.GUI model={model} />, target);
 }
 
@@ -23,7 +23,7 @@ declare var module: {
 declare var require: (name: string) => any;
 
 if (module.hot) {
-	module.hot.accept("./Components", () => {
+	module.hot.accept("./Components/GUI", () => {
 		render(target);
 	});
 }

@@ -1,24 +1,13 @@
 import * as ts from "typescript";
-import {
-	enableHotReload,
-	registerUpdateReconciler,
-	getReloadCount,
-	hotClass,
-} from "@hediet/node-reload";
-enableHotReload();
-
-import {
-	registerAll,
-	CommonDataTypes,
-	getClosure,
-} from "@hediet/debug-visualizer-data-extraction";
+import { registerAll } from "@hediet/debug-visualizer-data-extraction";
 import { MockLanguageServiceHost } from "./MockLanguageServiceHost";
 
 registerAll();
 
-registerUpdateReconciler(module);
+setTimeout(() => {
+	new Main().run();
+}, 0);
 
-@hotClass(module)
 class Main {
 	run() {
 		const mainFile = {
@@ -49,10 +38,12 @@ class Test1 {
 
 		const c = prog.getTypeChecker();
 		let myValue = undefined;
-		const sf = prog.getSourceFiles()[0];
-		myValue = sf.getText();
+		const sourceFileAst = prog.getSourceFiles()[0];
+		myValue = sourceFileAst.getText();
+		console.log("myValue is the source code of the AST");
+
 		myValue = {
-			sf,
+			sf: sourceFileAst,
 			fn: (n: ts.Node) => {
 				try {
 					const t = c.getTypeAtLocation(n);
@@ -62,8 +53,10 @@ class Test1 {
 				}
 			},
 		};
+		console.log("myValue is AST, annotated with type information");
+
 		myValue = {
-			sf,
+			sf: sourceFileAst,
 			fn: (n: ts.Node) => {
 				try {
 					const t = c.getSymbolAtLocation(n);
@@ -73,12 +66,16 @@ class Test1 {
 				}
 			},
 		};
+		console.log("myValue is AST, annotated with symbol information");
 
 		for (const ident of identifiers) {
-			const s = c.getSymbolAtLocation(ident);
 			myValue = ident;
+			console.log("myValue is an identifier");
 		}
+	}
+}
 
+/*
 		myValue = {
 			kind: { text: true, svg: true },
 			text: `
@@ -89,10 +86,4 @@ class Test1 {
 					/>
 				</svg>
 	  		`,
-		};
-	}
-}
-
-if (getReloadCount(module) === 0) {
-	new Main().run();
-}
+		};*/

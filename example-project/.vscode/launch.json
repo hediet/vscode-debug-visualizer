@@ -3,22 +3,5 @@
 	// Hover to view descriptions of existing attributes.
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
-	"configurations": [
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Launch Index",
-			"program": "${workspaceFolder}\\dist\\index.js",
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
-			"preLaunchTask": "npm: dev"
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Launch Double Linked List Demo",
-			"program": "${workspaceFolder}\\dist\\DoubleLinkedList.js",
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
-			"preLaunchTask": "npm: dev"
-		}
-	]
+	"configurations": []
 }

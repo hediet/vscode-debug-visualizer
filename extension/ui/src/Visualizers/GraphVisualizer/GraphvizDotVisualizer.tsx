@@ -3,12 +3,12 @@ import * as React from "react";
 import { observable, autorun, runInAction } from "mobx";
 import Viz from "viz.js";
 import { Module, render } from "viz.js/full.render.js";
-import { SvgViewer } from "./SvgVisualizer";
+import { SvgViewer } from "../SvgVisualizer";
 import {
 	VisualizationProvider,
 	VisualizationCollector,
 	asVisualizationId,
-} from "./Visualizer";
+} from "../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
@@ -19,18 +19,18 @@ const viz: any = new Viz({
 	render,
 });
 
-export class DotVisualizer extends VisualizationProvider {
+export class GraphvizDotVisualizer extends VisualizationProvider {
 	getVisualizations(
 		data: ExtractedData,
 		collector: VisualizationCollector
 	): void {
 		if (isCommonDataType(data, { dotGraph: true })) {
 			collector.addVisualization({
-				id: asVisualizationId("dot-graph"),
-				name: "Dot Graph",
+				id: asVisualizationId("graphviz-dot"),
+				name: "Graphviz (Dot Data)",
 				priority: 100,
 				render() {
-					return <DotViewer dotCode={data.text} />;
+					return <GraphvizDotViewer dotCode={data.text} />;
 				},
 			});
 		}
@@ -38,7 +38,7 @@ export class DotVisualizer extends VisualizationProvider {
 }
 
 @observer
-export class DotViewer extends React.Component<{
+export class GraphvizDotViewer extends React.Component<{
 	dotCode: string;
 	svgRef?: (element: SVGSVGElement | null) => void;
 }> {

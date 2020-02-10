@@ -37,7 +37,7 @@ declare const window: any;
 
 export function selfContainedInitDataExtractorApi(): boolean {
 	const obj = typeof window === "object" ? (window as any) : (global as any);
-	const key = "@hediet/data-extractor";
+	const key = "@hediet/data-extractor/v1";
 	const prefix = key + "::";
 
 	let api: DataExtractorApi | undefined = obj[key];
@@ -135,7 +135,7 @@ export const ApiHasNotBeenInitializedCode = "EgH0cybXij1jYUozyakO" as const;
 
 export function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi {
 	const obj = typeof window === "object" ? (window as any) : (global as any);
-	const key = "@hediet/data-extractor";
+	const key = "@hediet/data-extractor/v1";
 	let api: DataExtractorApi | undefined = obj[key];
 	if (!api) {
 		const code: typeof ApiHasNotBeenInitializedCode =

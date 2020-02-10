@@ -1,20 +1,20 @@
 import "./style.scss";
 import { ComposedVisualizationProvider } from "./Visualizer";
 import { TreeVisualizer } from "./TreeVisualizer/Visualizer";
-import { DotGraphVisualizer } from "./DotGraphVisualizer";
+import { GraphvizGraphVisualizer } from "./GraphVisualizer/GraphvizGraphVisualizer";
 import { SvgVisualizer } from "./SvgVisualizer";
-import { DotVisualizer } from "./DotVisualizer";
-import { TextVisualizer } from "./TextVisualizer";
-import { MonacoTextVisualizer } from "./MonacoTextVisualizer";
+import { GraphvizDotVisualizer } from "./GraphVisualizer/GraphvizDotVisualizer";
+import { TextVisualizer } from "./TextVisualizer/TextVisualizer";
+import { MonacoTextVisualizer } from "./TextVisualizer/MonacoTextVisualizer";
 import { AstVisualizer } from "./AstViewer";
-import { VisJsGraphVisualizer } from "./VisJsGraphVisualizer";
+import { VisJsGraphVisualizer } from "./GraphVisualizer/VisJsGraphVisualizer";
 
 export const knownVisualizations = new ComposedVisualizationProvider([
 	new TreeVisualizer(),
-	new DotGraphVisualizer(),
+	new GraphvizGraphVisualizer(),
 	new VisJsGraphVisualizer(),
 	new SvgVisualizer(),
-	new DotVisualizer(),
+	new GraphvizDotVisualizer(),
 	new TextVisualizer(),
 	new MonacoTextVisualizer(),
 	new AstVisualizer(),

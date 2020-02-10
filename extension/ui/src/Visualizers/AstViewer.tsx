@@ -9,16 +9,12 @@ import {
 	CommonDataTypes,
 } from "@hediet/debug-visualizer-data-extraction";
 import { createTreeViewModelFromTreeNodeData } from "./TreeVisualizer/Visualizer";
-import {
-	TreeWithPathView,
-	TreeViewModel,
-	TreeView,
-} from "./TreeVisualizer/Views";
+import { TreeWithPathView, TreeViewModel } from "./TreeVisualizer/Views";
 import React = require("react");
 import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, autorun, trace } from "mobx";
 import * as monaco from "monaco-editor";
-import { getLanguageId } from "./MonacoTextVisualizer";
+import { getLanguageId } from "./TextVisualizer/MonacoTextVisualizer";
 import LineColumn = require("line-column");
 
 export class AstVisualizer extends VisualizationProvider {
@@ -70,7 +66,7 @@ interface NodeInfo {
 @observer
 export class AstTree extends React.Component<{
 	model: TreeViewModel<NodeInfo>;
-	data: CommonDataTypes.AstData;
+	data: CommonDataTypes.Ast;
 	nodeInfoToRange: (info: NodeInfo) => monaco.IRange;
 }> {
 	render() {

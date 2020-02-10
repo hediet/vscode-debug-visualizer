@@ -13,10 +13,12 @@ import { MonacoBridge } from "./MonacoBridge";
 
 declare const window: Window & {
 	serverPort?: number;
+	serverSecret?: string;
 };
 
 export class Model {
-	port: number;
+	private port: number;
+	private serverSecret: string;
 
 	@observable expression: string = "";
 	@observable state: DataExtractionState | { kind: "noExpression" } = {
@@ -67,6 +69,7 @@ export class Model {
 	constructor() {
 		if (window.serverPort) {
 			this.port = window.serverPort;
+			this.serverSecret = window.serverSecret!;
 		} else {
 			const url = new URL(window.location.href);
 			const portStr = url.searchParams.get("serverPort");
@@ -79,6 +82,12 @@ export class Model {
 			if (expr) {
 				this.setExpression(expr);
 			}
+
+			const secret = url.searchParams.get("serverSecret");
+			if (!secret) {
+				throw new Error("Server secret not set.");
+			}
+			this.serverSecret = secret;
 		}
 
 		this.stayConnected();
@@ -141,6 +150,11 @@ export class Model {
 						},
 					}
 				);
+				try {
+					await server.authenticate({ secret: this.serverSecret });
+				} catch (e) {
+					console.error(e);
+				}
 				this.server = server;
 
 				await stream.onClosed;

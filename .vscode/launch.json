@@ -2,7 +2,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Run Extension",
+			"name": "Run Extension (Build UI)",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
@@ -11,7 +11,8 @@
 				"${workspaceFolder}\\example-project"
 			],
 			"env": {
-				"HOT_RELOAD": "true"
+				"HOT_RELOAD": "true",
+				"USE_DEV_UI": ""
 			},
 			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
 			"preLaunchTask": "npm: dev - extension"

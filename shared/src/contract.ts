@@ -87,6 +87,11 @@ export const debugVisualizerUIContract = contract({
 		}),
 	},
 	server: {
+		authenticate: requestContract({
+			params: types.type({
+				secret: types.string,
+			}),
+		}),
 		setPreferredDataExtractor: notificationContract({
 			params: types.type({
 				dataExtractorId: unchecked<DataExtractorId>(),

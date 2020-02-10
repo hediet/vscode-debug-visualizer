@@ -72,6 +72,7 @@ export function getHtml(server: Server) {
 			<body>
 				<script>
 					window.serverPort = ${server.port};
+					window.serverSecret = ${JSON.stringify(server.secret)};
 					const api = window.VsCodeApi = acquireVsCodeApi();
 					window.addEventListener('message', event => {
 						if (event.source === window.frames[0]) {

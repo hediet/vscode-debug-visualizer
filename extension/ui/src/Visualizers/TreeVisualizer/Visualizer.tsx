@@ -5,7 +5,6 @@ import {
 	TreeWithPathView,
 } from "./Views";
 import {
-	CommonDataTypes,
 	ExtractedData,
 	isCommonDataType,
 	TreeNode,
@@ -40,7 +39,7 @@ export function createTreeViewModelFromTreeNodeData<TData>(
 			children,
 			node.data
 		);
-		model.isMarked = node.isMarked;
+		model.isMarked = !!node.isMarked;
 		for (const c of children) {
 			c.parent = model;
 		}
