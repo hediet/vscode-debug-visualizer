@@ -3,7 +3,7 @@
 	"displayName": "Debug Visualizer",
 	"description": "An extension that visualizes values while debugging.",
 	"icon": "docs/logo.png",
-	"version": "0.9.0",
+	"version": "0.10.0",
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.35.0"

@@ -4,7 +4,7 @@
 
 -   Initial release
 
-## Current
+## 0.10.0
 
 -   Minor refactoring of `@hediet/debug-visualizer-data-extraction`'s API
 -   Improved documentation.
