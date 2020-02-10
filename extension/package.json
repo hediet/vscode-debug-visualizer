@@ -46,7 +46,7 @@
 		}
 	},
 	"scripts": {
-		"pub": "vsce publish --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
+		"pub": "vsce publish --yarn --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
 		"vscode:prepublish": "yarn build",
 		"build": "webpack --mode production",
 		"dev": "tsc -watch -p ./"
