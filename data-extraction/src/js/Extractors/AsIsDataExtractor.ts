@@ -1,12 +1,12 @@
 import { ExtractedData } from "../../DataExtractionResult";
-import { DataExtractor, ExtractionCollector } from "..";
+import { DataExtractor, ExtractionCollector, DataExtractorContext } from "..";
 
 export class AsIsDataExtractor implements DataExtractor<ExtractedData> {
 	readonly id = "as-is";
 	getExtractions(
 		data: unknown,
 		extractionCollector: ExtractionCollector<ExtractedData>,
-		evalFn: <TEval>(expression: string) => TEval
+		context: DataExtractorContext
 	): void {
 		if (typeof data !== "object" || !data || !("kind" in data)) {
 			return;

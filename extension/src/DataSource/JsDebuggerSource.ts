@@ -3,8 +3,7 @@ import {
 	EvaluationWatcher,
 	EvaluationWatcherOptions,
 } from "./DataSource";
-import { observable, autorun } from "mobx";
-import * as vscode from "vscode";
+import { observable, autorun, action } from "mobx";
 import { Disposable } from "@hediet/std/disposable";
 import {
 	selfContainedGetInitializedDataExtractorApi,
@@ -156,7 +155,8 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 				GetDebugVisualizationDataExtractor,
 			].map(e => `new (${e.toString()})()`);
 			expression += `(${selfContainedGetInitializedDataExtractorApi.toString()})()`;
-			expression += `.registerExtractors([${es.join(",")}])`;
+			// prefer existing is true, so that manually registered extractors are not overwritten.
+			expression += `.registerExtractors([${es.join(",")}], true)`;
 
 			const reply = await session.evaluate({
 				expression,
@@ -182,12 +182,13 @@ class ObservableEvaluationWatcher implements EvaluationWatcher {
 	}
 
 	@observable
-	_preferredDataExtractor: DataExtractorId | undefined = undefined;
+	private _preferredDataExtractor: DataExtractorId | undefined = undefined;
 
-	get preferredDataExtractor(): DataExtractorId | undefined {
+	public get preferredDataExtractor(): DataExtractorId | undefined {
 		return this._preferredDataExtractor;
 	}
 
+	@action
 	public setPreferredDataExtractor(id: DataExtractorId | undefined): void {
 		this._preferredDataExtractor = id;
 		this.refresh();

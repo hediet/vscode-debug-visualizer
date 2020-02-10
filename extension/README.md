@@ -9,11 +9,14 @@ A VS Code extension for visualizing data structures during debugging.
 ## Usage
 
 After installing this extension, use the command `Open a new Debug Visualizer View` to open a new visualizer view.
-In this view you can enter an expression that is visualized when debugging your application, e.g.
+In this view you can enter an expression that is evaluated and visualized while stepping through your application, e.g.
 
 ```ts
 { kind: { graph: true }, nodes: [ { id: "1", label: "1" }, { id: "2", label: "2" } ], edges: [{ from: "1", to: "2", label: "edge" }]}
 ```
+
+You can implement your own functions to extract this debug data from your custom data structures.
+See [here](../data-extraction/README.md) for documentation of the `createGraphFromPointers` helper.
 
 ## Integrated Visualizers
 
@@ -158,6 +161,11 @@ Calls `.getDebugVisualization()` on values and treats the result as direct input
 
 Currently, only JavaScript (and thus TypeScript) values can be visualized and only a few visualizations are supported.
 The architecture is solid enough to support other languages in the future.
+
+# `@hediet/debug-visualizer-data-extraction`
+
+A library that provides infrastructure to implement and register custom data extractors.
+See [README](../data-extraction/README.md) of the library for more info.
 
 # See Also
 

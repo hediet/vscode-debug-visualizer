@@ -25,5 +25,8 @@
 		"dev": "tsc --watch",
 		"build": "tsc"
 	},
-	"dependencies": {}
+	"dependencies": {},
+	"devDependencies": {
+		"typescript": "^"
+	}
 }

@@ -1,5 +1,14 @@
 import { ExtractedData } from "./DataExtractionResult";
 
+export type CommonDataType =
+	| CommonDataTypes.Text
+	| CommonDataTypes.Svg
+	| CommonDataTypes.Html
+	| CommonDataTypes.DotGraph
+	| CommonDataTypes.Tree
+	| CommonDataTypes.Ast
+	| CommonDataTypes.Graph;
+
 export function isCommonDataType<T>(
 	data: ExtractedData,
 	kind: T
@@ -13,15 +22,6 @@ export function isCommonDataType<T>(
 }
 
 type Narrow<T, TKind> = T extends TKind ? T : never;
-
-export type CommonDataType =
-	| CommonDataTypes.Text
-	| CommonDataTypes.Svg
-	| CommonDataTypes.Html
-	| CommonDataTypes.DotGraph
-	| CommonDataTypes.Tree
-	| CommonDataTypes.Ast
-	| CommonDataTypes.Graph;
 
 export module CommonDataTypes {
 	export interface Text {

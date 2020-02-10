@@ -9,6 +9,35 @@ import {
 	ExtractionCollector,
 } from "./DataExtractor";
 
+export interface DataExtractorApi {
+	/**
+	 * Registers a single extractor.
+	 * @preferExisting if `true`, an existing extractor is not overwritten.
+	 */
+	registerExtractor<TExtractedData extends ExtractedData>(
+		extractor: DataExtractor<TExtractedData>,
+		preferExisting?: boolean
+	): void;
+
+	/**
+	 * Registers multiple extractors.
+	 * @preferExisting if `true`, an existing extractor is not overwritten.
+	 */
+	registerExtractors(
+		extractors: DataExtractor<ExtractedData>[],
+		preferExisting?: boolean
+	): void;
+
+	/**
+	 * Extracts data from `value`.
+	 */
+	getData(
+		value: unknown,
+		evalFn: <T>(expression: string) => T,
+		preferredDataExtractorId: string | undefined
+	): JSONString<DataResult>;
+}
+
 export type DataResult =
 	| {
 			kind: "Data";
@@ -21,26 +50,18 @@ export interface JSONString<T> extends String {
 	__brand: { json: T };
 }
 
-export interface DataExtractorApi {
-	registerExtractor<TExtractedData extends ExtractedData>(
-		extractor: DataExtractor<TExtractedData>
-	): void;
-	registerExtractors(extractors: DataExtractor<ExtractedData>[]): void;
-	getData(
-		value: unknown,
-		evalFn: <T>(expression: string) => T,
-		preferredDataExtractorId: string | undefined
-	): JSONString<DataResult>;
-}
-
 declare const window: any;
 
+/**
+ * @internal
+ */
 export function selfContainedInitDataExtractorApi(): boolean {
-	const obj = typeof window === "object" ? (window as any) : (global as any);
+	const globalObj =
+		typeof window === "object" ? (window as any) : (global as any);
 	const key = "@hediet/data-extractor/v1";
 	const prefix = key + "::";
 
-	let api: DataExtractorApi | undefined = obj[key];
+	let api: DataExtractorApi | undefined = globalObj[key];
 	if (api) {
 		return false;
 	}
@@ -49,29 +70,38 @@ export function selfContainedInitDataExtractorApi(): boolean {
 		return JSON.stringify(data) as any;
 	}
 	function getExtractors(): DataExtractor<ExtractedData>[] {
-		return Object.entries(obj)
+		return Object.entries(globalObj)
 			.filter(([key, value]) => key.startsWith(prefix))
 			.map(([key, value]) => value as DataExtractor<ExtractedData>);
 	}
-	obj["$asData"] = (x: unknown) => x;
-	obj[key] = api = {
-		registerExtractor(extractor) {
-			obj[prefix + extractor.id] = extractor;
+	globalObj["$asData"] = (x: unknown) => x;
+	globalObj[key] = api = {
+		registerExtractor(extractor, preferExisting) {
+			const key = prefix + extractor.id;
+			if (preferExisting && key in globalObj) {
+				// don't overwrite existing data extractor
+				return;
+			}
+			globalObj[key] = extractor;
 		},
-		registerExtractors(extractors: DataExtractor<ExtractedData>[]) {
+		registerExtractors(
+			extractors: DataExtractor<ExtractedData>[],
+			preferExisting
+		) {
 			for (const e of extractors) {
-				this.registerExtractor(e);
+				this.registerExtractor(e, preferExisting);
 			}
 		},
 		getData(value, evalFn, preferredDataExtractorId) {
 			const extractions = new Array<DataExtraction<ExtractedData>>();
-			const collector: ExtractionCollector<ExtractedData> = {
+			const extractionCollector: ExtractionCollector<ExtractedData> = {
 				addExtraction(extraction) {
 					extractions.push(extraction);
 				},
 			};
+
 			for (const e of getExtractors()) {
-				e.getExtractions(value, collector, evalFn);
+				e.getExtractions(value, extractionCollector, { evalFn });
 			}
 			extractions.sort((a, b) => b.priority - a.priority);
 			let usedExtraction = extractions[0];
@@ -111,10 +141,10 @@ export function selfContainedInitDataExtractorApi(): boolean {
 	};
 
 	api.registerExtractor({
-		id: "toString",
-		getExtractions(data, collector) {
+		id: "to-string",
+		getExtractions: (data, collector) => {
 			collector.addExtraction({
-				id: "toString",
+				id: "to-string",
 				name: "To String",
 				priority: 100,
 				extractData() {
@@ -131,8 +161,15 @@ export function selfContainedInitDataExtractorApi(): boolean {
 	return true;
 }
 
+/**
+ * This code is used to detect if the API has not been initialized yet.
+ * @internal
+ */
 export const ApiHasNotBeenInitializedCode = "EgH0cybXij1jYUozyakO" as const;
 
+/**
+ * @internal
+ */
 export function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi {
 	const obj = typeof window === "object" ? (window as any) : (global as any);
 	const key = "@hediet/data-extractor/v1";
@@ -147,6 +184,9 @@ export function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi 
 	return api;
 }
 
+/**
+ * Get the data extractor API.
+ */
 export function getDataExtractorApi(): DataExtractorApi {
 	selfContainedInitDataExtractorApi();
 	return selfContainedGetInitializedDataExtractorApi();

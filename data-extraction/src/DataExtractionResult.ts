@@ -17,4 +17,4 @@ export type DataExtractorInfo = {
 
 export type DataExtractorId = {
 	__brand: "DataExtractorId";
-};
+} & string;

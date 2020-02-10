@@ -1,8 +1,8 @@
 import * as ts from "typescript";
-import { registerAll } from "@hediet/debug-visualizer-data-extraction";
+import { registerDefaultDataExtractors } from "@hediet/debug-visualizer-data-extraction";
 import { MockLanguageServiceHost } from "./MockLanguageServiceHost";
 
-registerAll();
+registerDefaultDataExtractors();
 
 setTimeout(() => {
 	new Main().run();

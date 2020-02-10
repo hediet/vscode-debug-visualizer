@@ -1,13 +1,17 @@
 import { ExtractedData } from "../../DataExtractionResult";
-import { DataExtractor, ExtractionCollector } from "..";
+import {
+	ExtractionCollector,
+	DataExtractor,
+	DataExtractorContext,
+} from "../DataExtractor";
 
 export class GetDebugVisualizationDataExtractor
 	implements DataExtractor<ExtractedData> {
 	readonly id = "get-debug-visualization";
 	getExtractions(
 		data: unknown,
-		extractionCollector: ExtractionCollector<ExtractedData>,
-		evalFn: <TEval>(expression: string) => TEval
+		collector: ExtractionCollector<ExtractedData>,
+		context: DataExtractorContext
 	): void {
 		if (
 			typeof data !== "object" ||
@@ -17,10 +21,10 @@ export class GetDebugVisualizationDataExtractor
 			return;
 		}
 
-		extractionCollector.addExtraction({
+		collector.addExtraction({
 			id: this.id,
 			name: "Use Method 'getDebugVisualization'",
-			priority: 500,
+			priority: 600,
 			extractData() {
 				return (data as any).getDebugVisualization();
 			},

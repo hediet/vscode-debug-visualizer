@@ -1,16 +1,20 @@
 import * as ts from "typescript";
-import { DataExtractor, ExtractionCollector } from "../DataExtractor";
+import {
+	DataExtractor,
+	ExtractionCollector,
+	DataExtractorContext,
+} from "../DataExtractor";
 import { CommonDataTypes } from "../../CommonDataTypes";
 
 // This class is self contained and can be injected into both nodejs and browser environments.
 export class TypeScriptAstDataExtractor
 	implements DataExtractor<CommonDataTypes.Ast> {
-	readonly id = "TypeScriptAst";
+	readonly id = "typescript-ast";
 
 	getExtractions(
 		data: unknown,
 		collector: ExtractionCollector<CommonDataTypes.Ast>,
-		evalFn: <TEval>(expression: string) => TEval
+		{ evalFn }: DataExtractorContext
 	): void {
 		if (!data) {
 			return;
