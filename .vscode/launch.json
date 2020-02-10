@@ -32,6 +32,22 @@
 			},
 			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
 			"preLaunchTask": "npm: dev - extension"
+		},
+		{
+			"name": "Run Extension (Cold)",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/extension",
+				"${workspaceFolder}\\example-project"
+			],
+			"env": {
+				"HOT_RELOAD": "",
+				"USE_DEV_UI": ""
+			},
+			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
+			"preLaunchTask": "npm: dev - extension"
 		}
 	]
 }
