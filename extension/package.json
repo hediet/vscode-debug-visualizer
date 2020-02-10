@@ -3,7 +3,7 @@
 	"displayName": "Debug Visualizer",
 	"description": "An extension that visualizes values while debugging.",
 	"icon": "docs/logo.png",
-	"version": "0.10.0",
+	"version": "0.10.1",
 	"license": "MIT",
 	"engines": {
 		"vscode": "^1.35.0"
@@ -46,7 +46,7 @@
 		}
 	},
 	"scripts": {
-		"pub": "vsce publish --yarn --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
+		"pub": "vsce publish --yarn --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension --baseContentUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
 		"vscode:prepublish": "yarn build",
 		"build": "webpack --mode production",
 		"dev": "tsc -watch -p ./"
