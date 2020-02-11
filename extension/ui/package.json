@@ -1,5 +1,5 @@
 {
-	"name": "vscode-debug-visualizer",
+	"name": "debug-visualizer-ui",
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "webpack-dev-server --hot",
