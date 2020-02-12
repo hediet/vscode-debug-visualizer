@@ -15,7 +15,6 @@ export function getExpressionToInitializeDataExtractorApi(): string {
 	return `((function () {
 		let module = {};
 		${moduleSrc}
-		module.exports.installHelpers();
 		return module.exports.getDataExtractorApi();
 	})())`;
 }
@@ -34,6 +33,7 @@ export function getExpressionForDataExtractorApi(): string {
 const apiKey = "@hediet/data-extractor-api/v2";
 
 export function getDataExtractorApi(): DataExtractorApi {
+	installHelpers();
 	const globalObj =
 		typeof window === "object" ? (window as any) : (global as any);
 	if (!globalObj[apiKey]) {
