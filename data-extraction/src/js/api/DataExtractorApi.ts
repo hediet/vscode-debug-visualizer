@@ -17,10 +17,12 @@ export interface DataExtractorApi {
 	registerExtractors(extractors: DataExtractor<ExtractedData>[]): void;
 
 	/**
-	 * Extracts data from `value`.
+	 * Extracts data from the result of `valueFn`.
+	 * @valueFn a function returning the value to extract the data from.
+	 * Is a function so that it's evaluation can depend on `evalFn`.
 	 */
 	getData(
-		value: unknown,
+		valueFn: () => unknown,
 		evalFn: <T>(expression: string) => T,
 		preferredDataExtractorId: string | undefined
 	): JSONString<DataResult>;

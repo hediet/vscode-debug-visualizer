@@ -10,6 +10,8 @@ import { ExtractedData, DataExtractorInfo } from "../../DataExtractionResult";
 import { registerDefaultDataExtractors } from "./default-extractors";
 
 export class DataExtractorApiImpl implements DataExtractorApi {
+	public static lastEvalFn: (<T>(expression: string) => T) | undefined;
+
 	private readonly extractors = new Map<
 		string,
 		DataExtractor<ExtractedData>
@@ -34,7 +36,7 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 	}
 
 	public getData(
-		value: unknown,
+		valueFn: () => unknown,
 		evalFn: <T>(expression: string) => T,
 		preferredDataExtractorId: string | undefined
 	): JSONString<DataResult> {
@@ -44,6 +46,10 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 				extractions.push(extraction);
 			},
 		};
+
+		DataExtractorApiImpl.lastEvalFn = evalFn;
+		const value = valueFn();
+		DataExtractorApiImpl.lastEvalFn = undefined;
 
 		for (const e of this.extractors.values()) {
 			e.getExtractions(value, extractionCollector, { evalFn });
@@ -85,6 +91,7 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 	}
 
 	public registerDefaultExtractors(preferExisting: boolean = false): void {
+		// TODO consider preferExisting
 		registerDefaultDataExtractors(this);
 	}
 }

@@ -103,7 +103,7 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 				: "undefined";
 
 			const body = `${getExpressionForDataExtractorApi()}.getData(
-				${w.expression},
+				e => (${w.expression}),
 				expr => eval(expr),
 				${preferredExtractor}
 			)`;
