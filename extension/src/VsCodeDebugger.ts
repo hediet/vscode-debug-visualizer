@@ -38,17 +38,15 @@ export class VsCodeDebugger {
 							type Message =
 								| StoppedEvent
 								| ThreadsResponse
-								| ContinueResponse
-								| NextResponse;
+								| ContinueLikeResponse;
 
-							interface ContinueResponse {
+							interface ContinueLikeResponse {
 								type: "response";
-								command: "continue";
-							}
-
-							interface NextResponse {
-								type: "response";
-								command: "next";
+								command:
+									| "continue"
+									| "stepIn"
+									| "stepOut"
+									| "next";
 							}
 
 							interface StoppedEvent {
@@ -91,7 +89,9 @@ export class VsCodeDebugger {
 							} else if (m.type === "response") {
 								if (
 									m.command === "continue" ||
-									m.command === "next"
+									m.command === "next" ||
+									m.command === "stepIn" ||
+									m.command === "stepOut"
 								) {
 									extendedSession[
 										"activeStackFrame"
