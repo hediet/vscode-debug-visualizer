@@ -120,16 +120,13 @@ body,
 	}
 }
 
-.component-monaco-editor2 {
-	height: 23px;
+.component-monaco-editor {
 	width: 100%;
 	min-width: 0;
 	box-sizing: border-box;
 	display: flex;
 	padding: 2px;
 	background-color: white;
-
-	// overflow: hidden;
 
 	.part-editor {
 		min-width: 0;

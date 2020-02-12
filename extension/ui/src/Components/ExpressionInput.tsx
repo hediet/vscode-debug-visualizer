@@ -2,7 +2,6 @@ import React = require("react");
 import { Model } from "../Model/Model";
 import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, action, autorun } from "mobx";
-
 import * as monaco from "monaco-editor";
 
 export function getModel(): monaco.editor.ITextModel {
@@ -15,15 +14,21 @@ export function getModel(): monaco.editor.ITextModel {
 
 @observer
 export class ExpressionInput extends React.Component<{ model: Model }> {
-	@action.bound
-	submit() {
-		const val = this.model.getValue();
-		console.log(val);
-		this.props.model.setExpression(val);
-	}
 	@observable private editor: monaco.editor.IStandaloneCodeEditor | undefined;
-
+	@observable private contentHeight: number | undefined = undefined;
 	private model = getModel();
+
+	render() {
+		return (
+			<div className="component-monaco-editor">
+				<div
+					style={{ height: this.contentHeight }}
+					className="part-editor"
+					ref={this.setEditorDiv}
+				/>
+			</div>
+		);
+	}
 
 	componentWillUnmount() {
 		if (this.editor) {
@@ -65,20 +70,28 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 			},
 		});
 
+		this.editor.onDidContentSizeChange(e => {
+			this.contentHeight = e.contentHeight;
+		});
+
 		this.editor.onKeyDown(e => {
 			if (e.keyCode == monaco.KeyCode.Enter) {
-				e.preventDefault();
-				e.stopPropagation();
-				this.submit();
+				if (
+					(this.model.getLineCount() <= 1 || e.ctrlKey) &&
+					!e.shiftKey
+				) {
+					e.preventDefault();
+					e.stopPropagation();
+					this.submit();
+				}
 			}
 		});
 	};
 
-	render() {
-		return (
-			<div className="component-monaco-editor2">
-				<div className="part-editor" ref={this.setEditorDiv} />
-			</div>
-		);
+	@action.bound
+	submit() {
+		const val = this.model.getValue();
+		console.log(val);
+		this.props.model.setExpression(val);
 	}
 }
