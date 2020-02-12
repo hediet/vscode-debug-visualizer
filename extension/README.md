@@ -157,6 +157,11 @@ Treats the data as direct input to the visualizer.
 
 Calls `.getDebugVisualization()` on values and treats the result as direct input to the visualizer.
 
+## UI Features
+
+-   Multiline Expressions: Press `shift+enter` to add a new line, ctrl+enter to evaluate the expression.
+    Subsequent new lines can be inserted with a single `enter`.
+
 ## Limitations
 
 Currently, only JavaScript (and thus TypeScript) values can be visualized and only a few visualizations are supported.
@@ -173,7 +178,3 @@ This extension works very well together with my library [`@hediet/node-reload`](
 Together, they provide an interactive typescript playground.
 
 ![](../docs/demo-hot.gif)
-
-```
-
-```
