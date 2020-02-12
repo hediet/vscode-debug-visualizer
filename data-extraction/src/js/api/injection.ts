@@ -69,5 +69,6 @@ function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi {
 export function installHelpers(): void {
 	const globalObj =
 		typeof window === "object" ? (window as any) : (global as any);
-	globalObj["hediet_dbgVis"] = { ...helpers, ...globalHelpers };
+	// `hediet` as prefix to avoid name collision (I own `hediet.de`).
+	globalObj["hedietDbgVis"] = { ...helpers, ...globalHelpers };
 }
