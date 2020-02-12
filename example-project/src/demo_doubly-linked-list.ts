@@ -1,9 +1,9 @@
 import {
-	registerDefaultDataExtractors,
+	getDataExtractorApi,
 	createGraphFromPointers,
 } from "@hediet/debug-visualizer-data-extraction";
 
-registerDefaultDataExtractors();
+getDataExtractorApi().registerDefaultExtractors();
 
 setTimeout(() => {
 	new Main().run();

@@ -22,11 +22,18 @@
 		"registry": "https://registry.npmjs.org/"
 	},
 	"scripts": {
-		"dev": "tsc --watch",
-		"build": "tsc"
+		"dev": "webpack --watch --mode development",
+		"build": "webpack --mode production"
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"typescript": "^"
+		"typescript": "^3.7.5",
+		"@types/express": "^4.17.2",
+		"@types/serve-static": "^1.13.3",
+		"@types/node": "^13.7.1",
+		"tslint": "^6.0.0",
+		"webpack": "^4.41.6",
+		"webpack-cli": "^3.3.11",
+		"ts-loader": "^6.2.1"
 	}
 }

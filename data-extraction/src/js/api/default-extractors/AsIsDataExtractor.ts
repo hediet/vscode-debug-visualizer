@@ -1,5 +1,9 @@
-import { ExtractedData } from "../../DataExtractionResult";
-import { DataExtractor, ExtractionCollector, DataExtractorContext } from "..";
+import { ExtractedData } from "../../../DataExtractionResult";
+import {
+	DataExtractor,
+	ExtractionCollector,
+	DataExtractorContext,
+} from "../..";
 
 export class AsIsDataExtractor implements DataExtractor<ExtractedData> {
 	readonly id = "as-is";

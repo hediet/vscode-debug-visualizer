@@ -1,10 +1,7 @@
-import {
-	registerDefaultDataExtractors,
-	getDataExtractorApi,
-} from "@hediet/debug-visualizer-data-extraction";
+import { getDataExtractorApi } from "@hediet/debug-visualizer-data-extraction";
 
 // Registers all existing extractors.
-registerDefaultDataExtractors();
+getDataExtractorApi().registerDefaultExtractors();
 
 getDataExtractorApi().registerExtractor({
 	id: "my-extractor",

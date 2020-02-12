@@ -3,6 +3,8 @@
 [![](https://img.shields.io/twitter/follow/hediet_dev.svg?style=social)](https://twitter.com/intent/follow?screen_name=hediet_dev)
 
 A library that helps implementing data extractors for the Debug Visualizer VS Code extension.
+It will automatically be injected by the extension when the debugger attaches.
+Compatible with NodeJS and browsers.
 
 # Installation
 
@@ -14,15 +16,10 @@ yarn add @hediet/debug-visualizer-data-extraction
 
 # Usage
 
-## `createGraph` / `createGraphFromPointers` Helper
+## `createGraphFromPointers` Helper
 
 ```ts
-import {
-	registerDefaultDataExtractors,
-	createGraphFromPointers,
-} from "@hediet/debug-visualizer-data-extraction";
-
-registerDefaultDataExtractors();
+import { createGraphFromPointers } from "@hediet/debug-visualizer-data-extraction";
 
 setTimeout(() => {
 	new Main().run();
@@ -85,14 +82,7 @@ class DoublyLinkedList {
 ## Registering Custom Data Extractors
 
 ```ts
-import {
-	registerDefaultDataExtractors,
-	getDataExtractorApi,
-} from "@hediet/debug-visualizer-data-extraction";
-
-// The default data extractors are usually also registered by the VS Code extension.
-// Registered them manually ensures that they are up to date.
-registerDefaultDataExtractors();
+import { getDataExtractorApi } from "@hediet/debug-visualizer-data-extraction";
 
 getDataExtractorApi().registerExtractor({
 	id: "my-foo-extractor",

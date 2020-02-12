@@ -1,8 +1,9 @@
 import * as ts from "typescript";
-import { registerDefaultDataExtractors } from "@hediet/debug-visualizer-data-extraction";
+import { getDataExtractorApi } from "@hediet/debug-visualizer-data-extraction";
 import { MockLanguageServiceHost } from "./MockLanguageServiceHost";
 
-registerDefaultDataExtractors();
+// Registers all existing extractors.
+getDataExtractorApi().registerDefaultExtractors();
 
 setTimeout(() => {
 	new Main().run();

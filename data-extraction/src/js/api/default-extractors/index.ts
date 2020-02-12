@@ -1,0 +1,1 @@
+export { registerDefaultDataExtractors } from "./registerDefaultDataExtractors";

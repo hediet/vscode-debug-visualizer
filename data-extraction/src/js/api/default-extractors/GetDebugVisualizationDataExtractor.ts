@@ -1,9 +1,9 @@
-import { ExtractedData } from "../../DataExtractionResult";
+import { ExtractedData } from "../../../DataExtractionResult";
 import {
-	ExtractionCollector,
 	DataExtractor,
+	ExtractionCollector,
 	DataExtractorContext,
-} from "../DataExtractor";
+} from "../DataExtractorApi";
 
 export class GetDebugVisualizationDataExtractor
 	implements DataExtractor<ExtractedData> {

@@ -1,10 +1,10 @@
-import * as ts from "typescript";
+import * as ts from "typescript"; // Only compile-time import!
 import {
 	DataExtractor,
 	ExtractionCollector,
 	DataExtractorContext,
-} from "../DataExtractor";
-import { CommonDataTypes } from "../../CommonDataTypes";
+} from "../DataExtractorApi";
+import { CommonDataTypes } from "../../../CommonDataTypes";
 
 // This class is self contained and can be injected into both nodejs and browser environments.
 export class TypeScriptAstDataExtractor

@@ -6,14 +6,11 @@ import {
 import { observable, autorun, action } from "mobx";
 import { Disposable } from "@hediet/std/disposable";
 import {
-	selfContainedGetInitializedDataExtractorApi,
+	getExpressionForDataExtractorApi,
 	DataResult,
 	DataExtractorId,
 	ApiHasNotBeenInitializedCode,
-	selfContainedInitDataExtractorApi,
-	TypeScriptAstDataExtractor,
-	AsIsDataExtractor,
-	GetDebugVisualizationDataExtractor,
+	getExpressionToInitializeDataExtractorApi,
 } from "@hediet/debug-visualizer-data-extraction";
 import {
 	DataExtractionState,
@@ -100,14 +97,30 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 
 		try {
 			w._state = { kind: "loading" };
-			const fnSrc = selfContainedGetInitializedDataExtractorApi.toString();
 
 			const preferredExtractor = w.preferredDataExtractor
 				? `"${w.preferredDataExtractor}"`
 				: "undefined";
 
-			const body = `(${fnSrc})().getData(${w.expression}, expr => eval(expr), ${preferredExtractor})`;
-			const expression = `(() => { try { return ${body}; } catch (e) { return JSON.stringify({ kind: "Error", message: e.message, stack: e.stack }); } })()`;
+			const body = `${getExpressionForDataExtractorApi()}.getData(
+				${w.expression},
+				expr => eval(expr),
+				${preferredExtractor}
+			)`;
+
+			const expression = `
+				(() => {
+					try {
+						return ${body};
+					} catch (e) {
+						return JSON.stringify({
+							kind: "Error",
+							message: e.message,
+							stack: e.stack
+						});
+					}
+				})()
+			`;
 
 			const reply = await session.evaluate({
 				expression,
@@ -147,24 +160,14 @@ export class JsDebuggerSourceImplementation implements JsDataSource {
 		frameId: number | undefined
 	): Promise<boolean> {
 		try {
-			let expression = `(${selfContainedInitDataExtractorApi.toString()})();`;
+			// prefer existing is true, so that manually registered (possibly newer) extractors are not overwritten.
+			const expression = `${getExpressionToInitializeDataExtractorApi()}.registerDefaultExtractors(true);`;
 
-			const es = [
-				TypeScriptAstDataExtractor,
-				AsIsDataExtractor,
-				GetDebugVisualizationDataExtractor,
-			].map(e => `new (${e.toString()})()`);
-			expression += `(${selfContainedGetInitializedDataExtractorApi.toString()})()`;
-			// prefer existing is true, so that manually registered extractors are not overwritten.
-			expression += `.registerExtractors([${es.join(",")}], true)`;
-
-			const reply = await session.evaluate({
+			await session.evaluate({
 				expression,
 				frameId,
 			});
-			if (reply.result === "true") {
-				// register extractors
-			}
+
 			return true;
 		} catch (error) {
 			return false;
