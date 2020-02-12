@@ -28,9 +28,13 @@ export class Server {
 		});
 	}
 
-	public get indexUrl(): string {
+	public getIndexUrl(args: { expression?: string } = {}): string {
 		const port = process.env.USE_DEV_UI ? 8080 : this.port;
-		return `http://localhost:${port}/index.html?serverPort=${this.port}&serverSecret=${this.secret}`;
+		const expr =
+			args.expression !== undefined
+				? `&expression=${encodeURIComponent(args.expression)}`
+				: "";
+		return `http://localhost:${port}/index.html?serverPort=${this.port}&serverSecret=${this.secret}${expr}`;
 	}
 
 	public get mainBundleUrl(): string {

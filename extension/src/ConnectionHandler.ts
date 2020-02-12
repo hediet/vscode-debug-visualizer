@@ -72,12 +72,18 @@ export class ConnectionHandler {
 				openInBrowser: async ({}) => {
 					throwIfNotAuthenticated();
 
+					const url = server.getIndexUrl({
+						expression: this.watcher
+							? this.watcher.expression
+							: undefined,
+					});
+
 					let opened = false;
 					if (config.useChromeKioskMode()) {
-						opened = await launchChrome(server.indexUrl);
+						opened = await launchChrome(url);
 					}
 					if (!opened) {
-						open(server.indexUrl);
+						open(url);
 					}
 				},
 				setPreferredDataExtractor: async ({ dataExtractorId }) => {

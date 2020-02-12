@@ -89,7 +89,7 @@ export function getHtml(server: Server) {
 				</script>
 				${
 					isDev
-						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.indexUrl}"></iframe>`
+						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.getIndexUrl()}"></iframe>`
 						: `<script type="text/javascript" src="${server.mainBundleUrl}"></script>`
 				}
             </body>
