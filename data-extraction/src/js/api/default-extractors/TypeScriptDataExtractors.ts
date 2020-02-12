@@ -142,7 +142,7 @@ export class TypeScriptAstDataExtractor
 		let rootNode: ts.Node | undefined = undefined;
 		let marked: Set<ts.Node>;
 		let fn: (n: ts.Node) => string | undefined = (n: ts.Node) => undefined;
-		if (Array.isArray(data) && data.every(isNode)) {
+		if (Array.isArray(data) && data.every(isNode) && data.length > 0) {
 			rootSourceFile = getSourceFile(data[0] as ts.Node);
 			marked = new Set(data);
 		} else if (isNode(data)) {
