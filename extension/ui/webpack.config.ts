@@ -17,6 +17,7 @@ module.exports = {
 	resolve: {
 		extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
 	},
+
 	devtool: "source-map",
 	module: {
 		rules: [
@@ -32,6 +33,9 @@ module.exports = {
 				options: { transpileOnly: true },
 			},
 		],
+	},
+	node: {
+		fs: "empty",
 	},
 	plugins: [
 		new HtmlWebpackPlugin(),
