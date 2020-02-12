@@ -7,7 +7,8 @@ export type CommonDataType =
 	| CommonDataTypes.DotGraph
 	| CommonDataTypes.Tree
 	| CommonDataTypes.Ast
-	| CommonDataTypes.Graph;
+	| CommonDataTypes.Graph
+	| CommonDataTypes.Plotly;
 
 export function isCommonDataType<T>(
 	data: ExtractedData,
@@ -61,6 +62,11 @@ export module CommonDataTypes {
 			}>,
 			Text {
 		kind: { text: true; tree: true; ast: true };
+	}
+
+	export interface Plotly {
+		kind: { plotly: true };
+		data: Partial<Plotly.Data>[];
 	}
 }
 

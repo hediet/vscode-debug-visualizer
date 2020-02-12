@@ -8,6 +8,7 @@ import { TextVisualizer } from "./TextVisualizer/TextVisualizer";
 import { MonacoTextVisualizer } from "./TextVisualizer/MonacoTextVisualizer";
 import { AstVisualizer } from "./AstViewer";
 import { VisJsGraphVisualizer } from "./GraphVisualizer/VisJsGraphVisualizer";
+import { PlotlyVisualizer } from "./PlotlyVisualizer";
 
 export const knownVisualizations = new ComposedVisualizationProvider([
 	new TreeVisualizer(),
@@ -18,4 +19,5 @@ export const knownVisualizations = new ComposedVisualizationProvider([
 	new TextVisualizer(),
 	new MonacoTextVisualizer(),
 	new AstVisualizer(),
+	new PlotlyVisualizer(),
 ]);
