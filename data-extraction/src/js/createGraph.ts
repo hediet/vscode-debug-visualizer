@@ -34,7 +34,7 @@ export function createGraph<T>(
 
 		let id = ids.get(item);
 		if (!id) {
-			id = (idCounter++).toString();
+			id = `hediet.de/id-${idCounter++}`;
 			ids.set(item, id);
 		}
 		return id;
