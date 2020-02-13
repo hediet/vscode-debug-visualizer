@@ -1,1 +1,1 @@
-export { registerDefaultDataExtractors } from "./registerDefaultDataExtractors";
+export { registerDefaultExtractors } from "./registerDefaultDataExtractors";

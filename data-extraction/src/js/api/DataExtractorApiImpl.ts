@@ -7,7 +7,7 @@ import {
 	ExtractionCollector,
 } from "./DataExtractorApi";
 import { ExtractedData, DataExtractorInfo } from "../../DataExtractionResult";
-import { registerDefaultDataExtractors } from "./default-extractors";
+import { registerDefaultExtractors } from "./default-extractors";
 
 export class DataExtractorApiImpl implements DataExtractorApi {
 	public static lastEvalFn: (<T>(expression: string) => T) | undefined;
@@ -92,6 +92,6 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 
 	public registerDefaultExtractors(preferExisting: boolean = false): void {
 		// TODO consider preferExisting
-		registerDefaultDataExtractors(this);
+		registerDefaultExtractors(this);
 	}
 }
