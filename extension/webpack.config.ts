@@ -44,7 +44,9 @@ module.exports = {
 		new CopyPlugin([
 			{
 				from: r("../data-extraction/"),
-				to: r("./dist/data-extraction/"),
+				to: r(
+					"./dist/node_modules/@hediet/debug-visualizer-data-extraction/"
+				),
 				ignore: ["**/node_modules/**/*"],
 			},
 		]),
