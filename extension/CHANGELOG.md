@@ -8,3 +8,12 @@
 
 -   Minor refactoring of `@hediet/debug-visualizer-data-extraction`'s API
 -   Improved documentation.
+
+## 0.11.0
+
+-   Multiline Expression Input
+-   Helper Bundle Injection
+-   Plotly Visualizer
+-   Object Graph Data Extractor
+-   Plotly Data Extractor
+-   Some Bugfixes
