@@ -17,3 +17,7 @@
 -   Object Graph Data Extractor
 -   Plotly Data Extractor
 -   Some Bugfixes
+
+## 0.11.1
+
+-   Fixes crash on start
