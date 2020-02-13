@@ -46,8 +46,7 @@
 				"HOT_RELOAD": "",
 				"USE_DEV_UI": ""
 			},
-			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
-			"preLaunchTask": "npm: dev - extension"
+			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"]
 		},
 		{
 			"name": "Run Extension (Dev UI)",
