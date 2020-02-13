@@ -11,7 +11,7 @@ import {
 	NodeGraphData,
 	EdgeGraphData,
 } from "@hediet/debug-visualizer-data-extraction";
-import { DataSet, Network } from "vis-network";
+import { DataSet, Network, Options } from "vis-network";
 
 export class VisJsGraphVisualizer extends VisualizationProvider {
 	getVisualizations(
@@ -46,6 +46,7 @@ export class VisJsGraphViewer extends React.Component<{
 		id: string;
 		label: string;
 		color?: string;
+		shape?: string;
 	}>();
 	private readonly edges = new DataSet<{
 		id: string;
@@ -53,6 +54,8 @@ export class VisJsGraphViewer extends React.Component<{
 		from: string;
 		to: string;
 		color?: string;
+		dashes?: boolean;
+		shape?: boolean;
 	}>();
 
 	render() {
@@ -67,6 +70,7 @@ export class VisJsGraphViewer extends React.Component<{
 				id: n.id,
 				label: n.label,
 				color: n.color,
+				shape: n.shape,
 			});
 		}
 		this.nodes.forEach(item => {
@@ -92,6 +96,7 @@ export class VisJsGraphViewer extends React.Component<{
 				from: n.from,
 				to: n.to,
 				color: n.color,
+				dashes: n.dashes,
 			});
 		}
 		this.edges.forEach(item => {
@@ -112,7 +117,7 @@ export class VisJsGraphViewer extends React.Component<{
 			nodes: this.nodes,
 			edges: this.edges,
 		};
-		const options = {
+		const options: Options = {
 			edges: {
 				arrows: {
 					to: { enabled: true, scaleFactor: 1, type: "arrow" },

@@ -84,6 +84,7 @@ export interface NodeGraphData {
 	id: string;
 	label: string;
 	color?: string;
+	shape?: "ellipse" | "box";
 }
 
 export interface EdgeGraphData {
@@ -92,5 +93,5 @@ export interface EdgeGraphData {
 	label: string;
 	id?: string;
 	color?: string;
-	weight?: number;
+	dashes?: boolean;
 }
