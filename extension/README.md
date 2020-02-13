@@ -23,6 +23,50 @@ See [here](../data-extraction/README.md) for documentation of the `createGraphFr
 Visualizers present data extracted by a _Data Extractor_.
 Visualizers are (mostly) React components and live in the webview of the extension.
 
+### Graph Visualization
+
+The Graphviz and vis.js visualizers render data that matches the `Graph` interface.
+
+```ts
+interface Graph {
+	kind: { graph: true };
+	nodes: NodeGraphData[];
+	edges: EdgeGraphData[];
+}
+
+interface NodeGraphData {
+	id: string;
+	label: string;
+	color?: string;
+}
+
+interface EdgeGraphData {
+	from: string;
+	to: string;
+	label: string;
+	id?: string;
+	color?: string;
+	weight?: number;
+}
+```
+
+The graphviz visualizer uses the SVG viewer to render the SVG created by `viz.js`.
+
+![](../docs/visualization-graphviz.png)
+![](../docs/visualization-visjs.png)
+
+### Plotly Visualization
+
+```ts
+export interface Plotly {
+	kind: { plotly: true };
+	data: Partial<Plotly.Data>[];
+}
+// See plotly docs for Plotly.Data.
+```
+
+![](../docs/visualization-plotly-random-walk.png)
+
 ### Tree Visualization
 
 The tree visualizer renders data that matches the `Tree` interface.
@@ -102,38 +146,6 @@ interface DotGraph extends Text {
 
 `Viz.js` (Graphviz) is used for rendering.
 
-### Graph Visualization
-
-The Graphviz and vis.js visualizers render data that matches the `Graph` interface.
-
-```ts
-interface Graph {
-	kind: { graph: true };
-	nodes: NodeGraphData[];
-	edges: EdgeGraphData[];
-}
-
-interface NodeGraphData {
-	id: string;
-	label: string;
-	color?: string;
-}
-
-interface EdgeGraphData {
-	from: string;
-	to: string;
-	label: string;
-	id?: string;
-	color?: string;
-	weight?: number;
-}
-```
-
-The graphviz visualizer uses the SVG viewer to render the SVG created by `viz.js`.
-
-![](../docs/visualization-graphviz.png)
-![](../docs/visualization-visjs.png)
-
 ## Integrated Data Extractors
 
 Data extractors convert arbitrary values into visualizable data.
@@ -157,10 +169,22 @@ Treats the data as direct input to the visualizer.
 
 Calls `.getDebugVisualization()` on values and treats the result as direct input to the visualizer.
 
+### Plotly y-Values
+
+Uses plotly to plot an array of numbers.
+
+### Object Graph
+
+Constructs a graph containing all objects reachable from object the expression evaluates to.
+Graph is constructed using a breadth search. Stops after 50 nodes.
+
 ## UI Features
 
--   Multiline Expressions: Press `shift+enter` to add a new line, ctrl+enter to evaluate the expression.
-    Subsequent new lines can be inserted with a single `enter`.
+-   **Multi-line Expressions**: Press `shift+enter` to add a new line and `ctrl+enter` to evaluate the expression.
+    When only having a single line, `enter` submits the current expression,
+    but when having multiple lines, `enter` inserts another line break.
+
+    ![](../docs/multiline-expression.png)
 
 ## Limitations
 
