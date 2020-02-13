@@ -1,5 +1,5 @@
-import { EdgeGraphData, NodeGraphData, CommonDataTypes } from "../..";
-import { createGraph } from ".";
+import { NodeGraphData, CommonDataTypes } from "../../CommonDataTypes";
+import { CreateGraphEdge, createGraph } from "./createGraph";
 
 /**
  * Given a labeled list of roots, it creates a graph by following their edges recursively.
@@ -11,7 +11,7 @@ export function createGraphFromPointers<T>(
 		item: T
 	) => {
 		id?: string | number;
-		edges: ({ to: T } & Omit<EdgeGraphData, "from" | "to">)[];
+		edges: CreateGraphEdge<T>[];
 	} & Omit<NodeGraphData, "id">
 ): CommonDataTypes.Graph {
 	const marker = {};

@@ -4,6 +4,8 @@ import {
 	NodeGraphData,
 } from "../../CommonDataTypes";
 
+export type CreateGraphEdge<T> = { to: T } & Omit<EdgeGraphData, "from" | "to">;
+
 /**
  * Given a list of roots, it creates a graph by following their edges recursively.
  * Tracks cycles.
@@ -14,8 +16,9 @@ export function createGraph<T>(
 		item: T
 	) => {
 		id?: string | number;
-		edges: ({ to: T } & Omit<EdgeGraphData, "from" | "to">)[];
-	} & Omit<NodeGraphData, "id">
+		edges: CreateGraphEdge<T>[];
+	} & Omit<NodeGraphData, "id">,
+	options: { maxSize?: number } = {}
 ): CommonDataTypes.Graph {
 	const r: CommonDataTypes.Graph = {
 		kind: {
@@ -40,11 +43,13 @@ export function createGraph<T>(
 		return id;
 	}
 
-	const queue = new Array<T>(...roots);
+	const queue = new Array<{ item: T; dist: number }>(
+		...roots.map(r => ({ item: r, dist: 0 }))
+	);
 	const processed = new Set<T>();
 
 	while (queue.length > 0) {
-		const item = queue.shift()!;
+		const { item, dist } = queue.shift()!;
 		if (processed.has(item)) {
 			continue;
 		}
@@ -59,8 +64,15 @@ export function createGraph<T>(
 				from: fromId,
 				to: toId,
 			});
-			if (!processed.has(e.to)) {
-				queue.push(e.to);
+			let shouldPush = !processed.has(e.to);
+			if (
+				options.maxSize &&
+				processed.size + queue.length > options.maxSize
+			) {
+				shouldPush = false;
+			}
+			if (shouldPush) {
+				queue.push({ item: e.to, dist: dist + 1 });
 			}
 		}
 	}
