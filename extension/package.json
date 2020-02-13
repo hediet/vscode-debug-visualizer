@@ -64,6 +64,8 @@
 		"crypto-random-string": "^3.1.0"
 	},
 	"devDependencies": {
+		"copy-webpack-plugin": "^5.1.1",
+		"@types/copy-webpack-plugin": "^5.0.0",
 		"@types/express": "^4.17.2",
 		"@types/serve-static": "^1.13.3",
 		"@types/node": "^13.7.1",
