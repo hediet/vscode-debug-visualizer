@@ -44,14 +44,16 @@ export class GraphvizGraphViewer extends React.Component<{
 		const dotContent = `
             digraph MyGraph {
                 ${nodes
-					.map(n => `${n.id} [ label = ${JSON.stringify(n.label)} ];`)
+					.map(
+						n => `"${n.id}" [ label = ${JSON.stringify(n.label)} ];`
+					)
 					.join("\n ")}
                 ${edges
 					.map(
 						e =>
-							`${e.from} -> ${e.to} [ label = ${JSON.stringify(
-								e.label
-							)} ];`
+							`"${e.from}" -> "${
+								e.to
+							}" [ label = ${JSON.stringify(e.label)} ];`
 					)
 					.join("\n")}
             }
