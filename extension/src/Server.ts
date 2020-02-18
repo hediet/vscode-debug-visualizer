@@ -24,7 +24,13 @@ export class Server {
 		const wss = new WebSocket.Server({ server: this.server });
 		wss.on("connection", ws => {
 			const stream = new WebSocketStream(ws);
-			new ConnectionHandler(sources, stream, this, config, this.secret);
+			new ConnectionHandler(
+				sources.dataSource,
+				stream,
+				this,
+				config,
+				this.secret
+			);
 		});
 	}
 

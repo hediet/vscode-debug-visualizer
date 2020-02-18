@@ -1,10 +1,9 @@
 import { Disposable } from "@hediet/std/disposable";
 import { debugVisualizerUIContract } from "@hediet/debug-visualizer-vscode-shared";
 import { ConsoleRpcLogger, RequestHandlingError } from "@hediet/typed-json-rpc";
-import { EvaluationWatcher } from "./DataSource/DataSource";
+import { EvaluationWatcher, DataSource } from "./DataSource/DataSource";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { observable, autorun } from "mobx";
-import { Sources } from "./DataSource";
 import { Server } from "./Server";
 import * as open from "open";
 import chromeLauncher = require("chrome-launcher");
@@ -16,7 +15,7 @@ export class ConnectionHandler {
 	private watcher: EvaluationWatcher | undefined = undefined;
 
 	constructor(
-		sources: Sources,
+		dataSource: DataSource,
 		stream: WebSocketStream,
 		server: Server,
 		config: Config,
@@ -61,12 +60,9 @@ export class ConnectionHandler {
 						this.dispose.untrack(this.watcher).dispose();
 					}
 					this.watcher = this.dispose.track(
-						sources.jsSource.createEvaluationWatcher(
-							newExpression,
-							{
-								preferredDataExtractor: oldPreferredDataExtractor,
-							}
-						)
+						dataSource.createEvaluationWatcher(newExpression, {
+							preferredDataExtractor: oldPreferredDataExtractor,
+						})
 					);
 				},
 				openInBrowser: async ({}) => {
@@ -96,7 +92,7 @@ export class ConnectionHandler {
 				getCompletions: async ({ text, column }) => {
 					throwIfNotAuthenticated();
 
-					const completions = await sources.jsSource.getCompletions(
+					const completions = await dataSource.getCompletions(
 						text,
 						column
 					);

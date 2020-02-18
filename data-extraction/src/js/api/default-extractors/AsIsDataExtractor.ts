@@ -1,4 +1,4 @@
-import { ExtractedData } from "../../../DataExtractionResult";
+import { ExtractedData, isExtractedData } from "../../../DataExtractionResult";
 import {
 	DataExtractor,
 	ExtractionCollector,
@@ -12,17 +12,7 @@ export class AsIsDataExtractor implements DataExtractor<ExtractedData> {
 		extractionCollector: ExtractionCollector<ExtractedData>,
 		context: DataExtractorContext
 	): void {
-		if (typeof data !== "object" || !data || !("kind" in data)) {
-			return;
-		}
-
-		const obj = data as any;
-		if (typeof obj.kind !== "object" || !obj.kind) {
-			return;
-		}
-
-		const areAllTrue = Object.values(obj.kind).every(val => val === true);
-		if (!areAllTrue) {
+		if (!isExtractedData(data)) {
 			return;
 		}
 
@@ -31,7 +21,7 @@ export class AsIsDataExtractor implements DataExtractor<ExtractedData> {
 			name: "As Is",
 			priority: 500,
 			extractData() {
-				return obj;
+				return data;
 			},
 		});
 	}

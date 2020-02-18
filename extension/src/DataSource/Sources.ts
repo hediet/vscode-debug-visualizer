@@ -1,6 +1,7 @@
 import { Disposable } from "@hediet/std/disposable";
 import { VsCodeDebugger, VsCodeDebuggerView } from "../VsCodeDebugger";
-import { createJsDebuggerSource } from "./JsDebuggerSource";
+import { DataSourceImpl } from "./DataSourceImpl";
+import { defaultDataExtractionProviderFactory } from "./DataExtractionProvider";
 
 export class Sources {
 	public readonly dispose = Disposable.fn();
@@ -9,7 +10,8 @@ export class Sources {
 		new VsCodeDebuggerView(this.debugger)
 	);
 
-	public readonly jsSource = createJsDebuggerSource({
-		vsCodeDebuggerView: this.debuggerView,
-	});
+	public readonly dataSource = new DataSourceImpl(
+		this.debuggerView,
+		defaultDataExtractionProviderFactory
+	);
 }
