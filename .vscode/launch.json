@@ -8,7 +8,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\example-project"
+				"${workspaceFolder}\\demo"
 			],
 			"env": {
 				"HOT_RELOAD": "true",
@@ -24,7 +24,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\example-project"
+				"${workspaceFolder}\\demo"
 			],
 			"env": {
 				"HOT_RELOAD": "true",
@@ -40,7 +40,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\example-project"
+				"${workspaceFolder}\\demo"
 			],
 			"env": {
 				"HOT_RELOAD": "",
@@ -55,7 +55,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\example-project"
+				"${workspaceFolder}\\demo"
 			],
 			"env": {
 				"HOT_RELOAD": "",

@@ -1,4 +1,5 @@
 while (true) {
+	// visualize data
 	const data = new Array<number>();
 	let value = 0;
 	for (let i = 0; i < 10000; i++) {

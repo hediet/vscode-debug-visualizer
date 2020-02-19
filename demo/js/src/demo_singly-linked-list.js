@@ -19,7 +19,7 @@ hedietDbgVis.createGraphFromPointers(
 		label: `${n.data}`,
 		edges: [{ to: n.next, label: "next" }].filter(i => !!i.to),
 	})
-);
+)
 ```
 
 */

@@ -24,6 +24,7 @@ export class TypeScriptAstDataExtractor
 			if (typeof data === "object" && "typescript" in (data as object)) {
 				return (data as any).typescript;
 			} else {
+				// This might refer to global.require which uses CWD for resolution!
 				const require = evalFn<(request: string) => unknown>("require");
 				return require("typescript") as typeof ts;
 			}

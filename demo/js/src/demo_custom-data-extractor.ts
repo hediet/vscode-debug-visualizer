@@ -26,6 +26,7 @@ class Foo {}
 class Main {
 	run() {
 		const f = new Foo();
+		// visualize `f` here!
 		debugger;
 	}
 }

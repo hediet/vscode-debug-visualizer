@@ -34,6 +34,9 @@ export class VsCodeDebugger {
 					this.sessions.set(session, extendedSession);
 
 					return {
+						onWillReceiveMessage: msg => {
+							console.log(msg.type, msg.event, msg);
+						},
 						onDidSendMessage: async msg => {
 							type Message =
 								| StoppedEvent
@@ -79,6 +82,7 @@ export class VsCodeDebugger {
 										"getStackTrace"
 									]({
 										threadId,
+										startFrame: 0,
 										levels: 1,
 									});
 									extendedSession["activeStackFrame"] =
@@ -106,23 +110,32 @@ export class VsCodeDebugger {
 	}
 }
 
+interface StackFrame {
+	id: number;
+	name: string;
+}
+
 export class VsCodeDebugSession {
 	@observable protected activeStackFrame: number | undefined;
 
 	constructor(public readonly session: DebugSession) {}
 
-	protected async getStackTrace(args: { threadId: number; levels?: number }) {
-		interface StackFrame {
-			id: number;
-			name: string;
+	protected async getStackTrace(args: {
+		threadId: number;
+		startFrame?: number;
+		levels?: number;
+	}): Promise<{ totalFrames?: number; stackFrames: StackFrame[] }> {
+		try {
+			const reply = (await this.session.customRequest("stackTrace", {
+				threadId: args.threadId,
+				levels: args.levels,
+				startFrame: args.startFrame || 0,
+			})) as { totalFrames?: number; stackFrames: StackFrame[] };
+			return reply;
+		} catch (e) {
+			console.error(e);
+			throw e;
 		}
-
-		const reply = (await this.session.customRequest("stackTrace", {
-			threadId: args.threadId,
-			levels: args.levels,
-		})) as { totalFrames?: number; stackFrames: StackFrame[] };
-
-		return reply;
 	}
 
 	public async getCompletions(args: {

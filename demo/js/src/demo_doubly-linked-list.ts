@@ -16,6 +16,7 @@ class Main {
 		list.next!.setNext(new DoublyLinkedList("3"));
 		list.next!.next!.setNext(new DoublyLinkedList("4"));
 
+		// Use `visualize()` as expression to visualize in the Debug Visualizer!
 		const visualize = () =>
 			createGraphFromPointers({ list, last, cur }, i => ({
 				id: i.id,

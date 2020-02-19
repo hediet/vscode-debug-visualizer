@@ -44,15 +44,15 @@ export class VisJsGraphViewer extends React.Component<{
 	private readonly divRef = React.createRef<HTMLDivElement>();
 	private readonly nodes = new DataSet<{
 		id: string;
-		label: string;
+		label?: string;
 		color?: string;
 		shape?: string;
 	}>();
 	private readonly edges = new DataSet<{
 		id: string;
-		label: string;
 		from: string;
 		to: string;
+		label?: string;
 		color?: string;
 		dashes?: boolean;
 		shape?: boolean;
@@ -68,7 +68,7 @@ export class VisJsGraphViewer extends React.Component<{
 			newNodes.add(n.id);
 			this.nodes.update({
 				id: n.id,
-				label: n.label,
+				label: n.label !== undefined ? n.label : n.id,
 				color: n.color,
 				shape: n.shape,
 			});
@@ -92,7 +92,7 @@ export class VisJsGraphViewer extends React.Component<{
 			newEdges.add(id);
 			this.edges.update({
 				id: id,
-				label: n.label,
+				label: n.label !== undefined ? n.label : "",
 				from: n.from,
 				to: n.to,
 				color: n.color,

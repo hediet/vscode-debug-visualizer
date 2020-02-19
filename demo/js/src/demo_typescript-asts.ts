@@ -20,6 +20,9 @@ class Test1 {
 }
 		`,
 		};
+
+		//console.log(ts, require("typescript"));
+
 		const files = new Map<string, string>([
 			[mainFile.name, mainFile.content],
 		]);
@@ -38,10 +41,11 @@ class Test1 {
 		traverse(prog.getSourceFiles()[0]);
 
 		const c = prog.getTypeChecker();
-		let myValue = undefined;
+		let myValue = undefined; // Visualize `myValue` here!
 		const sourceFileAst = prog.getSourceFiles()[0];
 		myValue = sourceFileAst.getText();
 		console.log("myValue is the source code of the AST");
+		debugger;
 
 		myValue = {
 			sf: sourceFileAst,
@@ -55,6 +59,7 @@ class Test1 {
 			},
 		};
 		console.log("myValue is AST, annotated with type information");
+		debugger;
 
 		myValue = {
 			sf: sourceFileAst,
@@ -68,10 +73,12 @@ class Test1 {
 			},
 		};
 		console.log("myValue is AST, annotated with symbol information");
+		debugger;
 
 		for (const ident of identifiers) {
 			myValue = ident;
 			console.log("myValue is an identifier");
+			debugger;
 		}
 	}
 }

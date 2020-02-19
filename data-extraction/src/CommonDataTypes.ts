@@ -82,7 +82,7 @@ export interface TreeNode<TExtraData> {
 
 export interface NodeGraphData {
 	id: string;
-	label: string;
+	label?: string;
 	color?: string;
 	shape?: "ellipse" | "box";
 }
@@ -90,7 +90,7 @@ export interface NodeGraphData {
 export interface EdgeGraphData {
 	from: string;
 	to: string;
-	label: string;
+	label?: string;
 	id?: string;
 	color?: string;
 	dashes?: boolean;
