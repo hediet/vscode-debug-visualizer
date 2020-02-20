@@ -7,7 +7,7 @@ import { Model } from "../Model/Model";
 import { VisualizationId } from "../Visualizers/Visualizer";
 
 @observer
-export class ExpandedOptions extends React.Component<{ model: Model }> {
+export class VisualizerHeaderDetails extends React.Component<{ model: Model }> {
 	render() {
 		const m = this.props.model;
 		let availableExtractors = new Array<DataExtractorInfo>();
@@ -38,47 +38,47 @@ export class ExpandedOptions extends React.Component<{ model: Model }> {
 		}
 
 		return (
-			<>
-				<div style={{ height: 6 }} />
-				<div className="part-header-options">
-					<NamedSelect
-						name="Source"
-						selected={0}
-						options={[{ label: "js" }]}
-						onSelected={item => {}}
-					/>
-					<div style={{ width: 10 }} />
+			<div
+				className="component-VisualizerHeaderDetails"
+				style={{ display: "flex", alignItems: "center" }}
+			>
+				<NamedSelect
+					name="Source"
+					selected={0}
+					options={[{ label: "js" }]}
+					onSelected={item => {}}
+				/>
+				<div style={{ width: 10 }} />
 
-					<NamedSelect
-						name="Extractor"
-						selected={selectedExtractor}
-						options={availableExtractors.map(e => ({
-							label: e.name,
-							id: e.id,
-						}))}
-						onSelected={item => {
-							m.setPreferredExtractorId(item.id);
-						}}
-					/>
-					<div style={{ width: 10 }} />
+				<NamedSelect
+					name="Extractor"
+					selected={selectedExtractor}
+					options={availableExtractors.map(e => ({
+						label: e.name,
+						id: e.id,
+					}))}
+					onSelected={item => {
+						m.setPreferredExtractorId(item.id);
+					}}
+				/>
+				<div style={{ width: 10 }} />
 
-					<NamedSelect
-						name="Visualizer"
-						selected={selectedVisualization}
-						onSelected={item => {
-							m.setPreferredVisualizationId(item.id);
-						}}
-						options={
-							m.visualizations
-								? m.visualizations.allVisualizations.map(v => ({
-										label: v.name,
-										id: v.id,
-								  }))
-								: []
-						}
-					/>
-				</div>
-			</>
+				<NamedSelect
+					name="Visualizer"
+					selected={selectedVisualization}
+					onSelected={item => {
+						m.setPreferredVisualizationId(item.id);
+					}}
+					options={
+						m.visualizations
+							? m.visualizations.allVisualizations.map(v => ({
+									label: v.name,
+									id: v.id,
+							  }))
+							: []
+					}
+				/>
+			</div>
 		);
 	}
 }
@@ -90,11 +90,18 @@ function NamedSelect<T extends SelectableItem>(props: {
 	options: T[];
 }) {
 	return (
-		<div className="component-NamedSelect">
-			<div className="part-Select">
+		<div
+			className="component-NamedSelect"
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+			}}
+		>
+			<div className="part-Select" style={{ minWidth: 100 }}>
 				<Select {...props} />
 			</div>
-			<div>{props.name}</div>
+			<div className="part-Name">{props.name}</div>
 		</div>
 	);
 }
@@ -121,14 +128,14 @@ class Select<T extends SelectableItem> extends React.Component<{
 					modifiers={{ arrow: { enabled: false } }}
 					usePortal={false}
 				>
-					<button className="part-button">
+					<button className="part-Button">
 						{this.selected ? this.selected.label : "(none)"}
 					</button>
-					<div className={"part-content"}>
+					<div className="part-Items">
 						{this.props.options.map((o, idx) => (
 							<div
 								key={idx}
-								className="part-option"
+								className="part-Item"
 								onClick={() => this.props.onSelected(o)}
 							>
 								{o.label}

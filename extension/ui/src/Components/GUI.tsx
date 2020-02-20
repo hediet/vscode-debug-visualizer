@@ -1,93 +1,138 @@
 import React = require("react");
 import { Button, Spinner } from "@blueprintjs/core";
-import { observable } from "mobx";
+import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 import { Model } from "../Model/Model";
 import { ExpressionInput } from "./ExpressionInput";
 import { Visualizer } from "./Visualizer";
 import classnames = require("classnames");
-import { ExpandedOptions } from "./ExpandedOptions";
+import { VisualizerHeaderDetails } from "./VisualizerHeaderDetails";
 
 @observer
 export class GUI extends React.Component<{ model: Model }> {
-	@observable text: string = "node";
-
-	@observable expanded = false;
-
 	render() {
 		const m = this.props.model;
 		return (
-			<div className="component-GUI" tabIndex={0}>
-				<div className="part-header">
-					<ExpandButton
-						expanded={this.expanded}
-						setExpanded={v => (this.expanded = v)}
-					/>
-					<div className="part-header-content">
-						<div className="part-header-main">
-							<div className="part-expression-input ">
-								<ExpressionInput model={m} />
-							</div>
-							<div style={{ width: 4 }} />
-							{m.loading ? (
-								<div style={{ padding: "0 4px" }}>
-									<Spinner size={Spinner.SIZE_SMALL} />
-								</div>
-							) : (
-								<Button
-									minimal
-									small
-									className="part-icon"
-									icon="refresh"
-									onClick={() => m.refresh()}
-								/>
-							)}
-							<Button
-								minimal
-								small
-								className="part-icon"
-								icon="log-in"
-								onClick={() => m.openBrowser()}
-							/>
-							{/*
-							TODO
-							<Button
-								minimal
-								small
-								className="part-icon"
-								icon="locate"
-								onClick={() => m.useSelectionAsExpression()}
-							/>
-							*/}
-						</div>
-						{this.expanded && <ExpandedOptions model={m} />}
-					</div>
+			<div
+				className="component-GUI"
+				tabIndex={0}
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					height: "100%",
+				}}
+			>
+				<div className="part-Header">
+					<VisualizerHeader model={m} />
 				</div>
-				<div className="part-visualizer">
+				<div
+					className="part-Visualizer"
+					style={{ flex: 1, minHeight: 0 }}
+				>
 					<Visualizer model={m} />
 				</div>
 			</div>
 		);
 	}
+}
 
-	renderValue(value: string) {
-		return <div>{`${value.length}`}</div>;
+@observer
+export class VisualizerHeader extends React.Component<{ model: Model }> {
+	@observable expanded = false;
+
+	render() {
+		const m = this.props.model;
+		return (
+			<div
+				className="component-VisualizerHeader"
+				style={{ display: "flex", flexDirection: "row" }}
+			>
+				<div
+					className={classnames(
+						"part-ExpandButton",
+						this.expanded && "expanded"
+					)}
+					onClick={this.toggleExpanded}
+				/>
+				<div
+					className="part-HeaderContent"
+					style={{
+						flex: 1,
+						minWidth: 0,
+						display: "flex",
+						flexDirection: "column",
+					}}
+				>
+					<div className="part-HeaderMain">
+						<VisualizerHeaderMain model={m} />
+					</div>
+
+					{this.expanded && (
+						<>
+							<div style={{ height: 6 }} />
+							<VisualizerHeaderDetails model={m} />
+						</>
+					)}
+				</div>
+			</div>
+		);
+	}
+
+	@action.bound
+	toggleExpanded() {
+		this.expanded = !this.expanded;
 	}
 }
 
-export class ExpandButton extends React.Component<{
-	expanded: boolean;
-	setExpanded: (val: boolean) => void;
-}> {
+export class VisualizerHeaderMain extends React.Component<{ model: Model }> {
 	render() {
+		const m = this.props.model;
 		return (
 			<div
-				onClick={() => this.props.setExpanded(!this.props.expanded)}
-				className={classnames(
-					"component-ExpandButton",
-					this.props.expanded && "expanded"
+				className="component-VisualizerHeaderMain"
+				style={{
+					display: "flex",
+					alignItems: "center",
+				}}
+			>
+				<div
+					className="part-ExpressionInput "
+					style={{ flex: 1, minWidth: 0 }}
+				>
+					<ExpressionInput model={m} />
+				</div>
+				<div style={{ width: 4 }} />
+				{m.loading ? (
+					<div style={{ padding: "0 4px" }}>
+						<Spinner size={Spinner.SIZE_SMALL} />
+					</div>
+				) : (
+					<Button
+						minimal
+						small
+						className="part-Icon"
+						icon="refresh"
+						onClick={() => m.refresh()}
+					/>
 				)}
-			/>
+				<Button
+					minimal
+					small
+					className="part-Icon"
+					icon="log-in"
+					onClick={() => m.openBrowser()}
+				/>
+				{/*
+					TODO
+					<Button
+						minimal
+						small
+						className="part-Icon"
+						icon="locate"
+						onClick={() => m.useSelectionAsExpression()}
+					/>
+					*/}
+			</div>
 		);
 	}
 }

@@ -34,13 +34,18 @@ export class Server {
 		});
 	}
 
-	public getIndexUrl(args: { expression?: string } = {}): string {
+	public getIndexUrl(args: {
+		expression?: string;
+		mode: "standalone" | "webViewIFrame";
+	}): string {
 		const port = process.env.USE_DEV_UI ? 8080 : this.port;
 		const expr =
 			args.expression !== undefined
 				? `&expression=${encodeURIComponent(args.expression)}`
 				: "";
-		return `http://localhost:${port}/index.html?serverPort=${this.port}&serverSecret=${this.secret}${expr}`;
+		const inWebView =
+			args.mode === "standalone" ? "" : "&mode=webViewIFrame";
+		return `http://localhost:${port}/index.html?serverPort=${this.port}&serverSecret=${this.secret}${inWebView}${expr}`;
 	}
 
 	public get mainBundleUrl(): string {

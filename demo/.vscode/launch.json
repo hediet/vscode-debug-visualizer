@@ -5,6 +5,12 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "java",
+			"name": "CodeLens (Launch) - DemoLinkedLists",
+			"request": "launch",
+			"mainClass": "DemoLinkedLists"
+		},
+		{
 			"type": "node",
 			"request": "launch",
 			"name": "TypeScript - Demo: Custom Data Extractor",
@@ -16,7 +22,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "TypeScript - Demo: Doubly Linked List",
-			"program": "${workspaceFolder}/js/dist/demo-doubly-linked-list",
+			"program": "${workspaceFolder}/js/dist/demo_doubly-linked-list",
 			"skipFiles": ["<node_internals>/**"],
 			"preLaunchTask": "typescript-watch"
 		},
@@ -64,6 +70,15 @@
 			"xdebugSettings": {
 				"max_data": -1
 			}
+		},
+		{
+			"name": "Java - Demo",
+			"type": "java",
+			"request": "launch",
+			"mainClass": "DemoLinkedLists.java",
+			"classPaths": ["${workspaceFolder}/java/json-simple-1.1.1.jar"],
+			"sourcePaths": ["${workspaceFolder}/java/"],
+			"cwd": "${workspaceFolder}/java"
 		}
 	]
 }

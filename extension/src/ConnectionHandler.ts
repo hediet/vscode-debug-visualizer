@@ -69,6 +69,7 @@ export class ConnectionHandler {
 					throwIfNotAuthenticated();
 
 					const url = server.getIndexUrl({
+						mode: "standalone",
 						expression: this.watcher
 							? this.watcher.expression
 							: undefined,

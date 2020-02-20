@@ -126,3 +126,16 @@
 		flex: 1;
 	}
 }
+
+.decorator-collapse-icon {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M6 4v8l4-4-4-4zm1 2.414L8.586 8 7 9.586V6.414z'/%3E%3C/svg%3E");
+
+	background-position: 50%;
+	background-position-x: 50%;
+	background-position-y: center;
+	background-repeat: no-repeat;
+
+	&.expanded {
+		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M11 10.07H5.344L11 4.414v5.656z'/%3E%3C/svg%3E");
+	}
+}

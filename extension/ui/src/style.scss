@@ -1,8 +1,12 @@
-@import "./vscode-light.scss";
-
 @import "~normalize.css";
 @import "~@blueprintjs/core/lib/css/blueprint.css";
 @import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
+
+html,
+body,
+.target {
+	height: 100%;
+}
 
 body {
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -12,6 +16,8 @@ body {
 
 	margin: 0;
 	padding: 0;
+
+	background-color: var(--vscode-editor-background);
 }
 
 .bp3-input,
@@ -26,10 +32,95 @@ body {
 	}
 }
 
-html,
-body,
-.target {
-	height: 100%;
+.component-GUI {
+	& > .part-Header {
+		padding: 6px 20px 6px 0;
+		background-color: var(--vscode-sideBar-background);
+
+		// border-top: solid 1px var(--vscode-button-background);
+		// rgba(128, 128, 128, 0.15)
+	}
+}
+
+.component-VisualizerHeader {
+	.part-ExpandButton {
+		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M6 4v8l4-4-4-4zm1 2.414L8.586 8 7 9.586V6.414z'/%3E%3C/svg%3E");
+
+		background-position: 50%;
+		background-position-x: 50%;
+		background-position-y: center;
+		background-repeat: no-repeat;
+
+		width: 15px;
+		margin: -6px 6px -6px 0px;
+
+		&.expanded {
+			background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M11 10.07H5.344L11 4.414v5.656z'/%3E%3C/svg%3E");
+		}
+
+		&:hover {
+			background-color: var(--vscode-titleBar-activeBackground);
+		}
+	}
+}
+
+.component-VisualizerHeaderMain {
+	.part-Icon {
+		margin-left: 4px;
+		svg {
+			fill: var(--color);
+		}
+	}
+}
+
+.component-NamedSelect {
+	.part-Name {
+		color: var(--color);
+	}
+}
+
+.component-Select {
+	.part-Button {
+		background-color: var(--vscode-button-background);
+		color: var(--vscode-button-foreground);
+		padding: 4px 10px;
+
+		width: 100%;
+
+		border: none;
+		cursor: pointer;
+		&:hover,
+		&:focus {
+			background-color: var(--vscode-button-hoverBackground);
+		}
+	}
+
+	.part-Items {
+		background-color: var(--vscode-sideBar-background);
+
+		.part-Item {
+			//color: black;
+			color: var(--color);
+			padding: 12px 16px;
+			text-decoration: none;
+			display: block;
+			cursor: pointer;
+
+			&:hover {
+				background-color: var(
+					--vscode-titleBar-activeBackground
+				); // #ddd;
+			}
+		}
+	}
+
+	.bp3-popover-wrapper {
+		width: 100%;
+	}
+
+	.bp3-popover-target {
+		width: 100%;
+	}
 }
 
 .component-Visualizer {
@@ -49,7 +140,7 @@ body,
 		height: 100%;
 
 		rect {
-			fill: white;
+			fill: var(--vscode-editor-background);
 		}
 
 		line {
@@ -57,66 +148,9 @@ body,
 		}
 
 		text {
-			stroke: black;
+			fill: var(--vscode-editor-foreground);
 			stroke-width: 0px;
 		}
-	}
-}
-
-.component-GUI {
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-
-	& > .part-header {
-		padding: 6px 20px 6px 0;
-		background-color: var(--vscode-sideBar-background);
-
-		//border: solid 8px white;
-		//border-top: solid 1px var(--vscode-button-background);
-		//  rgba(128, 128, 128, 0.15)
-		display: flex;
-		flex-direction: row;
-
-		.part-header-content {
-			flex: 1;
-			min-width: 0;
-
-			transition: flex 0.3s ease-out;
-
-			.part-header-main,
-			.part-header-options {
-				display: flex;
-				align-items: center;
-
-				.part-expression-input {
-					min-width: 0;
-					//color: rgb(155, 70, 176);
-					//font-family: var(--vscode-editor-font-family);
-					flex: 1;
-				}
-			}
-
-			.part-header-main {
-				.part-icon {
-					margin-left: 4px;
-				}
-			}
-
-			.part-header-options {
-				.part-select {
-					min-width: 90px;
-				}
-			}
-		}
-	}
-
-	.part-visualizer {
-		//padding: 10px 20px;
-		flex: 1;
-		min-height: 0px;
-
-		height: 100%;
 	}
 }
 
@@ -126,7 +160,7 @@ body,
 	box-sizing: border-box;
 	display: flex;
 	padding: 2px;
-	background-color: white;
+	border: 0.5px solid gray;
 
 	.part-editor {
 		min-width: 0;
@@ -139,90 +173,6 @@ body,
 		.selectionHighlight {
 			background: transparent !important;
 		}
-	}
-}
-
-.decorator-collapse-icon {
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M6 4v8l4-4-4-4zm1 2.414L8.586 8 7 9.586V6.414z'/%3E%3C/svg%3E");
-
-	background-position: 50%;
-	background-position-x: 50%;
-	background-position-y: center;
-	background-repeat: no-repeat;
-
-	&.expanded {
-		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M11 10.07H5.344L11 4.414v5.656z'/%3E%3C/svg%3E");
-	}
-}
-
-.component-ExpandButton {
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M6 4v8l4-4-4-4zm1 2.414L8.586 8 7 9.586V6.414z'/%3E%3C/svg%3E");
-
-	background-position: 50%;
-	background-position-x: 50%;
-	background-position-y: center;
-	background-repeat: no-repeat;
-
-	width: 15px;
-	margin: -6px 6px -6px 0px;
-
-	&.expanded {
-		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath fill='%23646465' d='M11 10.07H5.344L11 4.414v5.656z'/%3E%3C/svg%3E");
-	}
-
-	&:hover {
-		background-color: var(--vscode-titleBar-activeBackground);
-	}
-}
-
-.component-NamedSelect {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-
-	.part-Select {
-		min-width: 100px;
-	}
-}
-
-.component-Select {
-	.part-button {
-		background-color: var(--vscode-button-background);
-		color: white;
-		padding: 4px 10px;
-
-		width: 100%;
-
-		border: none;
-		cursor: pointer;
-		&:hover,
-		&:focus {
-			background-color: var(--vscode-button-hoverBackground);
-		}
-	}
-
-	.part-content {
-		background-color: var(--vscode-sideBar-background);
-
-		.part-option {
-			color: black;
-			padding: 12px 16px;
-			text-decoration: none;
-			display: block;
-			cursor: pointer;
-
-			&:hover {
-				background-color: #ddd;
-			}
-		}
-	}
-
-	.bp3-popover-wrapper {
-		width: 100%;
-	}
-
-	.bp3-popover-target {
-		width: 100%;
 	}
 }
 

@@ -71,8 +71,10 @@ export function getHtml(server: Server) {
             </head>
 			<body>
 				<script>
-					window.serverPort = ${server.port};
-					window.serverSecret = ${JSON.stringify(server.secret)};
+					window.webViewData = ${JSON.stringify({
+						serverSecret: server.secret,
+						serverPort: server.port,
+					})};
 					const api = window.VsCodeApi = acquireVsCodeApi();
 					window.addEventListener('message', event => {
 						if (event.source === window.frames[0]) {
@@ -89,7 +91,9 @@ export function getHtml(server: Server) {
 				</script>
 				${
 					isDev
-						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.getIndexUrl()}"></iframe>`
+						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.getIndexUrl(
+								{ mode: "webViewIFrame" }
+						  )}"></iframe>`
 						: `<script type="text/javascript" src="${server.mainBundleUrl}"></script>`
 				}
             </body>

@@ -1,6 +1,7 @@
 import * as monaco from "monaco-editor";
 import { Model } from "./Model";
 import { Disposable } from "@hediet/std/disposable";
+import { autorun } from "mobx";
 export class MonacoBridge {
 	public readonly dispose = Disposable.fn();
 
@@ -41,6 +42,14 @@ export class MonacoBridge {
 				new DebugSessionCompletionProvider(this.model)
 			)
 		);
+
+		this.dispose.track({
+			dispose: autorun(() => {
+				monaco.editor.setTheme(
+					model.theme === "light" ? "vs-light" : "vs-dark"
+				);
+			}),
+		});
 	}
 }
 
@@ -82,10 +91,12 @@ class DebugSessionCompletionProvider
 		if (!this.model.server) {
 			return { suggestions: [] };
 		}
-		const completions = (await this.model.server.getCompletions({
-			text: expression,
-			column: position.column,
-		})).completions;
+		const completions = (
+			await this.model.server.getCompletions({
+				text: expression,
+				column: position.column,
+			})
+		).completions;
 
 		const p = model.getWordAtPosition(position);
 

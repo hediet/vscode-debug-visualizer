@@ -6,6 +6,14 @@ import Components = require("./Components/GUI");
 
 const model = new Model();
 
+if (model.runningMode !== "webView") {
+	if (model.theme === "light") {
+		require("./vscode-light.scss");
+	} else {
+		require("./vscode-dark.scss");
+	}
+}
+
 function render(target: HTMLDivElement) {
 	const c = require("./Components/GUI") as typeof Components;
 	ReactDOM.render(<c.GUI model={model} />, target);

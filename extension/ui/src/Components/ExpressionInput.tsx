@@ -4,26 +4,34 @@ import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, action, autorun } from "mobx";
 import * as monaco from "monaco-editor";
 
-export function getModel(): monaco.editor.ITextModel {
-	return monaco.editor.createModel(
-		"",
-		"javascript",
-		monaco.Uri.parse(`file:///main.ts`)
-	);
-}
-
 @observer
 export class ExpressionInput extends React.Component<{ model: Model }> {
 	@observable private editor: monaco.editor.IStandaloneCodeEditor | undefined;
 	@observable private contentHeight: number | undefined = undefined;
-	private model = getModel();
+	private model = monaco.editor.createModel(
+		"",
+		"javascript",
+		monaco.Uri.parse(`file:///main.ts`)
+	);
 
 	render() {
 		return (
-			<div className="component-monaco-editor">
+			<div
+				className="component-monaco-editor"
+				style={{
+					// The monaco editor does not have a padding, so we add our own.
+					// We have to match the colors of monaco's background.
+					backgroundColor:
+						this.props.model.theme === "light"
+							? "white"
+							: "#263238",
+				}}
+			>
 				<div
-					style={{ height: this.contentHeight }}
 					className="part-editor"
+					style={{
+						height: this.contentHeight,
+					}}
 					ref={this.setEditorDiv}
 				/>
 			</div>
@@ -68,8 +76,11 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 				horizontalScrollbarSize: 0,
 				verticalScrollbarSize: 0,
 			},
+			/*theme: { dark: "vs-dark", light: "vs-light" }[
+				this.props.model.theme
+			],*/
 		});
-
+		//
 		this.editor.onDidContentSizeChange(e => {
 			this.contentHeight = e.contentHeight;
 		});

@@ -4,19 +4,27 @@ import {
 } from "@hediet/debug-visualizer-vscode-shared";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import { observable, action, computed, when } from "mobx";
+import { observable, action, computed, when, autorun } from "mobx";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 import { Visualization, VisualizationId } from "../Visualizers/Visualizer";
 import { knownVisualizations } from "../Visualizers";
 import { getApi as getVsCodeApi } from "./VsCodeApi";
 import { MonacoBridge } from "./MonacoBridge";
+import { Disposable } from "@hediet/std/disposable";
+import { startInterval } from "@hediet/std/timer";
 
 declare const window: Window & {
-	serverPort?: number;
-	serverSecret?: string;
+	webViewData?: { serverSecret: string; serverPort: number };
 };
 
 export class Model {
+	public readonly dispose = Disposable.fn();
+	public readonly runningMode: "standalone" | "webView" | "webViewIFrame" =
+		"webView";
+
+	@observable
+	public theme: "dark" | "light" = "light";
+
 	private port: number;
 	private serverSecret: string;
 
@@ -67,9 +75,25 @@ export class Model {
 	private readonly _bridge = new MonacoBridge(this);
 
 	constructor() {
-		if (window.serverPort) {
-			this.port = window.serverPort;
-			this.serverSecret = window.serverSecret!;
+		if (window.webViewData) {
+			const data = window.webViewData;
+			this.port = data.serverPort;
+			this.serverSecret = data.serverSecret;
+			this.runningMode = "webView";
+
+			const updateTheme = () => {
+				const isLight = document.body.classList.contains(
+					"vscode-light"
+				);
+				this.theme = isLight ? "light" : "dark";
+			};
+			updateTheme();
+
+			this.dispose.track(
+				startInterval(1000, () => {
+					updateTheme();
+				})
+			);
 		} else {
 			const url = new URL(window.location.href);
 			const portStr = url.searchParams.get("serverPort");
@@ -88,6 +112,20 @@ export class Model {
 				throw new Error("Server secret not set.");
 			}
 			this.serverSecret = secret;
+
+			const theme = url.searchParams.get("theme");
+			if (theme && theme === "dark") {
+				this.theme = "dark";
+			} else {
+				this.theme = "light";
+			}
+
+			const mode = url.searchParams.get("mode");
+			if (mode) {
+				this.runningMode = mode as any;
+			} else {
+				this.runningMode = "standalone";
+			}
 		}
 
 		this.stayConnected();
