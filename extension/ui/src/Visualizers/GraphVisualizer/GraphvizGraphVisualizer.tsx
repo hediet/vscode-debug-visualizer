@@ -36,8 +36,8 @@ export class GraphvizGraphVisualizer extends VisualizationProvider {
 
 @observer
 export class GraphvizGraphViewer extends React.Component<{
-	nodes: { id: string; label: string }[];
-	edges: { from: string; to: string; label: string }[];
+	nodes: { id: string; label?: string }[];
+	edges: { from: string; to: string; label?: string }[];
 }> {
 	render() {
 		const { nodes, edges } = this.props;
@@ -45,7 +45,10 @@ export class GraphvizGraphViewer extends React.Component<{
             digraph MyGraph {
                 ${nodes
 					.map(
-						n => `"${n.id}" [ label = ${JSON.stringify(n.label)} ];`
+						n =>
+							`"${n.id}" [ label = ${JSON.stringify(
+								n.label !== undefined ? n.label : n.id
+							)} ];`
 					)
 					.join("\n ")}
                 ${edges
@@ -53,7 +56,9 @@ export class GraphvizGraphViewer extends React.Component<{
 						e =>
 							`"${e.from}" -> "${
 								e.to
-							}" [ label = ${JSON.stringify(e.label)} ];`
+							}" [ label = ${JSON.stringify(
+								e.label !== undefined ? e.label : ""
+							)} ];`
 					)
 					.join("\n")}
             }
