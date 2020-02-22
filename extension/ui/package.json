@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "webpack-dev-server --hot",
+		"dev-playground": "webpack-dev-server --hot --port 8090 --playground",
 		"build": "webpack"
 	},
 	"dependencies": {

@@ -7,8 +7,12 @@ import { CleanWebpackPlugin } from "clean-webpack-plugin";
 
 const r = (file: string) => path.resolve(__dirname, file);
 
+const mode = process.argv.some(v => v === "--playground")
+	? "playground"
+	: "default";
+
 module.exports = {
-	entry: [r("src/index.tsx")],
+	entry: [mode === "default" ? r("src/index.tsx") : r("src/playground.tsx")],
 	output: {
 		path: r("dist"),
 		filename: "[name].js",
@@ -17,7 +21,6 @@ module.exports = {
 	resolve: {
 		extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
 	},
-
 	devtool: "source-map",
 	module: {
 		rules: [
@@ -37,10 +40,15 @@ module.exports = {
 	node: {
 		fs: "empty",
 	},
-	plugins: [
-		new HtmlWebpackPlugin(),
-		new MonacoWebpackPlugin(),
-		new ForkTsCheckerWebpackPlugin(),
-		new CleanWebpackPlugin(),
-	],
+	plugins: (() => {
+		const plugins: any[] = [
+			new HtmlWebpackPlugin(),
+			new ForkTsCheckerWebpackPlugin(),
+			new CleanWebpackPlugin(),
+		];
+		if (mode === "default") {
+			plugins.push(new MonacoWebpackPlugin());
+		}
+		return plugins;
+	})(),
 } as webpack.Configuration;
