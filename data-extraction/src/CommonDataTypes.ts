@@ -8,7 +8,8 @@ export type CommonDataType =
 	| CommonDataTypes.Tree
 	| CommonDataTypes.Ast
 	| CommonDataTypes.Graph
-	| CommonDataTypes.Plotly;
+	| CommonDataTypes.Plotly
+	| CommonDataTypes.Grid;
 
 export function isCommonDataType<T>(
 	data: ExtractedData,
@@ -53,6 +54,30 @@ export module CommonDataTypes {
 	export interface Tree<TData = unknown> {
 		kind: { tree: true };
 		root: TreeNode<TData>;
+	}
+
+	export interface Grid {
+		kind: { array: true };
+		columnLabels?: { label?: string }[];
+		rows: {
+			label?: string;
+			columns: {
+				content?: string;
+				tag?: string;
+				color?: string;
+			}[];
+		}[];
+		markers?: {
+			id: string;
+
+			row: number;
+			column: number;
+			rows?: number;
+			columns?: number;
+
+			label?: string;
+			color?: string;
+		}[];
 	}
 
 	export interface Ast

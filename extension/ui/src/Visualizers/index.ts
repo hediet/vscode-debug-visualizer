@@ -6,9 +6,10 @@ import { SvgVisualizer } from "./SvgVisualizer";
 import { GraphvizDotVisualizer } from "./GraphVisualizer/GraphvizDotVisualizer";
 import { TextVisualizer } from "./TextVisualizer/TextVisualizer";
 import { MonacoTextVisualizer } from "./TextVisualizer/MonacoTextVisualizer";
-import { AstVisualizer } from "./AstViewer";
+import { AstVisualizer } from "./AstVisualizer";
 import { VisJsGraphVisualizer } from "./GraphVisualizer/VisJsGraphVisualizer";
 import { PlotlyVisualizer } from "./PlotlyVisualizer";
+import { GridVisualizer } from "./GridVisualizer";
 
 export const knownVisualizations = new ComposedVisualizationProvider([
 	new TreeVisualizer(),
@@ -20,4 +21,5 @@ export const knownVisualizations = new ComposedVisualizationProvider([
 	new MonacoTextVisualizer(),
 	new AstVisualizer(),
 	new PlotlyVisualizer(),
+	new GridVisualizer(),
 ]);

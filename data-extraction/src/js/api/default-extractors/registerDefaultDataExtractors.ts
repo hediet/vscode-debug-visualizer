@@ -6,6 +6,7 @@ import { ToStringDataExtractor } from "./ToStringExtractor";
 import { PlotDataExtractor } from "./PlotlyDataExtractor";
 import { ObjectGraphExtractor } from "./ObjectGraphExtractor";
 import { getDataExtractorApi } from "../injection";
+import { GridExtractor } from "./GridExtractor";
 
 /**
  * The default data extractors should be registered by VS Code automatically.
@@ -21,6 +22,7 @@ export function registerDefaultExtractors(
 		new ToStringDataExtractor(),
 		new PlotDataExtractor(),
 		new ObjectGraphExtractor(),
+		new GridExtractor(),
 	]) {
 		api.registerExtractor(item);
 	}
