@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.9.8.jar"/>
+</classpath>
