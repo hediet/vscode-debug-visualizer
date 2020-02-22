@@ -29,6 +29,14 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "TypeScript - Demo: Sorting",
+			"program": "${workspaceFolder}/js/dist/demo_sorting",
+			"skipFiles": ["<node_internals>/**"],
+			"preLaunchTask": "typescript-watch"
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "TypeScript - Demo: Random Walks",
 			"program": "${workspaceFolder}/js/dist/demo_random-walks",
 			"skipFiles": ["<node_internals>/**"],
@@ -75,10 +83,7 @@
 			"name": "Java - Demo",
 			"type": "java",
 			"request": "launch",
-			"mainClass": "DemoLinkedLists.java",
-			"classPaths": ["${workspaceFolder}/java/json-simple-1.1.1.jar"],
-			"sourcePaths": ["${workspaceFolder}/java/"],
-			"cwd": "${workspaceFolder}/java"
+			"projectName": "java"
 		}
 	]
 }
