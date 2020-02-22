@@ -14,10 +14,12 @@ $visualize = function () use (&$graph) {
 };
 
 for ($i = 2; $i < 100; $i++) {
-    $targetId = "" . random_int(1, $i - 1);
+    // add a node
     $id = "" . $i;
-
     array_push($graph["nodes"], ["id" => $id, "label" => $id]);
+
+    // connects the node to a random edge
+    $targetId = "" . random_int(1, $i - 1);
     array_push($graph["edges"], ["from" => $id, "to" => "" . $targetId]);
 
     xdebug_break();
