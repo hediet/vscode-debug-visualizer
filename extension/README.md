@@ -2,26 +2,37 @@
 
 [![](https://img.shields.io/twitter/follow/hediet_dev.svg?style=social)](https://twitter.com/intent/follow?screen_name=hediet_dev)
 
-A VS Code extension for visualizing data structures during debugging.
+A VS Code extension for visualizing data structures while debugging.
 
-![](../docs/doubly-linked-list-reverse-demo.gif)
+Works best with JavaScript/TypeScript.
+Also tested with C#, Java and PHP. Works with any language that you can debug in VS Code.
+
+![](../docs/demo.gif)
 
 ## Usage
 
 After installing this extension, use the command `Open a new Debug Visualizer View` to open a new visualizer view.
-In this view you can enter an expression that is evaluated and visualized while stepping through your application, e.g.
+In this view you can enter an expression that is evaluated and visualized while stepping through your application.
 
-```ts
-{ kind: { graph: true }, nodes: [ { id: "1", label: "1" }, { id: "2", label: "2" } ], edges: [{ from: "1", to: "2", label: "edge" }]}
-```
+You can refresh the evaluation and pop out the current visualizer view into a new browser window by using the top right buttons.
+You can also unfold the details pane to select a _Data Extractor_ and a _Visualizer_.
 
-You can implement your own functions to extract this debug data from your custom data structures.
-See [here](../data-extraction/README.md) for documentation of the `createGraphFromPointers` helper.
+## Supported Values
+
+Visualizers consume specific JSON data. See [Integrated Visualizers](#Integrated%20Visualizers) for the schema of supported JSON data.
+
+The currently visualized expression should evaluate to a JSON Object string,
+matching the schema of one of the supported visualizers. This JSON string may be surrounded by single or double quotation marks (or none at all) and must not be escaped.
+A valid example is `"{ "kind": { "text": true }, "text": "some text\nmore text" }"`.
+
+For some languages (TypeScript/JavaScript), runtime code is injected to support _Data Extractors_.
+A Data Extractor lifts the requirement for the visualized value to be a JSON string
+and acts as a bridge between custom data structures and the JSON data processed by the visualizers.
+When multiple Data Extractors are applicable, a preferred one can be selected in the visualization view.
 
 ## Integrated Visualizers
 
-Visualizers present data extracted by a _Data Extractor_.
-Visualizers are (mostly) React components and live in the webview of the extension.
+The following visualizers are built into this extension.
 
 ### Graph Visualization
 
@@ -36,17 +47,18 @@ interface Graph {
 
 interface NodeGraphData {
 	id: string;
-	label: string;
+	label?: string;
 	color?: string;
+	shape?: "ellipse" | "box";
 }
 
 interface EdgeGraphData {
 	from: string;
 	to: string;
-	label: string;
+	label?: string;
 	id?: string;
 	color?: string;
-	weight?: number;
+	dashes?: boolean;
 }
 ```
 
@@ -56,6 +68,8 @@ The graphviz visualizer uses the SVG viewer to render the SVG created by `viz.js
 ![](../docs/visualization-visjs.png)
 
 ### Plotly Visualization
+
+The plotly visualizer uses plotly and can visualize JSON data matching the following interface:
 
 ```ts
 export interface Plotly {
@@ -91,7 +105,7 @@ interface TreeNode<TExtraData> {
 
 ### AST Visualization
 
-The AST visualizer renders data that matches the `Ast` interface.
+The AST (Abstract Syntax Tree) visualizer renders data that matches the `Ast` interface.
 
 ```ts
 interface Ast
@@ -104,9 +118,42 @@ interface Ast
 }
 ```
 
-In addition to the tree view, the text representation is shown.
+Additionally to the tree view, the source code is rendered and when selecting an AST node,
+its span in the source code is highlighted.
 
 ![](../docs/visualization-ast.png)
+
+### Grid Visualization
+
+Visualizes data matching the following interface:
+
+```ts
+export interface Grid {
+	kind: { array: true };
+	columnLabels?: { label?: string }[];
+	rows: {
+		label?: string;
+		columns: {
+			content?: string;
+			tag?: string;
+			color?: string;
+		}[];
+	}[];
+	markers?: {
+		id: string;
+
+		row: number;
+		column: number;
+		rows?: number;
+		columns?: number;
+
+		label?: string;
+		color?: string;
+	}[];
+}
+```
+
+![](../docs/visualization-grid.gif)
 
 ### Text Visualization
 
@@ -146,11 +193,13 @@ interface DotGraph extends Text {
 
 `Viz.js` (Graphviz) is used for rendering.
 
-## Integrated Data Extractors
+## JavaScript/TypeScript Integrated Data Extractors
 
-Data extractors convert arbitrary values into visualizable data.
-They live in the debugee. The following data extractors are injected automatically by this extension.
+Data extractors convert arbitrary values into data consumable by visualizers.
+They live in the debugee. The following data extractors are injected automatically into the debugee by this extension when using the `node`, `node2`, `extensionHost` or `chrome` debug adapter.
 Custom data extractors can be registered too.
+See the package `@hediet/debug-visualizer-data-extraction` and its [README](../data-extraction/README.md) for the implementation and its API.
+Also, a global object of name `hedietDbgVis` with helper functions is injected.
 
 ### ToString
 
@@ -178,6 +227,10 @@ Uses plotly to plot an array of numbers.
 Constructs a graph containing all objects reachable from object the expression evaluates to.
 Graph is constructed using a breadth search. Stops after 50 nodes.
 
+### Array Grid
+
+Creates Grid visualization data for an array.
+
 ## UI Features
 
 -   **Multi-line Expressions**: Press `shift+enter` to add a new line and `ctrl+enter` to evaluate the expression.
@@ -186,19 +239,14 @@ Graph is constructed using a breadth search. Stops after 50 nodes.
 
     ![](../docs/multiline-expression.png)
 
-## Limitations
-
-Currently, only JavaScript (and thus TypeScript) values can be visualized and only a few visualizations are supported.
-The architecture is solid enough to support other languages in the future.
-
-# `@hediet/debug-visualizer-data-extraction`
-
-A library that provides infrastructure to implement and register custom data extractors.
-See [README](../data-extraction/README.md) of the library for more info.
-
 # See Also
 
-This extension works very well together with my library [`@hediet/node-reload`](https://github.com/hediet/node-reload).
-Together, they provide an interactive typescript playground.
+This extension works very well together with my library [`@hediet/node-reload`](https://github.com/hediet/node-reload) for TypeScript/JavaScript.
+Together, they provide an interactive playground.
 
 ![](../docs/demo-hot.gif)
+
+# Contributing
+
+Feel free to ping me on GitHub by opening an issue!
+Having runtime infrastructures for languages other than JavaScript would be awesome and I happily accept PRs!
