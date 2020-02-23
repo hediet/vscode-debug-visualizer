@@ -42,12 +42,14 @@ export class VisualizerHeaderDetails extends React.Component<{ model: Model }> {
 				className="component-VisualizerHeaderDetails"
 				style={{ display: "flex", alignItems: "center" }}
 			>
-				<NamedSelect
-					name="Source"
-					selected={0}
-					options={[{ label: "js" }]}
-					onSelected={item => {}}
-				/>
+				{/*
+					<NamedSelect
+						name="Source"
+						selected={0}
+						options={[{ label: "js" }]}
+						onSelected={item => {}}
+					/>
+				*/}
 				<div style={{ width: 10 }} />
 
 				<NamedSelect
