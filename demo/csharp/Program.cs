@@ -1,4 +1,10 @@
-﻿#nullable enable
+﻿
+// Install dotnet core clr see VS Code docs on how to setup VS Code so that you can debug C# applications.
+// The Debug Visualizer does not support C# data extractors yet.
+// If you want to visualize a value, it's `ToString` method must return supported json data.
+// See the readme of the extension for supported json schemas.
+
+#nullable enable
 
 using System.Linq;
 using Hediet.DebugVisualizer.ExtractedData;
@@ -49,7 +55,7 @@ namespace Demo
         public ExtractedData Visualize()
         {
             var list = new Node(default(T)!) { Next = this.Head };
-            return GraphData.From(new[] { list }.Where(i => i != null), (item, info) =>
+            return GraphData.From(new[] { list }, (item, info) =>
             {
                 info.Id = item == list ? "List" : string.Format("{0}", item.Value);
                 if (item == list)

@@ -2,6 +2,16 @@ import { getDataExtractorApi } from "@hediet/debug-visualizer-data-extraction";
 
 getDataExtractorApi().registerDefaultExtractors();
 
+/*
+Visualize this expression:
+```ts
+hedietDbgVis.markedGrid(
+    array,
+    hedietDbgVis.tryEval(["i", "j", "left", "right"])
+)
+```
+*/
+
 // From https://github.com/AvraamMavridis/Algorithms-Data-Structures-in-Typescript/blob/master/algorithms/quickSort.md
 const array = [1, 2, 33, 31, 1, 2, 63, 123, 6, 32, 943, 346, 24];
 const sorted = quickSort(array, 0, array.length - 1);

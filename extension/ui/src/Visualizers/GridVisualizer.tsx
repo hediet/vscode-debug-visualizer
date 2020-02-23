@@ -11,6 +11,7 @@ import {
 import React = require("react");
 import { observer } from "mobx-react";
 import { computed, action, observable } from "mobx";
+import { Icon } from "@blueprintjs/core";
 
 export class GridVisualizer extends VisualizationProvider {
 	getVisualizations(
@@ -55,7 +56,11 @@ export class DecoratedGridComponent extends React.Component<{
 			columnCount = Math.max(columnCount, row.columns.length);
 			rows.push({
 				columns: row.columns.map((c, colIdx) => ({
-					content: c.content !== undefined ? c.content : c.tag || "",
+					content: (
+						<Cell>
+							{c.content !== undefined ? c.content : c.tag || ""}
+						</Cell>
+					),
 					id:
 						c.tag !== undefined
 							? getUniqueId(c.tag)
@@ -70,7 +75,7 @@ export class DecoratedGridComponent extends React.Component<{
 		rows.unshift({
 			columns: [...new Array(columnCount)].map((v, idx) => ({
 				id: `column-header-${idx}`,
-				content: `${idx}`,
+				content: <Cell>{idx}</Cell>,
 				kind: "header",
 			})),
 		});
@@ -91,8 +96,16 @@ export class DecoratedGridComponent extends React.Component<{
 
 				r.columns.push({
 					id: m.id,
-					kind: "data",
-					content: m.label || m.id,
+					kind: "empty",
+					content: (
+						<Cell>
+							<Icon
+								icon="arrow-up"
+								color="var(--vscode-editor-foreground)"
+							/>
+							{m.label || m.id}
+						</Cell>
+					),
 				});
 			}
 		}
@@ -113,8 +126,23 @@ export class DecoratedGridComponent extends React.Component<{
 	}
 }
 
+function Cell(props: { children: React.ReactNode }) {
+	return (
+		<div
+			style={{
+				padding: 10,
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+			}}
+		>
+			{props.children}
+		</div>
+	);
+}
+
 interface CellData {
-	content: string;
+	content: React.ReactNode;
 	id: string;
 	color?: string;
 	kind: "data" | "header" | "empty";
@@ -255,6 +283,7 @@ class GridComponent extends React.Component<{
 		const l = this.layout;
 		return (
 			<div
+				className="component-Grid"
 				style={{
 					position: "relative",
 					height: l.height,
@@ -276,18 +305,17 @@ class GridComponent extends React.Component<{
 						}}
 					>
 						<div
+							className={`part-${i.cell.kind}`}
 							style={
 								{
 									empty: {},
 									data: {
 										display: "flex",
-										border: "1px solid lightgray",
-										background: "#eeeeee",
 										overflow: "hidden",
+										justifyContent: "center",
 										margin: 2,
 									},
 									header: {
-										background: "white",
 										overflow: "hidden",
 										display: "flex",
 										justifyContent: "center",
@@ -303,9 +331,7 @@ class GridComponent extends React.Component<{
 									height: "fit-content",
 								}}
 							>
-								<div style={{ padding: 10 }}>
-									{i.cell.content}
-								</div>
+								{i.cell.content}
 							</div>
 						</div>
 					</div>
@@ -353,7 +379,7 @@ class CellInfo {
 		);
 	}
 
-	content!: string;
+	content!: React.ReactNode;
 
 	ref: HTMLDivElement | null = null;
 

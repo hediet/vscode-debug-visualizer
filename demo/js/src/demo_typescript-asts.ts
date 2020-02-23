@@ -11,20 +11,17 @@ setTimeout(() => {
 
 class Main {
 	run() {
-		const mainFile = {
-			name: "main.ts",
-			content: `
+		const files = new Map<string, string>([
+			[
+				"main.ts",
+				`
 class Test1 {
 	public foo(a: number) {
+		const x = { a: 5 };
 	}
 }
-		`,
-		};
-
-		//console.log(ts, require("typescript"));
-
-		const files = new Map<string, string>([
-			[mainFile.name, mainFile.content],
+`,
+			],
 		]);
 		const serviceHost = new MockLanguageServiceHost(files, {});
 		const baseService = ts.createLanguageService(
@@ -32,13 +29,7 @@ class Test1 {
 			ts.createDocumentRegistry()
 		);
 		const prog = baseService.getProgram()!;
-
-		const identifiers = new Array<ts.Identifier>();
-		function traverse(node: ts.Node) {
-			if (ts.isIdentifier(node)) identifiers.push(node);
-			node.forEachChild(traverse);
-		}
-		traverse(prog.getSourceFiles()[0]);
+		debugger;
 
 		const c = prog.getTypeChecker();
 		let myValue = undefined; // Visualize `myValue` here!

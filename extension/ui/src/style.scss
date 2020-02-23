@@ -68,14 +68,14 @@ body {
 	.part-Icon {
 		margin-left: 4px;
 		svg {
-			fill: var(--color);
+			fill: var(--vscode-editor-foreground);
 		}
 	}
 }
 
 .component-NamedSelect {
 	.part-Name {
-		color: var(--color);
+		color: var(--vscode-editor-foreground);
 	}
 }
 
@@ -100,7 +100,7 @@ body {
 
 		.part-Item {
 			//color: black;
-			color: var(--color);
+			color: var(--vscode-editor-foreground);
 			padding: 12px 16px;
 			text-decoration: none;
 			display: block;
@@ -181,4 +181,8 @@ body {
 	height: 100%;
 	padding: 0;
 	margin: 0;
+}
+
+.bp3-transition-container {
+	z-index: 100000;
 }
