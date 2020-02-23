@@ -1,13 +1,15 @@
 # Change Log
 
-## 0.9.0
+## 0.12.0
 
--   Initial release
+-   Generic Debug Adapter Support (tested with PHP, Java, C#)
+-   Dark Theme Support
+-   Grid Visualizer
+-   Some Bugfixes
 
-## 0.10.0
+## 0.11.1
 
--   Minor refactoring of `@hediet/debug-visualizer-data-extraction`'s API
--   Improved documentation.
+-   Fixes crash on start
 
 ## 0.11.0
 
@@ -18,6 +20,11 @@
 -   Plotly Data Extractor
 -   Some Bugfixes
 
-## 0.11.1
+## 0.10.0
 
--   Fixes crash on start
+-   Minor refactoring of `@hediet/debug-visualizer-data-extraction`'s API
+-   Improved documentation.
+
+## 0.9.0
+
+-   Initial release
