@@ -149,6 +149,9 @@ export class VsCodeDebugSession {
 				frameId: args.frameId,
 				column: args.column,
 			});
+			if (!reply) {
+				return [];
+			}
 			return reply.targets;
 		} catch (error) {
 			console.error(error);
