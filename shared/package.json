@@ -14,7 +14,8 @@
 		"src"
 	],
 	"scripts": {
-		"dev": "tsc --watch"
+		"dev": "tsc --watch",
+		"build": "tsc"
 	},
 	"dependencies": {
 		"@hediet/std": "^0.6.0",
