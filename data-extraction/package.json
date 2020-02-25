@@ -27,9 +27,9 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"typescript": "^3.7.5",
-		"@types/plotly.js": "^1.44.28",
-		"@types/node": "^13.7.1",
+		"typescript": "^3.8.2",
+		"@types/plotly.js": "1.44.28",
+		"@types/node": "^13.7.4",
 		"tslint": "^6.0.0",
 		"webpack": "^4.41.6",
 		"webpack-cli": "^3.3.11",

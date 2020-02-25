@@ -5,5 +5,12 @@
 		"./data-extraction",
 		"./extension",
 		"./extension/ui"
-	]
+	],
+	"scripts": {
+		"build": "yarn build-data-extraction && yarn build-shared && yarn build-extension && yarn build-ui",
+		"build-data-extraction": "yarn workspace @hediet/debug-visualizer-data-extraction build",
+		"build-shared": "yarn workspace @hediet/debug-visualizer-vscode-shared build",
+		"build-extension": "yarn workspace debug-visualizer build",
+		"build-ui": "yarn workspace debug-visualizer-ui build"
+	}
 }

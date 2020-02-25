@@ -52,7 +52,7 @@ namespace Demo
             }
         }
 
-        public ExtractedData Visualize()
+        public string Visualize()
         {
             var list = new Node(default(T)!) { Next = this.Head };
             return GraphData.From(new[] { list }, (item, info) =>
@@ -65,7 +65,7 @@ namespace Demo
                 if (item.Next != null)
                     info.AddEdge(item.Next!, label: item == list ? "head" : "next");
                 return info;
-            });
+            }).ToString();
         }
     }
 }
