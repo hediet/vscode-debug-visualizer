@@ -25,7 +25,8 @@
 		"vis-network": "^7.3.6",
 		"vis-data": "^6.4.1",
 		"react-plotly.js": "^2.4.0",
-		"plotly.js": "^1.52.2"
+		"plotly.js": "^1.52.2",
+		"@hediet/debug-visualizer-data-extraction": "*"
 	},
 	"devDependencies": {
 		"@types/plotly.js": "1.44.28",

@@ -1,12 +1,14 @@
 @startuml Main
 
 [data-extraction] 
-[debug-visualizer-webview]
-[debug-visualizer]
+[webview]
+[extension]
 
-[debug-visualizer-webview] ..> [debug-visualizer]: "Uses RPC contracts, connects using websockets"
-[debug-visualizer] ..> [debug-visualizer-webview]: "Opens Webview in VS Code"
+[webview] ..> [extension]: "Uses RPC contracts, connects using websockets"
+[extension] ..> [webview]: "Loads into a Webview in VS Code"
 
-[debug-visualizer] ..> [data-extraction]: "Injects Runtime into JavaScript applications"
+[extension] ..> [data-extraction]: "Injects Runtime into JavaScript applications"
+
+[webview] ..> [data-extraction]: "Uses common types"
 
 @enduml
