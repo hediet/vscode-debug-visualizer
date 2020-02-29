@@ -1,6 +1,6 @@
 import React = require("react");
 import "../style.scss";
-import { DecoratedGridComponent } from "../Visualizers/GridVisualizer";
+import { DecoratedGridComponent } from "../visualizers/GridVisualizer";
 import { observable } from "mobx";
 import { observer } from "mobx-react";
 

@@ -1,0 +1,12 @@
+@startuml Main
+
+[data-extraction] 
+[debug-visualizer-webview]
+[debug-visualizer]
+
+[debug-visualizer-webview] ..> [debug-visualizer]: "Uses RPC contracts, connects using websockets"
+[debug-visualizer] ..> [debug-visualizer-webview]: "Opens Webview in VS Code"
+
+[debug-visualizer] ..> [data-extraction]: "Injects Runtime into JavaScript applications"
+
+@enduml

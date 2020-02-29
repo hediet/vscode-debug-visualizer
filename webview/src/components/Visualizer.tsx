@@ -1,5 +1,5 @@
 import React = require("react");
-import { Model } from "../Model/Model";
+import { Model } from "../model/Model";
 import { observer } from "mobx-react";
 import { NoData } from "./NoData";
 

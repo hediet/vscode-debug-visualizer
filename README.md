@@ -15,10 +15,12 @@ You can get the extension in the [marketplace](https://marketplace.visualstudio.
 
 ## Dev Instructions
 
+This project uses yarn workspaces.
+
 -   Clone the repository
 -   Run `yarn` in the repository root
 -   Run `yarn build` initially (or `yarn dev` for every project)
--   Run `yarn dev` **inside** the project you are working on.
+-   Run `yarn dev` for the project you are working on.
 
 For the UI, `yarn dev` will start a webserver that you can access on port 8080.
 You can use VS Code do launch and debug the extension.

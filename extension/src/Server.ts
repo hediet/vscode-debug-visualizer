@@ -1,7 +1,6 @@
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { AddressInfo } from "net";
 import WebSocket = require("ws");
-import { join } from "path";
 import { ConnectionHandler } from "./ConnectionHandler";
 import { Sources } from "./DataSource";
 import * as express from "express";
@@ -9,6 +8,7 @@ import * as http from "http";
 import * as serveStatic from "serve-static";
 import { Config } from "./Config";
 import cryptoRandomString = require("crypto-random-string");
+import { distPath } from "debug-visualizer-webview";
 
 export class Server {
 	private server: http.Server;
@@ -16,10 +16,16 @@ export class Server {
 
 	constructor(sources: Sources, config: Config) {
 		const app = express();
-		const distPath = join(__dirname, "../ui/dist");
+
 		app.use(serveStatic(distPath));
 
 		this.server = app.listen();
+
+		console.log(
+			`Serving "${distPath}" on port ${
+				(this.server.address() as AddressInfo).port
+			}`
+		);
 
 		const wss = new WebSocket.Server({ server: this.server });
 		wss.on("connection", ws => {

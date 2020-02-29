@@ -4,3 +4,7 @@ declare namespace NodeJS {
 		USE_DEV_UI?: "true";
 	}
 }
+
+declare module "debug-visualizer-webview" {
+	export const distPath: string;
+}

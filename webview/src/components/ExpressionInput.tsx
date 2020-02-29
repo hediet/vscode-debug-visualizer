@@ -1,5 +1,5 @@
 import React = require("react");
-import { Model } from "../Model/Model";
+import { Model } from "../model/Model";
 import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, action, autorun } from "mobx";
 import * as monaco from "monaco-editor";

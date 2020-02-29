@@ -1,5 +1,5 @@
 import { Disposable } from "@hediet/std/disposable";
-import { debugVisualizerUIContract } from "@hediet/debug-visualizer-vscode-shared";
+import { debugVisualizerUIContract } from "./contract";
 import { ConsoleRpcLogger, RequestHandlingError } from "@hediet/typed-json-rpc";
 import { EvaluationWatcher, DataSource } from "./DataSource/DataSource";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";

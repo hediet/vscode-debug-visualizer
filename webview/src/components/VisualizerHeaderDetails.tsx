@@ -3,8 +3,8 @@ import { Popover } from "@blueprintjs/core";
 import { DataExtractorInfo } from "@hediet/debug-visualizer-data-extraction";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
-import { Model } from "../Model/Model";
-import { VisualizationId } from "../Visualizers/Visualizer";
+import { Model } from "../model/Model";
+import { VisualizationId } from "../visualizers/Visualizer";
 
 @observer
 export class VisualizerHeaderDetails extends React.Component<{ model: Model }> {

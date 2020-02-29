@@ -6,10 +6,7 @@ import {
 import { observable, autorun, action } from "mobx";
 import { Disposable } from "@hediet/std/disposable";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import {
-	DataExtractionState,
-	CompletionItem,
-} from "@hediet/debug-visualizer-vscode-shared";
+import { DataExtractionState, CompletionItem } from "../contract";
 import { hotClass } from "@hediet/node-reload";
 import { VsCodeDebuggerView } from "../VsCodeDebugger";
 import { DataExtractionProviderFactory } from "./DataExtractionProvider/DataExtractionProvider";

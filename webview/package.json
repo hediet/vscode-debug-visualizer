@@ -1,11 +1,12 @@
 {
-	"name": "debug-visualizer-ui",
+	"name": "debug-visualizer-webview",
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "webpack-dev-server --hot",
 		"dev-playground": "webpack-dev-server --hot --port 8090 --playground",
 		"build": "webpack"
 	},
+	"main": "./index.js",
 	"dependencies": {
 		"@blueprintjs/core": "^3.23.1",
 		"@hediet/std": "^0.6.0",

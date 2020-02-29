@@ -47,7 +47,12 @@ module.exports = {
 			new CleanWebpackPlugin(),
 		];
 		if (mode === "default") {
-			plugins.push(new MonacoWebpackPlugin());
+			plugins.push(
+				new MonacoWebpackPlugin({
+					// Add more languages here once webworker issues are solved.
+					languages: ["typescript"],
+				})
+			);
 		}
 		return plugins;
 	})(),

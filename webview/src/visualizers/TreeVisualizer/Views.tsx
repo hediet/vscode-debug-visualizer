@@ -2,8 +2,8 @@ import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, autorun, computed, action, runInAction } from "mobx";
 import React = require("react");
 import classNames = require("classnames");
-import { Rectangle, Point } from "../../Components/Point";
-import { SvgLine } from "../../Components/SvgElements";
+import { Rectangle, Point } from "../../components/Point";
+import { SvgLine } from "../../components/SvgElements";
 import "./style.scss";
 
 export class TreeViewModel<TData = unknown> {

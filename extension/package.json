@@ -1,5 +1,6 @@
 {
 	"name": "debug-visualizer",
+	"private": true,
 	"displayName": "Debug Visualizer",
 	"description": "An extension that visualizes values while debugging.",
 	"icon": "docs/logo.png",
@@ -49,7 +50,7 @@
 		"pub": "vsce publish --yarn --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension --baseContentUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
 		"vscode:prepublish": "yarn build",
 		"build": "webpack --mode production",
-		"dev": "tsc -watch -p ./"
+		"dev": "shx rm -rf dist && tsc -watch -p ./"
 	},
 	"dependencies": {
 		"@hediet/std": "^0.6.0",
@@ -74,6 +75,7 @@
 		"typescript": "^3.8.2",
 		"webpack": "^4.41.6",
 		"webpack-cli": "^3.3.11",
-		"ts-loader": "^6.2.1"
+		"ts-loader": "^6.2.1",
+		"shx": "^0.3.2"
 	}
 }

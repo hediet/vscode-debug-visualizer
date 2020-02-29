@@ -1,7 +1,7 @@
 import { Disposable } from "@hediet/std/disposable";
 import { debug, DebugSession } from "vscode";
 import { EventEmitter } from "@hediet/std/events";
-import { CompletionItem } from "@hediet/debug-visualizer-vscode-shared";
+import { CompletionItem } from "./contract";
 import { observable, runInAction } from "mobx";
 
 export class VsCodeDebugger {

@@ -1,8 +1,5 @@
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import {
-	DataExtractionState,
-	CompletionItem,
-} from "@hediet/debug-visualizer-vscode-shared";
+import { DataExtractionState, CompletionItem } from "../contract";
 
 export interface DataSource {
 	createEvaluationWatcher(

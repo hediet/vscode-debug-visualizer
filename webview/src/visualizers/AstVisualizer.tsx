@@ -8,13 +8,13 @@ import {
 	isCommonDataType,
 	CommonDataTypes,
 } from "@hediet/debug-visualizer-data-extraction";
-import { createTreeViewModelFromTreeNodeData } from "./TreeVisualizer/Visualizer";
+import { createTreeViewModelFromTreeNodeData } from "./TreeVisualizer/TreeVisualizer";
 import { TreeWithPathView, TreeViewModel } from "./TreeVisualizer/Views";
 import React = require("react");
 import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, autorun, trace } from "mobx";
 import * as monaco from "monaco-editor";
-import { getLanguageId } from "./TextVisualizer/MonacoTextVisualizer";
+import { getLanguageId } from "./text-visualizers/MonacoTextVisualizer";
 import LineColumn = require("line-column");
 
 export class AstVisualizer extends VisualizationProvider {

@@ -2,7 +2,7 @@ import React = require("react");
 import { Button, Spinner } from "@blueprintjs/core";
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
-import { Model } from "../Model/Model";
+import { Model } from "../model/Model";
 import { ExpressionInput } from "./ExpressionInput";
 import { Visualizer } from "./Visualizer";
 import classnames = require("classnames");

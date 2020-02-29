@@ -16,6 +16,25 @@ import {
 } from "../Visualizer";
 import React = require("react");
 
+export class TreeVisualizer extends VisualizationProvider {
+	getVisualizations(
+		data: ExtractedData,
+		collector: VisualizationCollector
+	): void {
+		if (isCommonDataType(data, { tree: true })) {
+			collector.addVisualization({
+				id: asVisualizationId("tree"),
+				name: "Tree",
+				priority: 100,
+				render() {
+					const m = createTreeViewModelFromTreeNodeData(data.root);
+					return <TreeWithPathView model={m} />;
+				},
+			});
+		}
+	}
+}
+
 export function createTreeViewModelFromTreeNodeData<TData>(
 	root: TreeNode<TData>
 ): TreeViewModel<TData> {
@@ -44,24 +63,5 @@ export function createTreeViewModelFromTreeNodeData<TData>(
 			c.parent = model;
 		}
 		return model;
-	}
-}
-
-export class TreeVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
-		if (isCommonDataType(data, { tree: true })) {
-			collector.addVisualization({
-				id: asVisualizationId("tree"),
-				name: "Tree",
-				priority: 100,
-				render() {
-					const m = createTreeViewModelFromTreeNodeData(data.root);
-					return <TreeWithPathView model={m} />;
-				},
-			});
-		}
 	}
 }

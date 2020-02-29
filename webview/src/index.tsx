@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import "./style.scss";
-import { Model } from "./Model/Model";
-import Components = require("./Components/GUI");
+import { Model } from "./model/Model";
+import Components = require("./components/GUI");
 
 const model = new Model();
 
@@ -15,7 +15,7 @@ if (model.runningMode !== "webView") {
 }
 
 function render(target: HTMLDivElement) {
-	const c = require("./Components/GUI") as typeof Components;
+	const c = require("./components/GUI") as typeof Components;
 	ReactDOM.render(<c.GUI model={model} />, target);
 }
 
@@ -31,7 +31,7 @@ declare var module: {
 declare var require: (name: string) => any;
 
 if (module.hot) {
-	module.hot.accept("./Components/GUI", () => {
+	module.hot.accept("./components/GUI", () => {
 		render(target);
 	});
 }
