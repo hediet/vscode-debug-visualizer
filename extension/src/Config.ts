@@ -1,28 +1,99 @@
 import { workspace } from "vscode";
 import { Disposable } from "@hediet/std/disposable";
-import { EventEmitter, EventSource } from "@hediet/std/events";
+import { observable } from "mobx";
+import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 
-export const useChromeKioskModeKey = "debugVisualizer.useChromeKioskMode";
+const useChromeKioskModeKey = "debugVisualizer.useChromeKioskMode";
+const debugAdapterConfigsKey = "debugVisualizer.debugAdapterConfigurations";
 
 export class Config {
-	private changeEventEmitter = new EventEmitter();
-	public readonly onChange: EventSource = this.changeEventEmitter;
 	public dispose = Disposable.fn();
 
+	@observable
+	private _useChromeKioskMode!: boolean;
+
+	@observable
+	private _debugAdapterConfigs!: DebugAdapterConfigs;
+
+	public get useChromeKioskMode(): boolean {
+		return this._useChromeKioskMode;
+	}
+
+	public get debugAdapterConfigs(): DebugAdapterConfigs {
+		return this._debugAdapterConfigs;
+	}
+
 	constructor() {
+		this.updateConfig();
 		this.dispose.track(
 			workspace.onDidChangeConfiguration(() => {
-				this.changeEventEmitter.emit();
+				this.updateConfig();
 			})
 		);
 	}
 
-	public useChromeKioskMode(): boolean {
+	private updateConfig(): void {
 		const c = workspace.getConfiguration();
-		const b = c.get<boolean>(useChromeKioskModeKey);
-		if (b === undefined) {
-			return true;
-		}
-		return b;
+
+		this._useChromeKioskMode = mapUndefined(
+			c.get<boolean>(useChromeKioskModeKey),
+			true
+		);
+
+		this._debugAdapterConfigs = mapUndefined(
+			c.get<DebugAdapterConfigs>(debugAdapterConfigsKey),
+			{}
+		);
 	}
+
+	public getDebugAdapterConfig(
+		debugAdapterType: string
+	): DebugAdapterConfig | undefined {
+		const c = this.debugAdapterConfigs[debugAdapterType];
+		if (!c) {
+			return undefined;
+		}
+
+		return {
+			context: c.context || "watch",
+			getFinalExpression: ({ expression, preferredExtractorId }) =>
+				evaluateTemplate(c.expressionTemplate || "${expr}", {
+					expr: expression,
+					preferredDataExtractorId: preferredExtractorId || "",
+				}),
+		};
+	}
+}
+
+function mapUndefined<T>(val: T | undefined, defaultVal: T) {
+	if (val === undefined) {
+		return defaultVal;
+	}
+	return val;
+}
+
+type DebugAdapterConfigs = {
+	[debugAdapter: string]: {
+		context?: "watch" | "repl";
+		expressionTemplate?: "string";
+	};
+};
+
+export interface DebugAdapterConfig {
+	context: "watch" | "repl";
+	getFinalExpression(vars: {
+		expression: string;
+		preferredExtractorId: DataExtractorId | undefined;
+	}): string;
+}
+
+function evaluateTemplate(
+	template: string,
+	data: Record<string, string>
+): string {
+	let result = template;
+	for (const [key, val] of Object.entries(data)) {
+		result = result.split(`\${${key}}`).join(val);
+	}
+	return result;
 }

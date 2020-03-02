@@ -162,11 +162,12 @@ export class VsCodeDebugSession {
 	public async evaluate(args: {
 		expression: string;
 		frameId: number | undefined;
+		context?: "watch" | "repl";
 	}): Promise<{ result: string }> {
 		const reply = await this.session.customRequest("evaluate", {
 			expression: args.expression,
 			frameId: args.frameId,
-			context: "watch",
+			context: args.context || "watch",
 		});
 		return { result: reply.result };
 	}

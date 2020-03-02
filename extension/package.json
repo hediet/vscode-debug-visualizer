@@ -42,12 +42,33 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Pop out Debug Visualization Views with Chrome in Kiosk Mode."
+				},
+				"debugVisualizer.debugAdapterConfigurations": {
+					"type": "object",
+					"additionalProperties": {
+						"type": "object",
+						"properties": {
+							"expressionTemplate": {
+								"type:": "string",
+								"description": "A template for the final expression sent to the debugger for evaluation. Use `${expr}` to refer to the currently visualized expression."
+							},
+							"context": {
+								"type": "string",
+								"enum": [
+									"watch",
+									"repl"
+								],
+								"description": "The context to use for evaluating the expression."
+							}
+						}
+					}
 				}
 			}
 		}
 	},
 	"scripts": {
 		"pub": "vsce publish --yarn --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension --baseContentUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
+		"package": "vsce package --yarn",
 		"vscode:prepublish": "yarn build",
 		"build": "webpack --mode production",
 		"dev": "shx rm -rf dist && tsc -watch -p ./"

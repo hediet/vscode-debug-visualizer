@@ -73,7 +73,7 @@ export class DataSourceImpl implements DataSource {
 		const result = await extractionProvider.evaluate({
 			expression: w.expression,
 			frameId,
-			preferredExtractor: w.preferredDataExtractor,
+			preferredExtractorId: w.preferredDataExtractor,
 		});
 
 		w._state = result;

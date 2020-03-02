@@ -35,7 +35,7 @@ class JsDataEvaluator implements DataExtractionProvider {
 
 	public async evaluate({
 		expression,
-		preferredExtractor,
+		preferredExtractorId,
 		frameId,
 	}: DataExtractionProviderArgs): Promise<
 		| { kind: "data"; result: DataExtractionResult }
@@ -43,8 +43,8 @@ class JsDataEvaluator implements DataExtractionProvider {
 	> {
 		while (true) {
 			try {
-				const preferredExtractorExpr = preferredExtractor
-					? `"${preferredExtractor}"`
+				const preferredExtractorExpr = preferredExtractorId
+					? `"${preferredExtractorId}"`
 					: "undefined";
 
 				const body = `${getExpressionForDataExtractorApi()}.getData(

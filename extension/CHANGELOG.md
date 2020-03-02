@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+-   Adds "debugVisualizer.debugAdapterConfigurations" config to customize the expression template.
+-   Code Restructuring
+
 ## 0.12.1
 
 -   Tries to parse evaluated strings twice as JSON in case of C++/C# escape sequences.

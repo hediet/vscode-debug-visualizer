@@ -1,4 +1,7 @@
-import { DataExtractionResult } from "@hediet/debug-visualizer-data-extraction";
+import {
+	DataExtractionResult,
+	DataExtractorId,
+} from "@hediet/debug-visualizer-data-extraction";
 import { VsCodeDebugSession } from "../../VsCodeDebugger";
 
 export interface DataExtractionProviderFactory {
@@ -18,6 +21,6 @@ export interface DataExtractionProvider {
 
 export interface DataExtractionProviderArgs {
 	expression: string;
-	preferredExtractor: string | undefined;
+	preferredExtractorId: DataExtractorId | undefined;
 	frameId: number | undefined;
 }

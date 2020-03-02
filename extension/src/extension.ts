@@ -15,14 +15,35 @@ registerUpdateReconciler(module);
 import { WebViews } from "./WebViews";
 import { Server } from "./Server";
 import { Config } from "./Config";
-import { Sources } from "./DataSource";
+import { VsCodeDebugger, VsCodeDebuggerView } from "./VsCodeDebugger";
+import { DataSourceImpl } from "./DataSource";
+import {
+	ComposedDataExtractionProviderFactory,
+	JsDataExtractionProviderFactory,
+	GenericDataExtractionProviderFactory,
+	ConfiguredDataExtractionProviderFactory,
+} from "./DataSource/DataExtractionProvider";
 
 export class Extension {
-	public dispose = Disposable.fn();
+	public readonly dispose = Disposable.fn();
 
 	private readonly config = new Config();
-	private readonly sources = this.dispose.track(new Sources());
-	private readonly server = new Server(this.sources, this.config);
+
+	private readonly debugger = this.dispose.track(new VsCodeDebugger());
+	private readonly debuggerView = this.dispose.track(
+		new VsCodeDebuggerView(this.debugger)
+	);
+
+	public readonly dataSource = new DataSourceImpl(
+		this.debuggerView,
+		new ComposedDataExtractionProviderFactory([
+			new ConfiguredDataExtractionProviderFactory(this.config),
+			new JsDataExtractionProviderFactory(),
+			new GenericDataExtractionProviderFactory(),
+		])
+	);
+
+	private readonly server = new Server(this.dataSource, this.config);
 	private readonly views = this.dispose.track(new WebViews(this.server));
 
 	constructor() {

@@ -76,7 +76,7 @@ export class ConnectionHandler {
 					});
 
 					let opened = false;
-					if (config.useChromeKioskMode()) {
+					if (config.useChromeKioskMode) {
 						opened = await launchChrome(url);
 					}
 					if (!opened) {

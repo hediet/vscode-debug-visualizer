@@ -239,6 +239,30 @@ Creates Grid visualization data for an array.
 
     ![](../docs/multiline-expression.png)
 
+## Configuration
+
+This extension provides these configuration options:
+
+-   `debugVisualizer.debugAdapterConfigurations`
+
+    Allows to set expression templates for specific debug adapter types.
+    Example:
+
+    ```json
+    "debugVisualizer.debugAdapterConfigurations": {
+    	"lldb": {
+    		"expressionTemplate": "script to_json(\"${expr}\")",
+    		"context": "repl"
+    	}
+    }
+    ```
+
+    Configurations here overwrite the built-in support for the corresponding debug adapter type.
+
+*   `debugVisualizer.useChromeKioskMode`
+
+    Specifies whether to pop out Debug Visualization Views with Chrome in Kiosk Mode. Uses the default browser otherwise or if Chrome is not found. Defaults to `true`.
+
 # See Also
 
 This extension works very well together with my library [`@hediet/node-reload`](https://github.com/hediet/node-reload) for TypeScript/JavaScript.

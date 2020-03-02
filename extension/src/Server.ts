@@ -2,19 +2,19 @@ import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { AddressInfo } from "net";
 import WebSocket = require("ws");
 import { ConnectionHandler } from "./ConnectionHandler";
-import { Sources } from "./DataSource";
 import * as express from "express";
 import * as http from "http";
 import * as serveStatic from "serve-static";
 import { Config } from "./Config";
 import cryptoRandomString = require("crypto-random-string");
 import { distPath } from "debug-visualizer-webview";
+import { DataSource } from "./DataSource/DataSource";
 
 export class Server {
 	private server: http.Server;
 	public readonly secret = cryptoRandomString({ length: 20 });
 
-	constructor(sources: Sources, config: Config) {
+	constructor(dataSource: DataSource, config: Config) {
 		const app = express();
 
 		app.use(serveStatic(distPath));
@@ -31,7 +31,7 @@ export class Server {
 		wss.on("connection", ws => {
 			const stream = new WebSocketStream(ws);
 			new ConnectionHandler(
-				sources.dataSource,
+				dataSource,
 				stream,
 				this,
 				config,
