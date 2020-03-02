@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## 0.13.0
 
 -   Adds "debugVisualizer.debugAdapterConfigurations" config to customize the expression template.
 -   Code Restructuring
