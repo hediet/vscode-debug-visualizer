@@ -26,10 +26,10 @@ To setup a dev environment, follow these steps:
 -   Run `yarn dev` for the sub-project (i.e. in its folder) you are working on.
 
 For the _webview_ project, `yarn dev` will serve the react application on port 8080.
-Certain query parameters need to be so that the UI can connect to the debug visualizer extension.
+Certain query parameters need to be set, so that the UI can connect to the debug visualizer extension.
 
 You can use VS Code to launch and debug the extension.
-Chose the preconfigured `Run Extension (Dev UI)` as debug configuration
+Choose the preconfigured `Run Extension (Dev UI)` as debug configuration
 so that the extension loads the UI from the webpack server.
 Otherwise, the extension will start a webserver on its own, hosting the `dist` folder of the _webview_ project.
 
@@ -45,12 +45,20 @@ Otherwise, the extension will start a webserver on its own, hosting the `dist` f
 
 ### webview
 
-Provides the UI and is hosted inside a webview in VS Code.
+Implements the UI and is hosted inside a webview in VS Code.
+Can be opened in a browser window.
+Uses websockets and JSON RPC to communicate with the extension.
 
 ### extension
 
 Creates the webview in VS Code, hosts a webserver and a websocket server.
 The webserver serves the _webview_ project that is loaded by the webview.
+If started with the `Run Extension (Dev UI)` debug configuration, it will load
+the page from `http://localhost:8080` rather than from its own http server.
+
+The webview is served from an http server rather than the file system to work around some security mechanisms,
+which would prevent lazy chunk loading or websockets.
+
 After the webview is loaded, it connects to the websocket server.
 The websocket server is used to evaluate expressions and is secured by a random token.
 
