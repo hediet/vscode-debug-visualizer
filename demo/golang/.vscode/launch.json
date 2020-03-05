@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${fileDirname}",
+            "env": {},
+            "args": [],
+            "dlvLoadConfig": {
+                "followPointers": true,
+                "maxVariableRecurse": 1,
+                "maxStringLen": 5000,
+                "maxArrayValues": 64,
+                "maxStructFields": -1
+            }
+        }
+    ]
+}
