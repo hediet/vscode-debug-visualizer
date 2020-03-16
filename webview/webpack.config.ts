@@ -42,7 +42,9 @@ module.exports = {
 	},
 	plugins: (() => {
 		const plugins: any[] = [
-			new HtmlWebpackPlugin(),
+			new HtmlWebpackPlugin({
+				title: "Debug Visualizer",
+			}),
 			new ForkTsCheckerWebpackPlugin(),
 			new CleanWebpackPlugin(),
 		];
