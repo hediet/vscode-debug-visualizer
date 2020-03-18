@@ -82,6 +82,10 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 			this.contentHeight = e.contentHeight;
 		});
 
+		this.editor.onDidBlurEditorText(() => {
+			this.submit();
+		});
+
 		this.editor.onKeyDown(e => {
 			if (e.keyCode == monaco.KeyCode.Enter) {
 				if (

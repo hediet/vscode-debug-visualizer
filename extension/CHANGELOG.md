@@ -1,5 +1,9 @@
 # Change Log
 
+## Unrealeased
+
+-   Submits the expression when the expression input loses focus.
+
 ## 0.13.0
 
 -   Adds "debugVisualizer.debugAdapterConfigurations" config to customize the expression template.
