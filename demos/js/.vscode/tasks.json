@@ -3,7 +3,6 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"label": "typescript-watch",
 			"script": "dev",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
