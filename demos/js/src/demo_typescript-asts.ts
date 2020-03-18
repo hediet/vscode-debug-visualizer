@@ -65,12 +65,6 @@ class Test1 {
 		};
 		console.log("myValue is AST, annotated with symbol information");
 		debugger;
-
-		for (const ident of identifiers) {
-			myValue = ident;
-			console.log("myValue is an identifier");
-			debugger;
-		}
 	}
 }
 
