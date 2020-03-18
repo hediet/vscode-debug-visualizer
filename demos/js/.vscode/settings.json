@@ -1,6 +1,4 @@
 {
-	"debugVisualizer.useChromeKioskMode": false,
-	"editor.minimap.enabled": false,
 	"debugVisualizer.debugAdapterConfigurations": {
 		"php": {
 			"context": "watch",
