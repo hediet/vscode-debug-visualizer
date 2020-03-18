@@ -4,10 +4,20 @@
 
 A VS Code extension for visualizing data structures while debugging.
 
-Works best with JavaScript/TypeScript.
-Also tested with C#, Java and PHP. Works with any language that you can debug in VS Code.
-
 ![](../docs/demo.gif)
+
+## Supported Languages
+
+See [demos](./demos/) for demos. These languages and debuggers are verified to work with this extension:
+
+-   JavaScript/TypeScript/... using `node`/`node2`/`extensionHost` or `chrome` debug adapter: ⭐ Full Support
+-   Go using `go` (Delve) debug adapter: ✅ Rudimentary Support
+-   Python using `python` debug adapter: ✅ Rudimentary Support
+-   C# using `coreclr` debug adapter: ✅ Rudimentary Support
+-   PHP using `php` debug adapter: ✅ Rudimentary Support
+-   Java using `java` debug adapter: ✅ Rudimentary Support
+
+All other languages and debuggers might work too.
 
 ## Usage
 
