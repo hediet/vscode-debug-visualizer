@@ -7,20 +7,18 @@ import (
 	"time"
 )
 
-// Debug using Delve needs to adjust the configuration
-// Delve's maxStringLen default is small and needs to be adjusted for the maxStringLen default of the delve. See in detail (microsoft/vscode-go#868).
-// Add the following configuration to
-//launch.json
+// If you want to visualize large data structures,
+// you need to increase Delve's maxStringLen.
+// (See here https://github.com/microsoft/vscode-go/issues/868 for more info)
+// You can do this by adding the following configuration to your launch.json:
 // "dlvLoadConfig": {
-//                 "followPointers": true,
-//                 "maxVariableRecurse": 1,
-//                 "maxStringLen": 5000,
-//                 "maxArrayValues": 64,
-//                 "maxStructFields": -1
-//             }
-
-// debuging test Must be set settings.json
-//settings.json
+//     "followPointers": true,
+//     "maxVariableRecurse": 1,
+//     "maxStringLen": 5000,
+//     "maxArrayValues": 64,
+//     "maxStructFields": -1
+// }
+// For debugging tests, you can set the maxStringLen in settings.json like this:
 // "go.delveConfig": {
 //     "dlvLoadConfig": {
 //         "followPointers": true,
@@ -32,6 +30,30 @@ import (
 //     "apiVersion": 2,
 //     "showGlobalVariables": true
 // }
+
+// Open a new Debug Visualizer and visualize "s"
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	graph := NewGraph()
+	var s string
+	for i := 0; i < 100; i++ {
+		id := strconv.Itoa(i)
+		graph.Nodes = append(graph.Nodes, NodeGraphData{
+			ID:    id,
+			Label: id,
+		})
+		if i > 0 {
+			targetId := rand.Intn(i)
+			graph.Edges = append(graph.Edges, EdgeGraphData{
+				From: id,
+				To:   strconv.Itoa(targetId),
+			})
+		}
+		s = graph.toString()
+		_ = s
+		//fmt.Printf("%s", s)
+	}
+}
 
 type Graph struct {
 	Kind  map[string]bool `json:"kind"`
@@ -66,26 +88,4 @@ func NewGraph() *Graph {
 func (this *Graph) toString() string {
 	rs, _ := json.Marshal(this)
 	return string(rs)
-}
-
-// Visualize "s"
-func main() {
-	rand.Seed(time.Now().UnixNano())
-	graph := NewGraph()
-	var s string
-	for i := 2; i < 100; i++ {
-		id := strconv.Itoa(i)
-		graph.Nodes = append(graph.Nodes, NodeGraphData{
-			ID:    id,
-			Label: id,
-		})
-		targetId := rand.Intn(i) + 1
-		graph.Edges = append(graph.Edges, EdgeGraphData{
-			From: id,
-			To:   strconv.Itoa(targetId),
-		})
-		s = graph.toString()
-		_ = s
-		//fmt.Printf("%s", s)
-	}
 }
