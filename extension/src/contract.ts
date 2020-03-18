@@ -100,6 +100,11 @@ export const debugVisualizerUIContract = contract({
 				newState: unchecked<DataExtractionState>(),
 			}),
 		}),
+		setExpression: requestContract({
+			params: types.type({
+				expression: types.string,
+			}),
+		}),
 	},
 	server: {
 		authenticate: requestContract({

@@ -61,6 +61,36 @@ export class Extension {
 				}
 			)
 		);
+
+		this.dispose.track(
+			commands.registerCommand(
+				"vscode-debug-visualizer.visualizer-set-expression",
+				() => {
+					const editor = window.activeTextEditor;
+					if (!editor) {
+						return;
+					}
+
+					const selection = editor.selection;
+					const selectedText = editor.document.getText(selection);
+
+					if (!selectedText) {
+						return;
+					}
+
+					const connections = [...this.server.connections.values()];
+					if (connections.length > 0) {
+						const latestConnection =
+							connections[connections.length - 1];
+
+						latestConnection.setExpression(selectedText);
+					} else {
+						// TODO pass expression
+						// this.views.createNew();
+					}
+				}
+			)
+		);
 	}
 }
 

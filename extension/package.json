@@ -24,6 +24,7 @@
 	],
 	"activationEvents": [
 		"onCommand:vscode-debug-visualizer.new-visualizer",
+		"onCommand:vscode-debug-visualizer.visualizer-set-expression",
 		"onDebug",
 		"onWebviewPanel:debugVisualizer"
 	],
@@ -32,7 +33,18 @@
 		"commands": [
 			{
 				"command": "vscode-debug-visualizer.new-visualizer",
-				"title": "Open a new Debug Visualizer View"
+				"title": "Debug Visualizer: New View"
+			},
+			{
+				"command": "vscode-debug-visualizer.visualizer-set-expression",
+				"title": "Debug Visualizer: Use Selection as Expression"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "vscode-debug-visualizer.visualizer-set-expression",
+				"key": "shift+f1",
+				"when": "editorTextFocus"
 			}
 		],
 		"configuration": {

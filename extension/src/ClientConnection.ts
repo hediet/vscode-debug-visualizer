@@ -9,10 +9,12 @@ import * as open from "open";
 import chromeLauncher = require("chrome-launcher");
 import { Config } from "./Config";
 
-export class ConnectionHandler {
+export class ClientConnection {
 	public readonly dispose = Disposable.fn();
 	@observable
 	private watcher: EvaluationWatcher | undefined = undefined;
+
+	private readonly client: typeof debugVisualizerUIContract["TClientInterface"];
 
 	constructor(
 		dataSource: DataSource,
@@ -104,6 +106,8 @@ export class ConnectionHandler {
 			}
 		);
 
+		this.client = client;
+
 		this.dispose.track(
 			Disposable.create(
 				autorun(() => {
@@ -119,6 +123,10 @@ export class ConnectionHandler {
 		stream.onClosed.then(() => {
 			this.dispose();
 		});
+	}
+
+	public setExpression(expression: string) {
+		this.client.setExpression({ expression });
 	}
 }
 

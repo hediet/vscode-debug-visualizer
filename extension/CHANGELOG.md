@@ -3,6 +3,8 @@
 ## Unrealeased
 
 -   Submits the expression when the expression input loses focus.
+-   Changes text of command "Open a new Debug Visualizer View" to "Debug Visualizer: New View".
+-   Adds command "Debug Visualizer: Use Selection as Expression" (Shift+F1)
 
 ## 0.13.0
 

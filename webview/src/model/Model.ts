@@ -186,6 +186,9 @@ export class Model {
 								this.state = newState;
 							}
 						},
+						setExpression: async ({ expression }) => {
+							this.setExpression(expression);
+						},
 					}
 				);
 				try {

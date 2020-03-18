@@ -1,7 +1,7 @@
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { AddressInfo } from "net";
 import WebSocket = require("ws");
-import { ConnectionHandler } from "./ConnectionHandler";
+import { ClientConnection } from "./ClientConnection";
 import * as express from "express";
 import * as http from "http";
 import * as serveStatic from "serve-static";
@@ -13,6 +13,8 @@ import { DataSource } from "./DataSource/DataSource";
 export class Server {
 	private server: http.Server;
 	public readonly secret = cryptoRandomString({ length: 20 });
+
+	public readonly connections = new Set<ClientConnection>();
 
 	constructor(dataSource: DataSource, config: Config) {
 		const app = express();
@@ -28,15 +30,18 @@ export class Server {
 		);
 
 		const wss = new WebSocket.Server({ server: this.server });
-		wss.on("connection", ws => {
+		wss.on("connection", async ws => {
 			const stream = new WebSocketStream(ws);
-			new ConnectionHandler(
+			const c = new ClientConnection(
 				dataSource,
 				stream,
 				this,
 				config,
 				this.secret
 			);
+			this.connections.add(c);
+			await stream.onClosed;
+			this.connections.delete(c);
 		});
 	}
 
