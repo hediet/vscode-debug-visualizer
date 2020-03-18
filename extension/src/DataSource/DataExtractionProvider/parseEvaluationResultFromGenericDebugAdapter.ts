@@ -2,12 +2,13 @@ import {
 	DataExtractionResult,
 	isExtractedData,
 } from "@hediet/debug-visualizer-data-extraction";
+import { FormattedMessage } from "../../contract";
 
 export function parseEvaluationResultFromGenericDebugAdapter(
 	resultText: string
 ):
 	| { kind: "data"; result: DataExtractionResult }
-	| { kind: "error"; message: string } {
+	| { kind: "error"; message: FormattedMessage } {
 	const jsonData = resultText.trim();
 
 	let resultObj;
@@ -37,7 +38,26 @@ export function parseEvaluationResultFromGenericDebugAdapter(
 		if (!isExtractedData(resultObj)) {
 			return {
 				kind: "error",
-				message: "Data does not match ExtractedData interface.",
+				message: {
+					kind: "list",
+					items: [
+						"Evaluation result does not match ExtractedData interface.",
+						{
+							kind: "inlineList",
+							items: [
+								"Evaluation result was:",
+								{
+									kind: "code",
+									content: JSON.stringify(
+										resultObj,
+										undefined,
+										4
+									),
+								},
+							],
+						},
+					],
+				},
 			};
 		}
 	} catch (e) {
@@ -69,8 +89,26 @@ function parseJson(str: string) {
 	try {
 		return JSON.parse(str);
 	} catch (error) {
-		throw new Error(
-			`Could not parse \`${str}\` as JSON.\n${error.message}`
-		);
+		throw new FormattedError({
+			kind: "list",
+			items: [
+				"Could not parse evaluation result as JSON:",
+				error.message,
+				{
+					kind: "inlineList",
+					items: [
+						"Evaluation result was:",
+						{
+							kind: "code",
+							content: str,
+						},
+					],
+				},
+			],
+		});
 	}
+}
+
+class FormattedError {
+	constructor(public readonly message: FormattedMessage) {}
 }

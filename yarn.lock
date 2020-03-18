@@ -92,11 +92,6 @@
     stack-trace "^0.0.10"
     ws "^7.0.0"
 
-"@hediet/semantic-json@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.1.0.tgz#ca3831778f1e59e555d0112decd5fe598437fdd3"
-  integrity sha512-lNdXabUmyxXnysXadTKyiKK9ik5L8b9SXu/QshgvE271QObPtp2Ubmh+rLNNCEAO65DE2VAxcesWmRKYfaQSJg==
-
 "@hediet/std@^0.6.0":
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@hediet/std/-/std-0.6.0.tgz#f7d2ffc1180ecef6ff272d0d6780f0c0d9337e4e"

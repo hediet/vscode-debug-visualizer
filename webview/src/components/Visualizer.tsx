@@ -2,6 +2,7 @@ import React = require("react");
 import { Model } from "../model/Model";
 import { observer } from "mobx-react";
 import { NoData } from "./NoData";
+import { FormattedMessage } from "debug-visualizer/src/contract";
 
 @observer
 export class Visualizer extends React.Component<{ model: Model }> {
@@ -14,17 +15,21 @@ export class Visualizer extends React.Component<{ model: Model }> {
 	renderContent(): JSX.Element {
 		const s = this.props.model.state;
 		if (s.kind === "loading") {
-			return <NoData label="Loading" />;
+			return <NoData>Loading</NoData>;
 		} else if (s.kind === "error") {
-			return <NoData label={"Error: " + s.message} />;
+			return (
+				<NoData>
+					<Message message={s.message} />
+				</NoData>
+			);
 		} else if (s.kind === "noExpression") {
-			return <NoData label="No Expression" />;
+			return <NoData>No Expression Entered</NoData>;
 		} else if (s.kind === "noDebugSession") {
-			return <NoData label="No Debug Session" />;
+			return <NoData>No Active Debug Session</NoData>;
 		} else if (s.kind === "data") {
 			const vis = this.props.model.visualizations;
 			if (!vis || !vis.visualization) {
-				return <NoData label="No Visualization" />;
+				return <NoData>No Visualization Available</NoData>;
 			}
 
 			return vis.visualization.render();
@@ -33,4 +38,32 @@ export class Visualizer extends React.Component<{ model: Model }> {
 			return <div />;
 		}
 	}
+}
+
+function Message(props: { message: FormattedMessage }): React.ReactElement {
+	if (typeof props.message === "string") {
+		return <span>{props.message}</span>;
+	} else if (props.message.kind === "list") {
+		return (
+			<div>
+				{props.message.items.map((i, idx) => (
+					<p>
+						<Message key={idx} message={i} />
+					</p>
+				))}
+			</div>
+		);
+	} else if (props.message.kind === "inlineList") {
+		return (
+			<div>
+				{props.message.items.map((i, idx) => (
+					<Message key={idx} message={i} />
+				))}
+			</div>
+		);
+	} else if (props.message.kind === "code") {
+		return <pre>{props.message.content}</pre>;
+	}
+
+	throw new Error("Bug");
 }

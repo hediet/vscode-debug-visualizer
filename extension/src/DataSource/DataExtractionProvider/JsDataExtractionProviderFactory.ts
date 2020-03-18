@@ -11,7 +11,12 @@ import {
 	DataExtractionProvider,
 	DataExtractionProviderArgs,
 } from "./DataExtractionProvider";
+import { FormattedMessage } from "../../contract";
+import { registerUpdateReconciler, hotClass } from "@hediet/node-reload";
 
+registerUpdateReconciler(module);
+
+@hotClass(module)
 export class JsDataExtractionProviderFactory
 	implements DataExtractionProviderFactory {
 	createDataExtractionProvider(
@@ -39,7 +44,7 @@ class JsDataEvaluator implements DataExtractionProvider {
 		frameId,
 	}: DataExtractionProviderArgs): Promise<
 		| { kind: "data"; result: DataExtractionResult }
-		| { kind: "error"; message: string }
+		| { kind: "error"; message: FormattedMessage }
 	> {
 		while (true) {
 			try {

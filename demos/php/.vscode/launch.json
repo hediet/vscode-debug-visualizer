@@ -8,7 +8,7 @@
 			"name": "PHP - Demo",
 			"type": "php",
 			"request": "launch",
-			"program": "${workspaceFolder}/php/demo.php",
+			"program": "${workspaceFolder}/demo.php",
 			"xdebugSettings": {
 				"max_data": -1
 			}

@@ -6,7 +6,11 @@ import {
 } from "./DataExtractionProvider";
 import { Config, DebugAdapterConfig } from "../../Config";
 import { GenericDataExtractionProvider } from "./GenericDataExtractionProviderFactory";
+import { registerUpdateReconciler, hotClass } from "@hediet/node-reload";
 
+registerUpdateReconciler(module);
+
+@hotClass(module)
 export class ConfiguredDataExtractionProviderFactory
 	implements DataExtractionProviderFactory {
 	constructor(private readonly config: Config) {}

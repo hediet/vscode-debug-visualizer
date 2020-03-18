@@ -18,9 +18,24 @@ function unchecked<T>(): types.Type<T, any, unknown> {
 	);
 }
 
+export type FormattedMessage =
+	| string
+	| {
+			kind: "list";
+			items: FormattedMessage[];
+	  }
+	| {
+			kind: "inlineList";
+			items: FormattedMessage[];
+	  }
+	| {
+			kind: "code";
+			content: string;
+	  };
+
 export type DataExtractionState =
 	| { kind: "loading" }
-	| { kind: "error"; message: string }
+	| { kind: "error"; message: FormattedMessage }
 	| { kind: "noDebugSession" }
 	| {
 			kind: "data";

@@ -1,6 +1,6 @@
 {
 	"debugVisualizer.debugAdapterConfigurations": {
-		"php": {
+		"phpa": {
 			"context": "watch",
 			"expressionTemplate": "${expr}"
 		}

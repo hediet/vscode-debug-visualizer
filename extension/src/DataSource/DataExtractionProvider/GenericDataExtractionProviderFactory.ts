@@ -9,7 +9,12 @@ import {
 	DataExtractionProviderArgs,
 } from "./DataExtractionProvider";
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
+import { FormattedMessage } from "../../contract";
+import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
 
+registerUpdateReconciler(module);
+
+@hotClass(module)
 export class GenericDataExtractionProviderFactory
 	implements DataExtractionProviderFactory {
 	createDataExtractionProvider(
@@ -28,7 +33,7 @@ export class GenericDataExtractionProvider implements DataExtractionProvider {
 		frameId,
 	}: DataExtractionProviderArgs): Promise<
 		| { kind: "data"; result: DataExtractionResult }
-		| { kind: "error"; message: string }
+		| { kind: "error"; message: FormattedMessage }
 	> {
 		const finalExpression = this.getFinalExpression({
 			expression,
@@ -44,7 +49,20 @@ export class GenericDataExtractionProvider implements DataExtractionProvider {
 		} catch (error) {
 			return {
 				kind: "error",
-				message: error.message,
+				message: {
+					kind: "list",
+					items: [
+						error.message,
+						`Used debug adapter: ${this.session.session.configuration.type}`,
+						{
+							kind: "inlineList",
+							items: [
+								"Evaluated expression is",
+								{ kind: "code", content: finalExpression },
+							],
+						},
+					],
+				},
 			};
 		}
 

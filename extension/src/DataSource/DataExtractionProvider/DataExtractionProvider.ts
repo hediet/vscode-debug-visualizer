@@ -3,6 +3,7 @@ import {
 	DataExtractorId,
 } from "@hediet/debug-visualizer-data-extraction";
 import { VsCodeDebugSession } from "../../VsCodeDebugger";
+import { FormattedMessage } from "../../contract";
 
 export interface DataExtractionProviderFactory {
 	createDataExtractionProvider(
@@ -15,7 +16,7 @@ export interface DataExtractionProvider {
 		args: DataExtractionProviderArgs
 	): Promise<
 		| { kind: "data"; result: DataExtractionResult }
-		| { kind: "error"; message: string }
+		| { kind: "error"; message: FormattedMessage }
 	>;
 }
 

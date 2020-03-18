@@ -76,11 +76,8 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 				horizontalScrollbarSize: 0,
 				verticalScrollbarSize: 0,
 			},
-			/*theme: { dark: "vs-dark", light: "vs-light" }[
-				this.props.model.theme
-			],*/
 		});
-		//
+
 		this.editor.onDidContentSizeChange(e => {
 			this.contentHeight = e.contentHeight;
 		});

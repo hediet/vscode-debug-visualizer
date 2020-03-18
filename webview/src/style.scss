@@ -139,18 +139,19 @@ body {
 		width: 100%;
 		height: 100%;
 
-		rect {
-			fill: var(--vscode-editor-background);
-		}
-
 		line {
 			stroke: gray;
 		}
+	}
 
-		text {
-			fill: var(--vscode-editor-foreground);
-			stroke-width: 0px;
-		}
+	.part-content-inner {
+		background: var(--vscode-editor-background);
+		color: var(--vscode-editor-foreground);
+	}
+
+	pre {
+		margin-top: 4px;
+		margin-bottom: 4px;
 	}
 }
 
