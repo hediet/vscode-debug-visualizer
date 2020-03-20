@@ -19,15 +19,15 @@ export interface VisualizationCollector {
 	addVisualization(visualization: Visualization): void;
 }
 
-export abstract class VisualizationProvider {
-	abstract getVisualizations(
+export abstract class Visualizer {
+	abstract visualize(
 		data: ExtractedData,
 		collector: VisualizationCollector
 	): void;
 
 	getVisualizationsArray(data: ExtractedData): Visualization[] {
 		const result = new Array<Visualization>();
-		this.getVisualizations(data, {
+		this.visualize(data, {
 			addVisualization(visualization) {
 				result.push(visualization);
 			},
@@ -58,19 +58,14 @@ export abstract class VisualizationProvider {
 	}
 }
 
-export class ComposedVisualizationProvider extends VisualizationProvider {
-	constructor(
-		private readonly composedProviders: ReadonlyArray<VisualizationProvider>
-	) {
+export class ComposedVisualizer extends Visualizer {
+	constructor(private readonly composedProviders: ReadonlyArray<Visualizer>) {
 		super();
 	}
 
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		for (const c of this.composedProviders) {
-			c.getVisualizations(data, collector);
+			c.visualize(data, collector);
 		}
 	}
 }

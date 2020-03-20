@@ -10,17 +10,14 @@ import {
 	TreeNode,
 } from "@hediet/debug-visualizer-data-extraction";
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "../Visualizer";
-import React = require("react");
+} from "../../Visualizer";
+import * as React from "react";
 
-export class TreeVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class TreeVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { tree: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("tree"),

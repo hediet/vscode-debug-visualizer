@@ -1,29 +1,19 @@
 import { observer, disposeOnUnmount } from "mobx-react";
 import * as React from "react";
 import { observable, autorun, runInAction } from "mobx";
-import Viz from "viz.js";
-import { Module, render } from "viz.js/full.render.js";
 import { SvgViewer } from "../SvgVisualizer";
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "../Visualizer";
+} from "../../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
 } from "@hediet/debug-visualizer-data-extraction";
 
-const viz: any = new Viz({
-	Module: () => Module({ TOTAL_MEMORY: 1 << 30 }),
-	render,
-});
-
-export class GraphvizDotVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class GraphvizDotVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { dotGraph: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("graphviz-dot"),
@@ -37,6 +27,27 @@ export class GraphvizDotVisualizer extends VisualizationProvider {
 	}
 }
 
+class VisLoader {
+	private result: any | undefined;
+
+	async getViz(): Promise<any> {
+		if (!this.result) {
+			const Viz = await import("viz.js");
+			const { Module, render } = await import("viz.js/full.render.js");
+
+			const viz = new Viz.default({
+				Module: () => Module({ TOTAL_MEMORY: 1 << 30 }),
+				render,
+			});
+
+			this.result = viz;
+		}
+		return this.result;
+	}
+}
+
+const vizLoader = new VisLoader();
+
 @observer
 export class GraphvizDotViewer extends React.Component<{
 	dotCode: string;
@@ -47,6 +58,7 @@ export class GraphvizDotViewer extends React.Component<{
 	@disposeOnUnmount
 	// @ts-ignore
 	private readonly _updateSvgAutorun = autorun(async () => {
+		const viz = await vizLoader.getViz();
 		const svg = await viz.renderString(this.props.dotCode);
 		runInAction("Update svg", () => (this.svg = svg));
 	});

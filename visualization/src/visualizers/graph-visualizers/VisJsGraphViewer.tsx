@@ -1,40 +1,10 @@
+import { DataSet, Network, Options } from "vis-network";
 import { observer } from "mobx-react";
 import * as React from "react";
 import {
-	VisualizationProvider,
-	VisualizationCollector,
-	asVisualizationId,
-} from "../Visualizer";
-import {
-	ExtractedData,
-	isCommonDataType,
 	NodeGraphData,
 	EdgeGraphData,
 } from "@hediet/debug-visualizer-data-extraction";
-import { DataSet, Network, Options } from "vis-network";
-
-export class VisJsGraphVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
-		if (isCommonDataType(data, { graph: true })) {
-			collector.addVisualization({
-				id: asVisualizationId("vis-js-graph"),
-				name: "vis.js",
-				priority: 1001,
-				render() {
-					return (
-						<VisJsGraphViewer
-							edges={data.edges}
-							nodes={data.nodes}
-						/>
-					);
-				},
-			});
-		}
-	}
-}
 
 @observer
 export class VisJsGraphViewer extends React.Component<{

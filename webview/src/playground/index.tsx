@@ -1,6 +1,6 @@
-import React = require("react");
+import * as React from "react";
 import "../style.scss";
-import { DecoratedGridComponent } from "../visualizers/GridVisualizer";
+import { DecoratedGridComponent } from "@hediet/visualization";
 import { observable } from "mobx";
 import { observer } from "mobx-react";
 

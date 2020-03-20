@@ -1,4 +1,4 @@
-import React = require("react");
+import * as React from "react";
 import { Model } from "../model/Model";
 import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, action, autorun } from "mobx";

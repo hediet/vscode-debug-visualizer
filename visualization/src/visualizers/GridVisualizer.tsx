@@ -1,23 +1,20 @@
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "./Visualizer";
+} from "../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
 	CommonDataTypes,
 } from "@hediet/debug-visualizer-data-extraction";
-import React = require("react");
+import * as React from "react";
 import { observer } from "mobx-react";
 import { computed, action, observable } from "mobx";
 import { Icon } from "@blueprintjs/core";
 
-export class GridVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class GridVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { array: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("grid"),

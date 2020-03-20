@@ -1,5 +1,5 @@
-import "./style.scss";
-import { ComposedVisualizationProvider } from "./Visualizer";
+// import "./style.scss";
+import { ComposedVisualizer } from "../Visualizer";
 import { TreeVisualizer } from "./TreeVisualizer/TreeVisualizer";
 import { GraphvizGraphVisualizer } from "./graph-visualizers/GraphvizGraphVisualizer";
 import { SvgVisualizer } from "./SvgVisualizer";
@@ -8,10 +8,10 @@ import { TextVisualizer } from "./text-visualizers/TextVisualizer";
 import { MonacoTextVisualizer } from "./text-visualizers/MonacoTextVisualizer";
 import { AstVisualizer } from "./AstVisualizer";
 import { VisJsGraphVisualizer } from "./graph-visualizers/VisJsGraphVisualizer";
-import { PlotlyVisualizer } from "./PlotlyVisualizer";
+import { PlotlyVisualizer } from "./plotly";
 import { GridVisualizer } from "./GridVisualizer";
 
-export const knownVisualizations = new ComposedVisualizationProvider([
+export const knownVisualizations = new ComposedVisualizer([
 	new TreeVisualizer(),
 	new GraphvizGraphVisualizer(),
 	new VisJsGraphVisualizer(),

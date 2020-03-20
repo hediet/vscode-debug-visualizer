@@ -1,22 +1,19 @@
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "../Visualizer";
+} from "../../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
 } from "@hediet/debug-visualizer-data-extraction";
 import * as monaco from "monaco-editor";
-import React = require("react");
+import * as React from "react";
 import { observer, disposeOnUnmount } from "mobx-react";
 import { autorun, observable } from "mobx";
 
-export class MonacoTextVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class MonacoTextVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { text: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("monaco-text"),

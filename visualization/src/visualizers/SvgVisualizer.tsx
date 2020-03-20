@@ -1,23 +1,20 @@
 import Measure, { ContentRect } from "react-measure";
 import { observer } from "mobx-react";
-import React = require("react");
+import * as React from "react";
 import { observable, action } from "mobx";
 import { Tool, ReactSVGPanZoom, Value } from "react-svg-pan-zoom";
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "./Visualizer";
+} from "../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
 } from "@hediet/debug-visualizer-data-extraction";
 
-export class SvgVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class SvgVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { svg: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("svg"),

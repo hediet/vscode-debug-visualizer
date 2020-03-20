@@ -1,8 +1,8 @@
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "./Visualizer";
+} from "../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
@@ -10,18 +10,15 @@ import {
 } from "@hediet/debug-visualizer-data-extraction";
 import { createTreeViewModelFromTreeNodeData } from "./TreeVisualizer/TreeVisualizer";
 import { TreeWithPathView, TreeViewModel } from "./TreeVisualizer/Views";
-import React = require("react");
+import * as React from "react";
 import { observer, disposeOnUnmount } from "mobx-react";
 import { observable, autorun, trace } from "mobx";
 import * as monaco from "monaco-editor";
 import { getLanguageId } from "./text-visualizers/MonacoTextVisualizer";
-import LineColumn = require("line-column");
+import * as LineColumn from "line-column";
 
-export class AstVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class AstVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { ast: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("ast"),

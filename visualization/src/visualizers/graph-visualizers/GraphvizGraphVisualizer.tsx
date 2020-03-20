@@ -2,20 +2,17 @@ import { observer } from "mobx-react";
 import * as React from "react";
 import { GraphvizDotViewer } from "./GraphvizDotVisualizer";
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "../Visualizer";
+} from "../../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
 } from "@hediet/debug-visualizer-data-extraction";
 
-export class GraphvizGraphVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class GraphvizGraphVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { graph: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("graphviz-graph"),

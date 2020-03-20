@@ -1,4 +1,4 @@
-import React = require("react");
+import * as React from "react";
 import { Button, Spinner } from "@blueprintjs/core";
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";

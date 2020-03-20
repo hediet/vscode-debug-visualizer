@@ -4,10 +4,13 @@ import {
 } from "debug-visualizer/src/contract";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import { observable, action, computed, when, autorun } from "mobx";
+import { observable, action, computed, when } from "mobx";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import { Visualization, VisualizationId } from "../visualizers/Visualizer";
-import { knownVisualizations } from "../visualizers";
+import {
+	Visualization,
+	VisualizationId,
+	knownVisualizations,
+} from "@hediet/visualization";
 import { getApi as getVsCodeApi } from "./VsCodeApi";
 import { MonacoBridge } from "./MonacoBridge";
 import { Disposable } from "@hediet/std/disposable";

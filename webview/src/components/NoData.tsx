@@ -1,4 +1,4 @@
-import React = require("react");
+import * as React from "react";
 import { observer } from "mobx-react";
 import { observable } from "mobx";
 import Measure from "react-measure";

@@ -3,7 +3,8 @@
 	"workspaces": [
 		"./data-extraction",
 		"./extension",
-		"./webview"
+		"./webview",
+		"./visualization"
 	],
 	"scripts": {
 		"build": "yarn build-data-extraction && yarn build-extension && yarn build-ui",

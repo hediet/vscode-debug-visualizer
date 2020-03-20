@@ -1,19 +1,16 @@
 import {
-	VisualizationProvider,
+	Visualizer,
 	VisualizationCollector,
 	asVisualizationId,
-} from "../Visualizer";
+} from "../../Visualizer";
 import {
 	ExtractedData,
 	isCommonDataType,
 } from "@hediet/debug-visualizer-data-extraction";
-import React = require("react");
+import * as React from "react";
 
-export class TextVisualizer extends VisualizationProvider {
-	getVisualizations(
-		data: ExtractedData,
-		collector: VisualizationCollector
-	): void {
+export class TextVisualizer extends Visualizer {
+	visualize(data: ExtractedData, collector: VisualizationCollector): void {
 		if (isCommonDataType(data, { text: true })) {
 			collector.addVisualization({
 				id: asVisualizationId("text"),
