@@ -1,0 +1,78 @@
+@import "~normalize.css";
+@import "~@blueprintjs/core/lib/css/blueprint.css";
+@import "~@blueprintjs/icons/lib/css/blueprint-icons.css";
+@import "~@hediet/visualization/style.scss";
+
+html,
+body,
+.target {
+	height: 100%;
+}
+
+body {
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+
+	margin: 0;
+	padding: 0;
+
+	background-color: var(--vscode-editor-background);
+}
+
+.bp3-input,
+.bp3-button {
+	border-radius: 0;
+}
+
+.bp3-icon {
+	svg {
+		color: lighten(black, 20);
+		width: 14px;
+	}
+}
+
+.component-GUI {
+	height: 100%;
+	& > .part-Header {
+		padding: 6px 20px 6px 0;
+		background-color: var(--vscode-sideBar-background);
+
+		// border-top: solid 1px var(--vscode-button-background);
+		// rgba(128, 128, 128, 0.15)
+	}
+}
+
+.component-monaco-editor {
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	display: flex;
+	padding: 2px;
+	border: 0.5px solid gray;
+
+	.part-editor {
+		min-width: 0;
+		min-height: 0;
+		flex: 1;
+
+		.current-line {
+			border: none !important;
+		}
+		.selectionHighlight {
+			background: transparent !important;
+		}
+	}
+}
+
+.svgViewer {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+.bp3-transition-container {
+	z-index: 100000;
+}

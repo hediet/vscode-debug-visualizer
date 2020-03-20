@@ -4,7 +4,8 @@
 		"./data-extraction",
 		"./extension",
 		"./webview",
-		"./visualization"
+		"./visualization",
+		"./visualization-playground"
 	],
 	"scripts": {
 		"build": "yarn build-data-extraction && yarn build-extension && yarn build-ui",
