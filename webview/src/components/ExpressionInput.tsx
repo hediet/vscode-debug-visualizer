@@ -10,7 +10,7 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 	@observable private contentHeight: number | undefined = undefined;
 	private model = monaco.editor.createModel(
 		"",
-		"javascript",
+		"text",
 		monaco.Uri.parse(`file:///main.ts`)
 	);
 
