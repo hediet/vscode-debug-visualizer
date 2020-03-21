@@ -1,10 +1,14 @@
 # Change Log
 
-## Unrealeased
+## 0.14.0
 
 -   Submits the expression when the expression input loses focus.
 -   Changes text of command "Open a new Debug Visualizer View" to "Debug Visualizer: New View".
 -   Adds command "Debug Visualizer: Use Selection as Expression" (Shift+F1)
+-   Optimizes load time by splitting code into multiple bundles.
+-   Fixes monaco load errors.
+-   Sets the mode of the expression input to text rather than typescript, as this extension supports multiple languages.
+-   Improves error messages.
 
 ## 0.13.0
 
