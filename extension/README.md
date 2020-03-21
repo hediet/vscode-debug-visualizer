@@ -16,6 +16,7 @@ See [demos](./demos/) for demos. These languages and debuggers are verified to w
 -   C# using `coreclr` debug adapter: ✅ Rudimentary Support
 -   PHP using `php` debug adapter: ✅ Rudimentary Support
 -   Java using `java` debug adapter: ✅ Rudimentary Support
+-   C++ using `cppdbg` debug adapter: ✅ Rudimentary Support
 
 All other languages and debuggers might work too.
 
