@@ -7,12 +7,8 @@ import { CleanWebpackPlugin } from "clean-webpack-plugin";
 
 const r = (file: string) => path.resolve(__dirname, file);
 
-const mode = process.argv.some(v => v === "--playground")
-	? "playground"
-	: "default";
-
 module.exports = {
-	entry: [mode === "default" ? r("src/index.tsx") : r("src/playground.tsx")],
+	entry: [r("src/index.tsx")],
 	output: {
 		path: r("dist"),
 		filename: "[name].js",
@@ -47,15 +43,12 @@ module.exports = {
 			}),
 			new ForkTsCheckerWebpackPlugin(),
 			new CleanWebpackPlugin(),
+			new MonacoWebpackPlugin({
+				// Add more languages here once webworker issues are solved.
+				languages: ["typescript"],
+			}),
 		];
-		if (mode === "default") {
-			plugins.push(
-				new MonacoWebpackPlugin({
-					// Add more languages here once webworker issues are solved.
-					languages: ["typescript"],
-				})
-			);
-		}
+
 		return plugins;
 	})(),
 } as webpack.Configuration;
