@@ -59,8 +59,12 @@ export class Server {
 		return `http://localhost:${port}/index.html?serverPort=${this.port}&serverSecret=${this.secret}${inWebView}${expr}`;
 	}
 
+	public get publicPath(): string {
+		return `http://localhost:${this.port}/`;
+	}
+
 	public get mainBundleUrl(): string {
-		return `http://localhost:${this.port}/main.js`;
+		return `${this.publicPath}main.js`;
 	}
 
 	public get port(): number {

@@ -62,7 +62,7 @@ export function getHtml(server: Server) {
         <html>
 			<head>
 			<meta charset="UTF-8">
-			<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';">
+			<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline'; worker-src * data: 'unsafe-inline' 'unsafe-eval'; font-src * 'unsafe-inline' 'unsafe-eval';">
             <style>
                 html { height: 100%; width: 100%; padding: 0; margin: 0; }
                 body { height: 100%; width: 100%; padding: 0; margin: 0; }
@@ -74,6 +74,7 @@ export function getHtml(server: Server) {
 					window.webViewData = ${JSON.stringify({
 						serverSecret: server.secret,
 						serverPort: server.port,
+						publicPath: server.publicPath,
 					})};
 					const api = window.VsCodeApi = acquireVsCodeApi();
 					window.addEventListener('message', event => {
@@ -89,6 +90,7 @@ export function getHtml(server: Server) {
 						}
 					});
 				</script>
+				
 				${
 					isDev
 						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.getIndexUrl(
