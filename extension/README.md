@@ -18,6 +18,7 @@ See [demos](./demos/) for demos. These languages and debuggers are verified to w
 -   Java using `java` debug adapter: [✅ Rudimentary Support](../demos/java)
 -   C++ using `cppdbg` debug adapter: [✅ Rudimentary Support](../demos/cpp)
 -   Swift using `lldb` debug adapter: [✅ Rudimentary Support](../demos/swift)
+-   Rust using `lldb` debug adapter: [✅ Rudimentary Support](../demos/rust)
 
 All other languages and debuggers might work too.
 For languages with _Rudimentary Support_, only JSON strings can be visualized - you must implement some logic that builds this JSON for your data structure!
