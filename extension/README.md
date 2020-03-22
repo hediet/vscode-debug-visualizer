@@ -17,8 +17,11 @@ See [demos](./demos/) for demos. These languages and debuggers are verified to w
 -   PHP using `php` debug adapter: [✅ Rudimentary Support](../demos/php)
 -   Java using `java` debug adapter: [✅ Rudimentary Support](../demos/java)
 -   C++ using `cppdbg` debug adapter: [✅ Rudimentary Support](../demos/cpp)
+-   Swift using `lldb` debug adapter: [✅ Rudimentary Support](../demos/swift)
 
 All other languages and debuggers might work too.
+For languages with _Rudimentary Support_, only JSON strings can be visualized - you must implement some logic that builds this JSON for your data structure!
+Fully supported languages offer _Data Extractors_ which convert some well known data structures to json.
 
 ## Usage
 
