@@ -10,23 +10,26 @@ A VS Code extension for visualizing data structures while debugging.
 
 See [demos](./demos/) for demos. These languages and debuggers are verified to work with this extension:
 
--   JavaScript/TypeScript/... using `node`/`node2`/`extensionHost` or `chrome` debug adapter: ⭐ Full Support
--   Go using `go` (Delve) debug adapter: ✅ Rudimentary Support
--   Python using `python` debug adapter: ✅ Rudimentary Support
--   C# using `coreclr` debug adapter: ✅ Rudimentary Support
--   PHP using `php` debug adapter: ✅ Rudimentary Support
--   Java using `java` debug adapter: ✅ Rudimentary Support
--   C++ using `cppdbg` debug adapter: ✅ Rudimentary Support
+-   JavaScript/TypeScript/... using `node`/`node2`/`extensionHost` or `chrome` debug adapter: [⭐ Full Support](../demos/js)
+-   Go using `go` (Delve) debug adapter: [✅ Rudimentary Support](../demos/golang)
+-   Python using `python` debug adapter: [✅ Rudimentary Support](../demos/python)
+-   C# using `coreclr` debug adapter: [✅ Rudimentary Support](../demos/csharp)
+-   PHP using `php` debug adapter: [✅ Rudimentary Support](../demos/php)
+-   Java using `java` debug adapter: [✅ Rudimentary Support](../demos/java)
+-   C++ using `cppdbg` debug adapter: [✅ Rudimentary Support](../demos/cpp)
 
 All other languages and debuggers might work too.
 
 ## Usage
 
-After installing this extension, use the command `Open a new Debug Visualizer View` to open a new visualizer view.
+After installing this extension, use the command `Debug Visualizer: New View` to open a new visualizer view.
 In this view you can enter an expression that is evaluated and visualized while stepping through your application.
 
 You can refresh the evaluation and pop out the current visualizer view into a new browser window by using the top right buttons.
 You can also unfold the details pane to select a _Data Extractor_ and a _Visualizer_.
+
+Use the command `Debug Visualizer: Use Selection as Expression` (Shift + F1) to use the currently selected text as expression
+in the most recently opened debug visualizer.
 
 ## Supported Values
 
@@ -47,6 +50,7 @@ The following visualizers are built into this extension.
 
 ### Graph Visualization
 
+[Demo](https://hediet.github.io/vscode-debug-visualizer/?value=%7B%0A++++%22kind%22%3A+%7B+%22graph%22%3A+true+%7D%2C%0A++++%22nodes%22%3A+%5B%0A++++++++%7B+%22id%22%3A+%221%22%2C+%22label%22%3A+%221%22+%7D%2C%0A++++++++%7B+%22id%22%3A+%222%22%2C+%22label%22%3A+%222%22%2C+%22color%22%3A+%22orange%22+%7D%2C%0A++++++++%7B+%22id%22%3A+%223%22%2C+%22label%22%3A+%223%22+%7D%0A++++%5D%2C%0A++++%22edges%22%3A+%5B%0A++++++++%7B+%22from%22%3A+%221%22%2C+%22to%22%3A+%222%22%2C+%22color%22%3A+%22red%22+%7D%2C%0A++++++++%7B+%22from%22%3A+%221%22%2C+%22to%22%3A+%223%22+%7D%0A++++%5D%0A%7D).
 The Graphviz and vis.js visualizers render data that matches the `Graph` interface.
 
 ```ts
@@ -80,6 +84,7 @@ The graphviz visualizer uses the SVG viewer to render the SVG created by `viz.js
 
 ### Plotly Visualization
 
+[Demo](https://hediet.github.io/vscode-debug-visualizer/?value=%7B%22kind%22%3A%7B%22plotly%22%3Atrue%7D%2C%22data%22%3A%5B%7B%22y%22%3A%5B0%2C1%2C2%2C3%2C4%2C3%2C4%2C3%2C2%2C1%2C2%5D%7D%5D%7D).
 The plotly visualizer uses plotly and can visualize JSON data matching the following interface:
 
 ```ts
@@ -116,6 +121,7 @@ interface TreeNode<TExtraData> {
 
 ### AST Visualization
 
+[Demo](https://hediet.github.io/vscode-debug-visualizer/?value=%7B%22kind%22%3A%7B%22text%22%3Atrue%2C%22tree%22%3Atrue%2C%22ast%22%3Atrue%7D%2C%22root%22%3A%7B%22name%22%3A%22SourceFile%22%2C%22id%22%3A%22root%22%2C%22children%22%3A%5B%7B%22name%22%3A%22ClassDeclaration%22%2C%22id%22%3A%22statements%22%2C%22children%22%3A%5B%7B%22name%22%3A%22Identifier%22%2C%22id%22%3A%22name%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A6%2C%22position%22%3A6%7D%2C%22isMarked%22%3Afalse%2C%22value%22%3A%22Test1%22%7D%2C%7B%22name%22%3A%22MethodDeclaration%22%2C%22id%22%3A%22members%22%2C%22children%22%3A%5B%7B%22name%22%3A%22PublicKeyword%22%2C%22id%22%3A%22modifiers%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A8%2C%22position%22%3A14%7D%2C%22isMarked%22%3Afalse%7D%2C%7B%22name%22%3A%22Identifier%22%2C%22id%22%3A%22name%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A4%2C%22position%22%3A22%7D%2C%22isMarked%22%3Afalse%2C%22value%22%3A%22foo%22%7D%2C%7B%22name%22%3A%22Parameter%22%2C%22id%22%3A%22parameters%22%2C%22children%22%3A%5B%7B%22name%22%3A%22Identifier%22%2C%22id%22%3A%22name%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A1%2C%22position%22%3A27%7D%2C%22isMarked%22%3Afalse%2C%22value%22%3A%22a%22%7D%2C%7B%22name%22%3A%22NumberKeyword%22%2C%22id%22%3A%22type%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A7%2C%22position%22%3A29%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A9%2C%22position%22%3A27%7D%2C%22isMarked%22%3Afalse%7D%2C%7B%22name%22%3A%22Block%22%2C%22id%22%3A%22body%22%2C%22children%22%3A%5B%7B%22name%22%3A%22VariableStatement%22%2C%22id%22%3A%22statements%22%2C%22children%22%3A%5B%7B%22name%22%3A%22VariableDeclarationList%22%2C%22id%22%3A%22declarationList%22%2C%22children%22%3A%5B%7B%22name%22%3A%22VariableDeclaration%22%2C%22id%22%3A%22declarations%22%2C%22children%22%3A%5B%7B%22name%22%3A%22Identifier%22%2C%22id%22%3A%22name%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A2%2C%22position%22%3A47%7D%2C%22isMarked%22%3Afalse%2C%22value%22%3A%22x%22%7D%2C%7B%22name%22%3A%22ObjectLiteralExpression%22%2C%22id%22%3A%22initializer%22%2C%22children%22%3A%5B%7B%22name%22%3A%22PropertyAssignment%22%2C%22id%22%3A%22properties%22%2C%22children%22%3A%5B%7B%22name%22%3A%22Identifier%22%2C%22id%22%3A%22name%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A2%2C%22position%22%3A53%7D%2C%22isMarked%22%3Afalse%2C%22value%22%3A%22a%22%7D%2C%7B%22name%22%3A%22FirstLiteralToken%22%2C%22id%22%3A%22initializer%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A2%2C%22position%22%3A56%7D%2C%22isMarked%22%3Afalse%2C%22value%22%3A%225%22%7D%5D%2C%22data%22%3A%7B%22length%22%3A5%2C%22position%22%3A53%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A9%2C%22position%22%3A51%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A13%2C%22position%22%3A47%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A21%2C%22position%22%3A39%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A22%2C%22position%22%3A39%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A27%2C%22position%22%3A37%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A50%2C%22position%22%3A14%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A66%2C%22position%22%3A0%7D%2C%22isMarked%22%3Afalse%7D%2C%7B%22name%22%3A%22EndOfFileToken%22%2C%22id%22%3A%22endOfFileToken%22%2C%22children%22%3A%5B%5D%2C%22data%22%3A%7B%22length%22%3A1%2C%22position%22%3A66%7D%2C%22isMarked%22%3Afalse%7D%5D%2C%22data%22%3A%7B%22length%22%3A67%2C%22position%22%3A0%7D%2C%22isMarked%22%3Atrue%7D%2C%22text%22%3A%22%5Cnclass+Test1+%7B%5Cn%5Ctpublic+foo%28a%3A+number%29+%7B%5Cn%5Ct%5Ctconst+x+%3D+%7B+a%3A+5+%7D%3B%5Cn%5Ct%7D%5Cn%7D%5Cn%22%2C%22fileName%22%3A%22index.ts%22%7D).
 The AST (Abstract Syntax Tree) visualizer renders data that matches the `Ast` interface.
 
 ```ts
