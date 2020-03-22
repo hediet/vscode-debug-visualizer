@@ -8,9 +8,10 @@
 		"./visualization-playground"
 	],
 	"scripts": {
-		"build": "yarn build-data-extraction && yarn build-extension && yarn build-ui",
+		"build": "yarn build-data-extraction && yarn build-extension && yarn build-visualization && yarn build-ui",
 		"build-data-extraction": "yarn workspace @hediet/debug-visualizer-data-extraction build",
 		"build-extension": "yarn workspace debug-visualizer build",
+		"build-visualization": "yarn workspace @hediet/visualization build",
 		"build-ui": "yarn workspace debug-visualizer-webview build"
 	}
 }
