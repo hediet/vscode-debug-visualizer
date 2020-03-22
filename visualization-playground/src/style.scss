@@ -36,8 +36,8 @@ body {
 .component-GUI {
 	height: 100%;
 	& > .part-Header {
-		padding: 6px 20px 6px 0;
-		background-color: var(--vscode-sideBar-background);
+		//padding: 6px 20px 6px 0;
+		//background-color: var(--vscode-sideBar-background);
 
 		// border-top: solid 1px var(--vscode-button-background);
 		// rgba(128, 128, 128, 0.15)
@@ -64,13 +64,6 @@ body {
 			background: transparent !important;
 		}
 	}
-}
-
-.svgViewer {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
 }
 
 .bp3-transition-container {

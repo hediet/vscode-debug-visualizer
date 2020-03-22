@@ -5,34 +5,41 @@ import { observer } from "mobx-react";
 import { Model } from "../model/Model";
 import classnames = require("classnames");
 import { knownVisualizations } from "@hediet/visualization";
-import {
-	ExtractedData,
-	CommonDataType,
-} from "@hediet/debug-visualizer-data-extraction";
+import { CommonDataType } from "@hediet/debug-visualizer-data-extraction";
+import { LightExpressionInput } from "./LightExpressionInput";
 
 @observer
 export class GUI extends React.Component<{ model: Model }> {
 	render() {
 		const m = this.props.model;
-		const e: CommonDataType = {
-			kind: { graph: true },
-			nodes: [
-				{ id: "1", label: "1" },
-				{ id: "2", label: "2" },
-			],
-			edges: [
-				{
-					from: "1",
-					to: "2",
-				},
-			],
-		};
-		const result = knownVisualizations.getBestVisualization(e, undefined);
 
 		return (
-			<div className="component-GUI">
-				{result.visualization!.render()}
+			<div
+				className="component-GUI"
+				style={{ display: "flex", flexDirection: "column" }}
+			>
+				<div className="part-header">
+					<LightExpressionInput model={m.jsonExpression} />
+				</div>
+				<div
+					className="part-visualization"
+					style={{ minHeight: 0, flex: 1 }}
+				>
+					{this.renderVisualization()}
+				</div>
 			</div>
 		);
+	}
+
+	renderVisualization() {
+		const m = this.props.model;
+
+		if (!m.visualizations) {
+			return <div>No/Invalid Data</div>;
+		}
+		if (!m.visualizations.visualization) {
+			return <div>Data cannot be visualized</div>;
+		}
+		return m.visualizations.visualization.render();
 	}
 }

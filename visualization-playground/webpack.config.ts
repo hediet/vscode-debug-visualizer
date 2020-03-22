@@ -4,13 +4,46 @@ import HtmlWebpackPlugin = require("html-webpack-plugin");
 import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 import ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import { EnabledVisualizers } from "@hediet/visualization";
 
 const r = (file: string) => path.resolve(__dirname, file);
 
 const mode = process.argv.some(v => v === "--fast") ? "fast" : "default";
 
+const enabledVisualizers: EnabledVisualizers =
+	mode === "fast"
+		? {
+				VisJsGraphVisualizer: true,
+				TreeVisualizer: false,
+				GraphvizGraphVisualizer: false,
+				SvgVisualizer: false,
+				GraphvizDotVisualizer: false,
+				TextVisualizer: false,
+				PlotlyVisualizer: false,
+				GridVisualizer: false,
+				MonacoTextVisualizer: false,
+				AstVisualizer: false,
+		  }
+		: {
+				VisJsGraphVisualizer: true,
+				TreeVisualizer: true,
+				GraphvizGraphVisualizer: true,
+				SvgVisualizer: true,
+				GraphvizDotVisualizer: true,
+				TextVisualizer: true,
+				PlotlyVisualizer: true,
+				GridVisualizer: true,
+				MonacoTextVisualizer: true,
+				AstVisualizer: true,
+		  };
+
+const stringifiedEnabledVisualizers: Record<string, string> = {};
+for (const [key, val] of Object.entries(enabledVisualizers)) {
+	stringifiedEnabledVisualizers[key] = JSON.stringify(val);
+}
+
 module.exports = {
-	entry: [mode === "default" ? r("src/index.tsx") : r("src/playground.tsx")],
+	entry: [r("src/index.tsx")],
 	output: {
 		path: r("dist"),
 		filename: "[name].js",
@@ -19,7 +52,7 @@ module.exports = {
 	resolve: {
 		extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
 	},
-	devtool: "source-map",
+	devtool: "eval", // "source-map",
 	module: {
 		rules: [
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
@@ -45,15 +78,18 @@ module.exports = {
 			}),
 			new ForkTsCheckerWebpackPlugin(),
 			new CleanWebpackPlugin(),
+			new webpack.DefinePlugin({
+				ENABLED_VISUALIZERS: stringifiedEnabledVisualizers,
+			}),
 		];
-		if (mode === "default") {
-			plugins.push(
-				new MonacoWebpackPlugin({
-					// Add more languages here once webworker issues are solved.
-					languages: ["typescript"],
-				})
-			);
-		}
+
+		plugins.push(
+			new MonacoWebpackPlugin({
+				// Add more languages here once webworker issues are solved.
+				languages: ["typescript"],
+			})
+		);
+
 		return plugins;
 	})(),
 } as webpack.Configuration;

@@ -4,8 +4,27 @@ import HtmlWebpackPlugin = require("html-webpack-plugin");
 import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 import ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import { EnabledVisualizers } from "@hediet/visualization";
 
 const r = (file: string) => path.resolve(__dirname, file);
+
+const enabledVisualizers: EnabledVisualizers = {
+	VisJsGraphVisualizer: true,
+	TreeVisualizer: true,
+	GraphvizGraphVisualizer: true,
+	SvgVisualizer: true,
+	GraphvizDotVisualizer: true,
+	TextVisualizer: true,
+	PlotlyVisualizer: true,
+	GridVisualizer: true,
+	MonacoTextVisualizer: true,
+	AstVisualizer: true,
+};
+
+const stringifiedEnabledVisualizers: Record<string, string> = {};
+for (const [key, val] of Object.entries(enabledVisualizers)) {
+	stringifiedEnabledVisualizers[key] = JSON.stringify(val);
+}
 
 module.exports = {
 	entry: [r("src/index.tsx")],
@@ -46,6 +65,9 @@ module.exports = {
 			new MonacoWebpackPlugin({
 				// Add more languages here once webworker issues are solved.
 				languages: ["typescript"],
+			}),
+			new webpack.DefinePlugin({
+				ENABLED_VISUALIZERS: stringifiedEnabledVisualizers,
 			}),
 		];
 

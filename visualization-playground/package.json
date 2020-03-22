@@ -4,9 +4,9 @@
 	"scripts": {
 		"dev": "webpack-dev-server --hot --port 8090",
 		"dev-fast": "webpack-dev-server --hot --port 8090 --fast",
-		"build": "webpack"
+		"build": "webpack",
+		"pub": "gh-pages -d dist"
 	},
-	"main": "./index.js",
 	"dependencies": {
 		"@blueprintjs/core": "^3.23.1",
 		"@hediet/std": "^0.6.0",
@@ -19,9 +19,11 @@
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",
 		"react-measure": "^2.3.0",
-		"@hediet/debug-visualizer-data-extraction": "*"
+		"@hediet/debug-visualizer-data-extraction": "*",
+		"react-autosize-textarea": "^7.0.0"
 	},
 	"devDependencies": {
+		"gh-pages": "^2.2.0",
 		"@types/html-webpack-plugin": "^3.2.2",
 		"@types/react-measure": "^2.0.6",
 		"@types/webpack": "^4.41.6",
