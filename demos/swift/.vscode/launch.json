@@ -1,0 +1,16 @@
+// .vscode/launch.json
+{
+	"version": "0.2.0",
+	"configurations": [
+		// Running executables
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Run your Executable",
+			"program": "${workspaceFolder}/.build/debug/swiftDemo",
+			"args": [],
+			"cwd": "${workspaceFolder}",
+			"preLaunchTask": "swift-build"
+		}
+	]
+}

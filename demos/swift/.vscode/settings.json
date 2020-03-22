@@ -1,0 +1,6 @@
+{
+	// You need to adapt this path to your swift installation.
+	// See here for more info:
+	// https://github.com/vadimcn/vscode-lldb/issues/234
+	"lldb.library": "/home/hediet/swift-5.1.5-RELEASE-ubuntu14.04/usr/lib/liblldb.so"
+}

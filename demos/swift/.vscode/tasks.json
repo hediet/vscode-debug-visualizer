@@ -1,0 +1,23 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		// compile your SPM project
+		{
+			"label": "swift-build",
+			"type": "shell",
+			"command": "swift build" // for TensorFlow add -Xlinker -ltensorflow
+		},
+		// compile your SPM tests
+		{
+			"label": "swift-build-tests",
+			"type": "process",
+			"command": "swift",
+			"group": "build",
+			"args": [
+				"build",
+				"--build-tests"
+				// for TensorFlow add "-Xlinker", "-ltensorflow"
+			]
+		}
+	]
+}
