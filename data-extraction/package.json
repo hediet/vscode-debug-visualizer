@@ -3,7 +3,7 @@
 	"description": "A library that helps implementing data extractors for the Debug Visualizer VS Code extension.",
 	"version": "0.12.0",
 	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"types": "dist/src/index.d.ts",
 	"author": {
 		"name": "Henning Dieterichs",
 		"email": "henning.dieterichs@live.de"
@@ -23,10 +23,17 @@
 	},
 	"scripts": {
 		"dev": "webpack --watch --mode development",
-		"build": "webpack --mode production"
+		"build": "webpack --mode production",
+		"test": "mocha --require source-map-support/register --require ts-node/register ./test/**/*.test.ts"
 	},
 	"dependencies": {},
 	"devDependencies": {
+		"@types/mocha": "^7.0.2",
+		"coveralls": "^3.0.11",
+		"mocha": "^7.1.1",
+		"mocha-lcov-reporter": "^1.3.0",
+		"nyc": "^15.0.0",
+		"source-map-support": "^0.5.16",
 		"typescript": "^3.8.2",
 		"@types/plotly.js": "1.44.28",
 		"@types/node": "^13.7.4",

@@ -9,6 +9,9 @@ import {
 import { ExtractedData, DataExtractorInfo } from "../../DataExtractionResult";
 import { registerDefaultExtractors } from "./default-extractors";
 
+/**
+ * @internal
+ */
 export class DataExtractorApiImpl implements DataExtractorApi {
 	public static lastEvalFn: (<T>(expression: string) => T) | undefined;
 

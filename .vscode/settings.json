@@ -5,5 +5,7 @@
 	"plantuml.diagramsRoot": "docs",
 	"plantuml.exportFormat": "png",
 	"plantuml.exportOutDir": "docs/exported",
-	"typescript.updateImportsOnFileMove.enabled": "prompt"
+	"typescript.updateImportsOnFileMove.enabled": "prompt",
+	"mochaExplorer.files": "./data-extraction/test/**/*.test.ts",
+	"mochaExplorer.require": ["ts-node/register", "source-map-support/register"]
 }
