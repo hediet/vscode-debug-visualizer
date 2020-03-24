@@ -16,13 +16,13 @@ import { WebViews } from "./WebViews";
 import { Server } from "./Server";
 import { Config } from "./Config";
 import { VsCodeDebugger, VsCodeDebuggerView } from "./VsCodeDebugger";
-import { DataSourceImpl } from "./DataSource";
+import { EvaluationWatchServiceImpl } from "./EvaluationWatchService";
 import {
-	ComposedDataExtractionProviderFactory,
-	JsDataExtractionProviderFactory,
-	GenericDataExtractionProviderFactory,
-	ConfiguredDataExtractionProviderFactory,
-} from "./DataSource/DataExtractionProvider";
+	ComposedEvaluationEngine,
+	JsEvaluationEngine,
+	GenericEvaluationEngine,
+	ConfiguredEvaluationEngine,
+} from "./EvaluationWatchService/EvaluationEngine";
 
 export class Extension {
 	public readonly dispose = Disposable.fn();
@@ -34,12 +34,12 @@ export class Extension {
 		new VsCodeDebuggerView(this.debugger)
 	);
 
-	public readonly dataSource = new DataSourceImpl(
+	public readonly dataSource = new EvaluationWatchServiceImpl(
 		this.debuggerView,
-		new ComposedDataExtractionProviderFactory([
-			new ConfiguredDataExtractionProviderFactory(this.config),
-			new JsDataExtractionProviderFactory(),
-			new GenericDataExtractionProviderFactory(),
+		new ComposedEvaluationEngine([
+			new ConfiguredEvaluationEngine(this.config),
+			new JsEvaluationEngine(),
+			new GenericEvaluationEngine(),
 		])
 	);
 

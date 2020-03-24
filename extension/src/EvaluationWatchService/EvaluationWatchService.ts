@@ -1,7 +1,7 @@
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 import { DataExtractionState, CompletionItem } from "../contract";
 
-export interface DataSource {
+export interface EvaluationWatchService {
 	createEvaluationWatcher(
 		expression: string,
 		options: EvaluationWatcherOptions

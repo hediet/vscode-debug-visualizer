@@ -1,32 +1,26 @@
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 import { VsCodeDebugSession } from "../../VsCodeDebugger";
-import {
-	DataExtractionProviderFactory,
-	DataExtractionProvider,
-} from "./DataExtractionProvider";
+import { EvaluationEngine, Evaluator } from "./EvaluationEngine";
 import { Config, DebugAdapterConfig } from "../../Config";
-import { GenericDataExtractionProvider } from "./GenericDataExtractionProviderFactory";
+import { GenericEvaluator } from "./GenericEvaluationEngine";
 import { registerUpdateReconciler, hotClass } from "@hediet/node-reload";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
-export class ConfiguredDataExtractionProviderFactory
-	implements DataExtractionProviderFactory {
+export class ConfiguredEvaluationEngine implements EvaluationEngine {
 	constructor(private readonly config: Config) {}
 
-	createDataExtractionProvider(
-		session: VsCodeDebugSession
-	): DataExtractionProvider | undefined {
+	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined {
 		const config = this.config.getDebugAdapterConfig(session.session.type);
 		if (!config) {
 			return undefined;
 		}
-		return new ConfiguredDataExtractionProvider(session, config);
+		return new ConfiguredEvaluator(session, config);
 	}
 }
 
-class ConfiguredDataExtractionProvider extends GenericDataExtractionProvider {
+class ConfiguredEvaluator extends GenericEvaluator {
 	constructor(
 		session: VsCodeDebugSession,
 		private readonly config: DebugAdapterConfig

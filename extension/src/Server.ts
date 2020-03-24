@@ -8,7 +8,7 @@ import * as serveStatic from "serve-static";
 import { Config } from "./Config";
 import cryptoRandomString = require("crypto-random-string");
 import { distPath } from "debug-visualizer-webview";
-import { DataSource } from "./DataSource/DataSource";
+import { EvaluationWatchService } from "./EvaluationWatchService/EvaluationWatchService";
 
 export class Server {
 	private server: http.Server;
@@ -16,7 +16,7 @@ export class Server {
 
 	public readonly connections = new Set<ClientConnection>();
 
-	constructor(dataSource: DataSource, config: Config) {
+	constructor(dataSource: EvaluationWatchService, config: Config) {
 		const app = express();
 
 		app.use(serveStatic(distPath));

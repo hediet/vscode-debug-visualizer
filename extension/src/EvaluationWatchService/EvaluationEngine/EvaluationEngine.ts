@@ -5,22 +5,20 @@ import {
 import { VsCodeDebugSession } from "../../VsCodeDebugger";
 import { FormattedMessage } from "../../contract";
 
-export interface DataExtractionProviderFactory {
-	createDataExtractionProvider(
-		session: VsCodeDebugSession
-	): DataExtractionProvider | undefined;
+export interface EvaluationEngine {
+	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined;
 }
 
-export interface DataExtractionProvider {
+export interface Evaluator {
 	evaluate(
-		args: DataExtractionProviderArgs
+		args: EvaluationArgs
 	): Promise<
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	>;
 }
 
-export interface DataExtractionProviderArgs {
+export interface EvaluationArgs {
 	expression: string;
 	preferredExtractorId: DataExtractorId | undefined;
 	frameId: number | undefined;

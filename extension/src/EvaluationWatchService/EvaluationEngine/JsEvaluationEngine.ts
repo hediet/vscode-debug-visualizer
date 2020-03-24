@@ -7,21 +7,18 @@ import {
 } from "@hediet/debug-visualizer-data-extraction";
 import { VsCodeDebugSession } from "../../VsCodeDebugger";
 import {
-	DataExtractionProviderFactory,
-	DataExtractionProvider,
-	DataExtractionProviderArgs,
-} from "./DataExtractionProvider";
+	EvaluationEngine,
+	Evaluator,
+	EvaluationArgs,
+} from "./EvaluationEngine";
 import { FormattedMessage } from "../../contract";
 import { registerUpdateReconciler, hotClass } from "@hediet/node-reload";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
-export class JsDataExtractionProviderFactory
-	implements DataExtractionProviderFactory {
-	createDataExtractionProvider(
-		session: VsCodeDebugSession
-	): DataExtractionProvider | undefined {
+export class JsEvaluationEngine implements EvaluationEngine {
+	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined {
 		const supportedDebugAdapters = [
 			"node",
 			"node2",
@@ -29,20 +26,20 @@ export class JsDataExtractionProviderFactory
 			"chrome",
 		];
 		if (supportedDebugAdapters.indexOf(session.session.type) !== -1) {
-			return new JsDataEvaluator(session);
+			return new JsEvaluator(session);
 		}
 		return undefined;
 	}
 }
 
-class JsDataEvaluator implements DataExtractionProvider {
+class JsEvaluator implements Evaluator {
 	constructor(private readonly session: VsCodeDebugSession) {}
 
 	public async evaluate({
 		expression,
 		preferredExtractorId,
 		frameId,
-	}: DataExtractionProviderArgs): Promise<
+	}: EvaluationArgs): Promise<
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	> {

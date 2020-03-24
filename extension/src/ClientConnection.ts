@@ -1,7 +1,10 @@
 import { Disposable } from "@hediet/std/disposable";
 import { debugVisualizerUIContract } from "./contract";
 import { ConsoleRpcLogger, RequestHandlingError } from "@hediet/typed-json-rpc";
-import { EvaluationWatcher, DataSource } from "./DataSource/DataSource";
+import {
+	EvaluationWatcher,
+	EvaluationWatchService,
+} from "./EvaluationWatchService";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { observable, autorun } from "mobx";
 import { Server } from "./Server";
@@ -17,7 +20,7 @@ export class ClientConnection {
 	private readonly client: typeof debugVisualizerUIContract["TClientInterface"];
 
 	constructor(
-		dataSource: DataSource,
+		dataSource: EvaluationWatchService,
 		stream: WebSocketStream,
 		server: Server,
 		config: Config,

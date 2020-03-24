@@ -1,24 +1,24 @@
 import {
-	DataSource,
+	EvaluationWatchService,
 	EvaluationWatcher,
 	EvaluationWatcherOptions,
-} from "./DataSource";
+} from "./EvaluationWatchService";
 import { observable, autorun, action } from "mobx";
 import { Disposable } from "@hediet/std/disposable";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 import { DataExtractionState, CompletionItem } from "../contract";
 import { hotClass } from "@hediet/node-reload";
 import { VsCodeDebuggerView } from "../VsCodeDebugger";
-import { DataExtractionProviderFactory } from "./DataExtractionProvider/DataExtractionProvider";
+import { EvaluationEngine } from "./EvaluationEngine/EvaluationEngine";
 
 @hotClass(module)
-export class DataSourceImpl implements DataSource {
+export class EvaluationWatchServiceImpl implements EvaluationWatchService {
 	public readonly dispose = Disposable.fn();
 	private readonly watchers = new Set<ObservableEvaluationWatcher>();
 
 	constructor(
 		private readonly vsCodeDebuggerView: VsCodeDebuggerView,
-		private readonly dataExtractionProviderFactory: DataExtractionProviderFactory
+		private readonly dataExtractionProviderFactory: EvaluationEngine
 	) {
 		this.dispose.track({
 			dispose: autorun(() => {
@@ -59,7 +59,7 @@ export class DataSourceImpl implements DataSource {
 
 		w._state = { kind: "loading" };
 
-		const extractionProvider = this.dataExtractionProviderFactory.createDataExtractionProvider(
+		const extractionProvider = this.dataExtractionProviderFactory.createEvaluator(
 			session
 		);
 		if (!extractionProvider) {
@@ -98,7 +98,7 @@ export class DataSourceImpl implements DataSource {
 class ObservableEvaluationWatcher implements EvaluationWatcher {
 	constructor(
 		public readonly expression: string,
-		private readonly source: DataSourceImpl,
+		private readonly source: EvaluationWatchServiceImpl,
 		options: EvaluationWatcherOptions
 	) {
 		this._preferredDataExtractor = options.preferredDataExtractor;

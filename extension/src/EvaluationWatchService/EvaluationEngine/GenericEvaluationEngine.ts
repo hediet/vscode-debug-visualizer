@@ -4,10 +4,10 @@ import {
 } from "@hediet/debug-visualizer-data-extraction";
 import { VsCodeDebugSession } from "../../VsCodeDebugger";
 import {
-	DataExtractionProviderFactory,
-	DataExtractionProvider,
-	DataExtractionProviderArgs,
-} from "./DataExtractionProvider";
+	EvaluationEngine,
+	Evaluator,
+	EvaluationArgs,
+} from "./EvaluationEngine";
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
 import { FormattedMessage } from "../../contract";
 import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
@@ -15,23 +15,20 @@ import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
 registerUpdateReconciler(module);
 
 @hotClass(module)
-export class GenericDataExtractionProviderFactory
-	implements DataExtractionProviderFactory {
-	createDataExtractionProvider(
-		session: VsCodeDebugSession
-	): DataExtractionProvider | undefined {
-		return new GenericDataExtractionProvider(session);
+export class GenericEvaluationEngine implements EvaluationEngine {
+	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined {
+		return new GenericEvaluator(session);
 	}
 }
 
-export class GenericDataExtractionProvider implements DataExtractionProvider {
+export class GenericEvaluator implements Evaluator {
 	constructor(private readonly session: VsCodeDebugSession) {}
 
 	public async evaluate({
 		expression,
 		preferredExtractorId,
 		frameId,
-	}: DataExtractionProviderArgs): Promise<
+	}: EvaluationArgs): Promise<
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	> {
