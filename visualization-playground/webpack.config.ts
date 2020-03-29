@@ -52,7 +52,7 @@ module.exports = {
 	resolve: {
 		extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
 	},
-	devtool: "eval", // "source-map",
+	devtool: "source-map",
 	module: {
 		rules: [
 			{ test: /\.css$/, loader: "style-loader!css-loader" },
