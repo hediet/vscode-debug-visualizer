@@ -5,7 +5,7 @@
 	"description": "An extension that visualizes values while debugging.",
 	"icon": "docs/logo.png",
 	"version": "0.14.0",
-	"license": "MIT",
+	"license": "GPL-3.0",
 	"engines": {
 		"vscode": "^1.35.0"
 	},

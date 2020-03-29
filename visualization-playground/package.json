@@ -1,6 +1,7 @@
 {
 	"name": "visualization-playground",
 	"version": "0.0.1",
+	"license": "GPL-3.0",
 	"scripts": {
 		"dev": "webpack-dev-server --hot --port 8090",
 		"dev-fast": "webpack-dev-server --hot --port 8090 --fast",
