@@ -4,8 +4,11 @@ import {
 } from "debug-visualizer/src/contract";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import { observable, action, computed, when } from "mobx";
-import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
+import { observable, action, computed, when, runInAction } from "mobx";
+import {
+	DataExtractorId,
+	ExtractedData,
+} from "@hediet/debug-visualizer-data-extraction";
 import {
 	Visualization,
 	VisualizationId,
@@ -21,6 +24,7 @@ declare const window: Window & {
 		serverSecret: string;
 		serverPort: number;
 		publicPath: string;
+		expression: string | undefined;
 	};
 };
 
@@ -38,9 +42,14 @@ export class Model {
 	private serverSecret: string;
 
 	@observable expression: string = "";
-	@observable state: DataExtractionState | { kind: "noExpression" } = {
+	@observable state:
+		| DataExtractionState
+		| { kind: "noExpression" }
+		| { kind: "visualizationError"; data: ExtractedData } = {
 		kind: "noExpression",
 	};
+
+	@observable languageId: string = "text";
 
 	@observable private preferredVisualizationId:
 		| VisualizationId
@@ -49,6 +58,11 @@ export class Model {
 	@action
 	public setPreferredVisualizationId(id: VisualizationId) {
 		this.preferredVisualizationId = id;
+	}
+
+	@action
+	public setVisualizationError(data: ExtractedData) {
+		this.state = { kind: "visualizationError", data: data };
 	}
 
 	@computed get visualizations():
@@ -98,6 +112,10 @@ export class Model {
 				this.theme = isLight ? "light" : "dark";
 			};
 			updateTheme();
+
+			if (data.expression !== undefined) {
+				this.setExpression(data.expression);
+			}
 
 			this.dispose.track(
 				startInterval(1000, () => {
@@ -191,13 +209,18 @@ export class Model {
 					new ConsoleRpcLogger(),
 					{
 						updateState: async ({ newState }) => {
-							this._loading = newState.kind === "loading";
-							if (!this._loading) {
-								this.state = newState;
-							}
+							runInAction(() => {
+								this._loading = newState.kind === "loading";
+								if (!this._loading) {
+									this.state = newState;
+								}
+							});
 						},
 						setExpression: async ({ expression }) => {
 							this.setExpression(expression);
+						},
+						updateLanguageId: async ({ languageId }) => {
+							this.languageId = languageId || "text";
 						},
 					}
 				);

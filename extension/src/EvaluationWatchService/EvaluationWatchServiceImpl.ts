@@ -18,7 +18,7 @@ export class EvaluationWatchServiceImpl implements EvaluationWatchService {
 
 	constructor(
 		private readonly vsCodeDebuggerView: VsCodeDebuggerView,
-		private readonly dataExtractionProviderFactory: EvaluationEngine
+		private readonly evaluationEngine: EvaluationEngine
 	) {
 		this.dispose.track({
 			dispose: autorun(() => {
@@ -48,6 +48,21 @@ export class EvaluationWatchServiceImpl implements EvaluationWatchService {
 		this.watchers.delete(w);
 	}
 
+	private lastLanguageId: string | undefined = undefined;
+
+	get languageId(): string | undefined {
+		const session = this.vsCodeDebuggerView.activeDebugSession;
+		if (!session) {
+			return this.lastLanguageId;
+		}
+		const evaluator = this.evaluationEngine.createEvaluator(session);
+		if (!evaluator) {
+			return this.lastLanguageId;
+		}
+		this.lastLanguageId = evaluator.languageId;
+		return evaluator.languageId;
+	}
+
 	public async refresh(w: ObservableEvaluationWatcher): Promise<void> {
 		const session = this.vsCodeDebuggerView.activeDebugSession;
 		if (!session) {
@@ -59,10 +74,8 @@ export class EvaluationWatchServiceImpl implements EvaluationWatchService {
 
 		w._state = { kind: "loading" };
 
-		const extractionProvider = this.dataExtractionProviderFactory.createEvaluator(
-			session
-		);
-		if (!extractionProvider) {
+		const evaluator = this.evaluationEngine.createEvaluator(session);
+		if (!evaluator) {
 			w._state = {
 				kind: "error",
 				message: `The debug adapter "${session.session.type}" is not supported.`,
@@ -70,7 +83,7 @@ export class EvaluationWatchServiceImpl implements EvaluationWatchService {
 			return;
 		}
 
-		const result = await extractionProvider.evaluate({
+		const result = await evaluator.evaluate({
 			expression: w.expression,
 			frameId,
 			preferredExtractorId: w.preferredDataExtractor,

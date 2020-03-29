@@ -27,7 +27,7 @@ export class WebViews {
 		});
 	}
 
-	public createNew() {
+	public createNew(expression: string | undefined = undefined) {
 		const panel = window.createWebviewPanel(
 			debugVisualizer,
 			"Debug Visualizer",
@@ -35,15 +35,18 @@ export class WebViews {
 			{ enableScripts: true }
 		);
 
-		this.setupView(panel);
+		this.setupView(panel, expression);
 	}
 
 	public restore(webviewPanel: WebviewPanel) {
 		this.setupView(webviewPanel);
 	}
 
-	private setupView(webviewPanel: WebviewPanel) {
-		webviewPanel.webview.html = getHtml(this.server);
+	private setupView(
+		webviewPanel: WebviewPanel,
+		expression: string | undefined = undefined
+	) {
+		webviewPanel.webview.html = getHtml(this.server, expression);
 		const view = new WebView(webviewPanel);
 		this.debugVisualizations.set(webviewPanel, view);
 		webviewPanel.onDidDispose(() => {
@@ -56,7 +59,10 @@ export class WebView {
 	constructor(private readonly webviewPanel: WebviewPanel) {}
 }
 
-export function getHtml(server: Server) {
+export function getHtml(
+	server: Server,
+	expression: string | undefined = undefined
+) {
 	const isDev = !!process.env.USE_DEV_UI;
 	return `
         <html>
@@ -75,6 +81,7 @@ export function getHtml(server: Server) {
 						serverSecret: server.secret,
 						serverPort: server.port,
 						publicPath: server.publicPath,
+						expression,
 					})};
 					const api = window.VsCodeApi = acquireVsCodeApi();
 					window.addEventListener('message', event => {
@@ -94,7 +101,7 @@ export function getHtml(server: Server) {
 				${
 					isDev
 						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.getIndexUrl(
-								{ mode: "webViewIFrame" }
+								{ mode: "webViewIFrame", expression }
 						  )}"></iframe>`
 						: `<script type="text/javascript" src="${server.mainBundleUrl}"></script>`
 				}

@@ -20,7 +20,7 @@ export class ClientConnection {
 	private readonly client: typeof debugVisualizerUIContract["TClientInterface"];
 
 	constructor(
-		dataSource: EvaluationWatchService,
+		evaluationWatchService: EvaluationWatchService,
 		stream: WebSocketStream,
 		server: Server,
 		config: Config,
@@ -65,9 +65,12 @@ export class ClientConnection {
 						this.dispose.untrack(this.watcher).dispose();
 					}
 					this.watcher = this.dispose.track(
-						dataSource.createEvaluationWatcher(newExpression, {
-							preferredDataExtractor: oldPreferredDataExtractor,
-						})
+						evaluationWatchService.createEvaluationWatcher(
+							newExpression,
+							{
+								preferredDataExtractor: oldPreferredDataExtractor,
+							}
+						)
 					);
 				},
 				openInBrowser: async ({}) => {
@@ -98,7 +101,7 @@ export class ClientConnection {
 				getCompletions: async ({ text, column }) => {
 					throwIfNotAuthenticated();
 
-					const completions = await dataSource.getCompletions(
+					const completions = await evaluationWatchService.getCompletions(
 						text,
 						column
 					);
@@ -111,7 +114,7 @@ export class ClientConnection {
 
 		this.client = client;
 
-		this.dispose.track(
+		this.dispose.track([
 			Disposable.create(
 				autorun(() => {
 					if (this.watcher) {
@@ -120,8 +123,15 @@ export class ClientConnection {
 						});
 					}
 				})
-			)
-		);
+			),
+			Disposable.create(
+				autorun(() => {
+					client.updateLanguageId({
+						languageId: evaluationWatchService.languageId || null,
+					});
+				})
+			),
+		]);
 
 		stream.onClosed.then(() => {
 			this.dispose();

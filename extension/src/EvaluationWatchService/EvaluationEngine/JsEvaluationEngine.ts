@@ -33,6 +33,8 @@ export class JsEvaluationEngine implements EvaluationEngine {
 }
 
 class JsEvaluator implements Evaluator {
+	public readonly languageId = "javascript";
+
 	constructor(private readonly session: VsCodeDebugSession) {}
 
 	public async evaluate({

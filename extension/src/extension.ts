@@ -85,8 +85,7 @@ export class Extension {
 
 						latestConnection.setExpression(selectedText);
 					} else {
-						// TODO pass expression
-						// this.views.createNew();
+						this.views.createNew(selectedText);
 					}
 				}
 			)

@@ -100,6 +100,11 @@ export const debugVisualizerUIContract = contract({
 				newState: unchecked<DataExtractionState>(),
 			}),
 		}),
+		updateLanguageId: notificationContract({
+			params: types.type({
+				languageId: types.union([types.null, types.string]),
+			}),
+		}),
 		setExpression: requestContract({
 			params: types.type({
 				expression: types.string,

@@ -10,7 +10,7 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 	@observable private contentHeight: number | undefined = undefined;
 	private model = monaco.editor.createModel(
 		"",
-		"text",
+		"javascript",
 		monaco.Uri.parse(`file:///main.ts`)
 	);
 
@@ -52,6 +52,11 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 		if (val !== newVal) {
 			this.model.setValue(newVal);
 		}
+	});
+
+	@disposeOnUnmount
+	private _updateLanguageId = autorun(() => {
+		monaco.editor.setModelLanguage(this.model, this.props.model.languageId);
 	});
 
 	private readonly setEditorDiv = (editorDiv: HTMLDivElement) => {

@@ -2,13 +2,20 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch Chrome",
+			"url": "http://localhost:8090",
+			"webRoot": "${workspaceFolder}/visualization-playground"
+		},
+		{
 			"name": "Run Extension (Hot Reload)",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\demos\\js"
+				"${workspaceFolder}\\demos\\php"
 			],
 			"env": {
 				"HOT_RELOAD": "true",

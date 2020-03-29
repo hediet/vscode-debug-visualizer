@@ -8,6 +8,13 @@ export interface EvaluationWatchService {
 	): EvaluationWatcher;
 
 	getCompletions(text: string, column: number): Promise<CompletionItem[]>;
+
+	/**
+	 * The language the expressions must be written in.
+	 * `undefined`, if unknown.
+	 * This field is observable.
+	 */
+	readonly languageId: string | undefined;
 }
 
 export interface EvaluationWatcherOptions {

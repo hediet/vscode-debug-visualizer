@@ -2,13 +2,23 @@ import * as monaco from "monaco-editor";
 import { Model } from "./Model";
 import { Disposable } from "@hediet/std/disposable";
 import { autorun } from "mobx";
+
+declare const require: {
+	(path: string): { default: string };
+	context: (
+		path: string,
+		includeSubDirs: boolean,
+		regex: RegExp
+	) => { (fileName: string): { default: string }; keys(): string[] };
+};
+
 export class MonacoBridge {
 	public readonly dispose = Disposable.fn();
 
 	constructor(private readonly model: Model) {
 		monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-			noSemanticValidation: false,
-			noSyntaxValidation: false,
+			noSemanticValidation: true,
+			noSyntaxValidation: true,
 		});
 		monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
 			target: monaco.languages.typescript.ScriptTarget.ES5,
@@ -19,29 +29,45 @@ export class MonacoBridge {
 			strict: true,
 		});
 
-		const es5Lib = require("!!raw-loader!./lib.es5.d.ts.txt")
-			.default as string;
-		const commonTypes = require("!!raw-loader!@hediet/debug-visualizer-data-extraction/src/CommonDataTypes.ts")
-			.default as string;
+		const es5Lib = require("!!raw-loader!./lib.es5.d.ts.txt").default;
+		const commonTypes = require.context(
+			"!!raw-loader!@hediet/debug-visualizer-data-extraction/dist/src/",
+			true,
+			/.*.d.ts$/
+		);
+
+		for (const file of commonTypes.keys()) {
+			console.log(file);
+			this.dispose.track(
+				monaco.languages.typescript.javascriptDefaults.addExtraLib(
+					commonTypes(file).default,
+					`file:///node_modules/debug-visualizer-data-extraction/${file}`
+				)
+			);
+		}
 
 		this.dispose.track([
 			monaco.languages.typescript.javascriptDefaults.addExtraLib(es5Lib),
 			monaco.languages.typescript.javascriptDefaults.addExtraLib(
-				commonTypes,
-				`file:///node_modules/CommonDataTypes/index.ts`
-			),
-			monaco.languages.typescript.javascriptDefaults.addExtraLib(
-				`declare function $asData(data: import("CommonDataTypes").CommonDataType): import("CommonDataTypes").CommonDataType;`,
+				`declare const hedietDbgVis: typeof import("debug-visualizer-data-extraction/js/helpers")`,
 				`file:///types.d.ts`
 			),
 		]);
 
-		this.dispose.track(
+		const debugSessionCompletionProvider = new DebugSessionCompletionProvider(
+			this.model
+		);
+
+		this.dispose.track([
 			monaco.languages.registerCompletionItemProvider(
 				"javascript",
-				new DebugSessionCompletionProvider(this.model)
-			)
-		);
+				debugSessionCompletionProvider
+			),
+			monaco.languages.registerCompletionItemProvider(
+				"text",
+				debugSessionCompletionProvider
+			),
+		]);
 
 		this.dispose.track({
 			dispose: autorun(() => {

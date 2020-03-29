@@ -22,6 +22,8 @@ export class GenericEvaluationEngine implements EvaluationEngine {
 }
 
 export class GenericEvaluator implements Evaluator {
+	public readonly languageId = "text";
+
 	constructor(private readonly session: VsCodeDebugSession) {}
 
 	public async evaluate({

@@ -16,6 +16,11 @@ export interface Evaluator {
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	>;
+
+	/**
+	 * The language that expressions must be written in.
+	 */
+	readonly languageId: string | undefined;
 }
 
 export interface EvaluationArgs {

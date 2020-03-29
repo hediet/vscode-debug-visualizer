@@ -1,7 +1,4 @@
-import {
-	getDataExtractorApi,
-	DataExtractorApiImpl,
-} from "@hediet/debug-visualizer-data-extraction";
+import { DataExtractorApiImpl } from "../";
 
 describe("extractor", () => {
 	it("should not crash", () => {
