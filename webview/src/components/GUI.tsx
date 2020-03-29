@@ -84,6 +84,7 @@ export class VisualizerHeader extends React.Component<{ model: Model }> {
 	}
 }
 
+@observer
 export class VisualizerHeaderMain extends React.Component<{ model: Model }> {
 	render() {
 		const m = this.props.model;
