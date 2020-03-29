@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.0
+
+-   "Debug Visualizer: Use Selection as Expression" will open a new view if no Debug Visualizer view was opened.
+-   Enables type based autocompletion in the input field when debugging JavaScript/TypeScript.
+-   Changes license from MIT to GPL-3.0.
+-   Fixes bug where loading animation didn't stop.
+-   Catches visualization errors rather than letting the entire webview crash.
+
 ## 0.14.0
 
 -   Submits the expression when the expression input loses focus.
