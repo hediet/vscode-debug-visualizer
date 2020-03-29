@@ -36,7 +36,7 @@ module.exports = {
 	},
 	plugins: [
 		new CleanWebpackPlugin({
-			protectWebpackAssets: true,
+			//protectWebpackAssets: true,
 			cleanAfterEveryBuildPatterns: ["!**/*.d.ts", "!**/*.d.ts.map"],
 		}),
 	],

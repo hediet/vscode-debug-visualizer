@@ -3,14 +3,14 @@
 		"target": "esnext",
 		"module": "commonjs",
 		"strict": true,
-		"outDir": "./dist",
 		"skipLibCheck": true,
-		"rootDir": "./src",
+		"rootDir": "./",
 		"resolveJsonModule": true,
 		"declaration": true,
 		"declarationMap": true,
 		"newLine": "LF",
-		"sourceMap": true
+		"sourceMap": true,
+		"noEmit": true
 	},
-	"include": ["./src/**/*"]
+	"include": ["./**/*"]
 }

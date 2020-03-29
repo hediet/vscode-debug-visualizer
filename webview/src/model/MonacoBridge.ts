@@ -31,7 +31,7 @@ export class MonacoBridge {
 
 		const es5Lib = require("!!raw-loader!./lib.es5.d.ts.txt").default;
 		const commonTypes = require.context(
-			"!!raw-loader!@hediet/debug-visualizer-data-extraction/dist/src/",
+			"!!raw-loader!@hediet/debug-visualizer-data-extraction/dist/",
 			true,
 			/.*.d.ts$/
 		);
