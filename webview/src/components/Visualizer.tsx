@@ -12,6 +12,11 @@ export class Visualizer extends React.Component<{ model: Model }> {
 		);
 	}
 
+	componentDidCatch() {
+		this.props.model.setVisualizationError({ kind: {} });
+		console.log("broken");
+	}
+
 	renderContent(): JSX.Element {
 		const s = this.props.model.state;
 		if (s.kind === "loading") {
@@ -24,6 +29,8 @@ export class Visualizer extends React.Component<{ model: Model }> {
 			);
 		} else if (s.kind === "noExpression") {
 			return <NoData>No Expression Entered</NoData>;
+		} else if (s.kind === "visualizationError") {
+			return <NoData>Visualization Error</NoData>;
 		} else if (s.kind === "noDebugSession") {
 			return <NoData>No Active Debug Session</NoData>;
 		} else if (s.kind === "data") {
@@ -32,7 +39,19 @@ export class Visualizer extends React.Component<{ model: Model }> {
 				return <NoData>No Visualization Available</NoData>;
 			}
 
-			return vis.visualization.render();
+			try {
+				return vis.visualization.render();
+			} catch (e) {
+				console.error(e);
+				return (
+					<NoData>
+						<>
+							Visualization Error
+							<pre>{e.message}</pre>
+						</>
+					</NoData>
+				);
+			}
 		} else {
 			const nvr: never = s;
 			return <div />;
