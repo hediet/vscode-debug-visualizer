@@ -3,6 +3,7 @@
 [![](https://img.shields.io/twitter/follow/hediet_dev.svg?style=social)](https://twitter.com/intent/follow?screen_name=hediet_dev)
 
 A VS Code extension for visualizing data structures while debugging.
+Like the VS Code's watch view, but with custom visualizations.
 
 ![](../docs/demo.gif)
 
@@ -28,8 +29,9 @@ Fully supported languages offer _Data Extractors_ which convert some well known 
 
 After installing this extension, use the command `Debug Visualizer: New View` to open a new visualizer view.
 In this view you can enter an expression that is evaluated and visualized while stepping through your application.
+This view works the same as the watch view of VS Code, except that the resulting value is presented visually rather than textually.
 
-You can refresh the evaluation and pop out the current visualizer view into a new browser window by using the top right buttons.
+You can refresh the evaluation and open the current visualizer view into a new browser window by using the top right buttons.
 You can also unfold the details pane to select a _Data Extractor_ and a _Visualizer_.
 
 Use the command `Debug Visualizer: Use Selection as Expression` (Shift + F1) to use the currently selected text as expression
@@ -39,7 +41,7 @@ in the most recently opened debug visualizer.
 
 Visualizers consume specific JSON data. See [Integrated Visualizers](#Integrated%20Visualizers) for the schema of supported JSON data.
 
-The currently visualized expression should evaluate to a JSON Object string,
+The currently watched expression should evaluate to a JSON Object string,
 matching the schema of one of the supported visualizers. This JSON string may be surrounded by single or double quotation marks (or none at all) and must not be escaped.
 A valid example is `"{ "kind": { "text": true }, "text": "some text\nmore text" }"`.
 
