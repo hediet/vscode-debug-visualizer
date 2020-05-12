@@ -14,7 +14,12 @@ export class VsCodeDebugger {
 	public readonly onDidStartDebugSession = this._onDidStartDebugSession.asEvent();
 
 	public getDebugSession(session: DebugSession): VsCodeDebugSession {
-		return this.sessions.get(session)!;
+		let result = this.sessions.get(session);
+		if (!result) {
+			result = new VsCodeDebugSession(session);
+			this.sessions.set(session, result);
+		}
+		return result;
 	}
 
 	constructor() {
@@ -24,15 +29,11 @@ export class VsCodeDebugger {
 				this._onDidStartDebugSession.emit({ session: e });
 			}),
 			debug.onDidTerminateDebugSession(session => {
-				const e = this.sessions.get(session)!;
-				// TODO add proper event
 				this.sessions.delete(session);
 			}),
 			debug.registerDebugAdapterTrackerFactory("*", {
 				createDebugAdapterTracker: session => {
-					const extendedSession = new VsCodeDebugSession(session);
-					this.sessions.set(session, extendedSession);
-
+					const extendedSession = this.getDebugSession(session);
 					return {
 						onWillReceiveMessage: msg => {
 							console.log(msg.type, msg.event, msg);
