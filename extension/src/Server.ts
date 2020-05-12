@@ -11,7 +11,7 @@ import { distPath } from "debug-visualizer-webview";
 import { EvaluationWatchService } from "./EvaluationWatchService/EvaluationWatchService";
 
 export class Server {
-	private server: http.Server;
+	private readonly server: http.Server;
 	public readonly secret = cryptoRandomString({ length: 20 });
 
 	public readonly connections = new Set<ClientConnection>();
