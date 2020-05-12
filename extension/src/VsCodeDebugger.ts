@@ -2,7 +2,7 @@ import { Disposable } from "@hediet/std/disposable";
 import { debug, DebugSession } from "vscode";
 import { EventEmitter } from "@hediet/std/events";
 import { CompletionItem } from "./contract";
-import { observable, runInAction } from "mobx";
+import { observable, runInAction, action } from "mobx";
 
 export class VsCodeDebugger {
 	public readonly dispose = Disposable.fn();
@@ -193,17 +193,19 @@ export class VsCodeDebuggerView {
 	constructor(private vsCodeDebugger: VsCodeDebugger) {
 		this.dispose.track(
 			debug.onDidChangeActiveDebugSession(activeSession => {
-				runInAction("Update active debug session", () => {
-					if (!activeSession) {
-						this._activeDebugSession = undefined;
-					} else {
-						const s = this.vsCodeDebugger.getDebugSession(
-							activeSession
-						);
-						this._activeDebugSession = s;
-					}
-				});
+				this.updateActiveDebugSession(activeSession);
 			})
 		);
+		this.updateActiveDebugSession(debug.activeDebugSession);
+	}
+
+	@action
+	private updateActiveDebugSession(activeSession: DebugSession | undefined) {
+		if (!activeSession) {
+			this._activeDebugSession = undefined;
+		} else {
+			const s = this.vsCodeDebugger.getDebugSession(activeSession);
+			this._activeDebugSession = s;
+		}
 	}
 }
