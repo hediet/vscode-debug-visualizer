@@ -219,7 +219,7 @@ interface DotGraph extends Text {
 ## JavaScript/TypeScript Integrated Data Extractors
 
 Data extractors convert arbitrary values into data consumable by visualizers.
-They live in the debugee. The following data extractors are injected automatically into the debugee by this extension when using the `node`, `node2`, `extensionHost` or `chrome` debug adapter.
+They live in the debugee. The following data extractors are injected automatically into the debugee by this extension when using the `node`, `node2`, `extensionHost`, `chrome` or `pwa-chrome` debug adapter.
 Custom data extractors can be registered too.
 See the package `@hediet/debug-visualizer-data-extraction` and its [README](../data-extraction/README.md) for the implementation and its API.
 Also, a global object of name `hedietDbgVis` with helper functions is injected.

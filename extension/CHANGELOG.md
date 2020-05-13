@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.1.0
+
+-   Fixes a bug that occurs when the debug visualizer is opened after the debug session has started.
+-   Fixes a bug that is caused by VS Code invoking the debug tracker multiple times for the same session.
+-   Adds support for the new `pwa-chrome` debug adapter.
+-   Uses `repl` mode as default evaluation context so that responses don't get truncated.
+-   Improves error messages when evaluating an expression or parsing the result goes wrong.
+-   Sets `webview.retainContextWhenHidden` to true, so that visualizer views load faster when they were already opened.
+-   Configures `webview.portMapping` so that this extension should work with remote development.
+
 ## 1.0.0
 
 -   "Debug Visualizer: Use Selection as Expression" will open a new view if no Debug Visualizer view was opened.
