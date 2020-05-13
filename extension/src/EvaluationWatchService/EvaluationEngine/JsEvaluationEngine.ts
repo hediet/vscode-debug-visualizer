@@ -24,6 +24,7 @@ export class JsEvaluationEngine implements EvaluationEngine {
 			"node2",
 			"extensionHost",
 			"chrome",
+			"pwa-chrome",
 		];
 		if (supportedDebugAdapters.indexOf(session.session.type) !== -1) {
 			return new JsEvaluator(session);
@@ -74,6 +75,7 @@ class JsEvaluator implements Evaluator {
 				const reply = await this.session.evaluate({
 					expression: wrappedExpr,
 					frameId,
+					context: "repl",
 				});
 				const resultStr = reply.result;
 				const jsonData = resultStr.substr(1, resultStr.length - 2);
@@ -115,6 +117,7 @@ class JsEvaluator implements Evaluator {
 			await this.session.evaluate({
 				expression,
 				frameId,
+				context: "repl",
 			});
 
 			return true;
