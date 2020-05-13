@@ -10,6 +10,18 @@
 		"vscode": "^1.35.0"
 	},
 	"publisher": "hediet",
+	"keywords": [
+		"debugger",
+		"debugging",
+		"debug",
+		"visual",
+		"javascript",
+		"graph",
+		"ast"
+	],
+	"bugs": {
+		"url": "https://github.com/hediet/vscode-debug-visualizer/issues"
+	},
 	"author": {
 		"email": "henning.dieterichs@live.de",
 		"name": "Henning Dieterichs"
