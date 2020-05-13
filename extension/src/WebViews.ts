@@ -32,7 +32,16 @@ export class WebViews {
 			debugVisualizer,
 			"Debug Visualizer",
 			ViewColumn.Two,
-			{ enableScripts: true }
+			{
+				enableScripts: true,
+				retainContextWhenHidden: true,
+				portMapping: [
+					{
+						webviewPort: this.server.port,
+						extensionHostPort: this.server.port,
+					},
+				],
+			}
 		);
 
 		this.setupView(panel, expression);
