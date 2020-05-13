@@ -160,15 +160,20 @@ export class VsCodeDebugSession {
 		}
 	}
 
+	/**
+	 * Evaluates the given expression.
+	 * If context is "watch", long results are usually shortened.
+	 */
 	public async evaluate(args: {
 		expression: string;
 		frameId: number | undefined;
-		context?: "watch" | "repl";
+		context: "watch" | "repl";
 	}): Promise<{ result: string }> {
 		const reply = await this.session.customRequest("evaluate", {
 			expression: args.expression,
 			frameId: args.frameId,
-			context: args.context || "watch",
+
+			context: args.context,
 		});
 		return { result: reply.result };
 	}
