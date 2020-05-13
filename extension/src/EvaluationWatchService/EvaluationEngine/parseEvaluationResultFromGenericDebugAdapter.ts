@@ -4,8 +4,13 @@ import {
 } from "@hediet/debug-visualizer-data-extraction";
 import { FormattedMessage } from "../../contract";
 
+export interface ParseEvaluationResultContext {
+	debugAdapterType: string;
+}
+
 export function parseEvaluationResultFromGenericDebugAdapter(
-	resultText: string
+	resultText: string,
+	context: ParseEvaluationResultContext
 ):
 	| { kind: "data"; result: DataExtractionResult }
 	| { kind: "error"; message: FormattedMessage } {
@@ -26,12 +31,12 @@ export function parseEvaluationResultFromGenericDebugAdapter(
 				// Just in case no quoting is done.
 				jsonData2 = jsonData;
 			}
-			resultObj = parseJson(jsonData2);
+			resultObj = parseJson(jsonData2, context);
 		} catch (e) {
 			// in case of C++: `"{ \"kind\": { ... }, \"text\": \"some\\ntext\" }"`
-			const str = parseJson(jsonData);
+			const str = parseJson(jsonData, context);
 			// str is now `{ "kind": { ... }, "text": "some\ntext" }"`
-			resultObj = parseJson(str);
+			resultObj = parseJson(str, context);
 			// result is now { kind: { ... }, text: "some\ntext" }
 		}
 
@@ -85,7 +90,7 @@ function isEnclosedWith(str: string, char: string): boolean {
 	return str.startsWith(char) && str.endsWith(char);
 }
 
-function parseJson(str: string) {
+function parseJson(str: string, context: ParseEvaluationResultContext) {
 	try {
 		return JSON.parse(str);
 	} catch (error) {
@@ -104,6 +109,7 @@ function parseJson(str: string) {
 						},
 					],
 				},
+				`Used debug adapter: ${context.debugAdapterType}`,
 			],
 		});
 	}

@@ -51,6 +51,7 @@ export class GenericEvaluator implements Evaluator {
 				message: {
 					kind: "list",
 					items: [
+						"An error occurred while evaluating the expression:",
 						error.message,
 						`Used debug adapter: ${this.session.session.configuration.type}`,
 						{
@@ -65,7 +66,9 @@ export class GenericEvaluator implements Evaluator {
 			};
 		}
 
-		return parseEvaluationResultFromGenericDebugAdapter(reply.result);
+		return parseEvaluationResultFromGenericDebugAdapter(reply.result, {
+			debugAdapterType: this.session.session.configuration.type,
+		});
 	}
 
 	protected getFinalExpression(args: {
@@ -76,6 +79,7 @@ export class GenericEvaluator implements Evaluator {
 	}
 
 	protected getContext(): "watch" | "repl" {
-		return "watch";
+		// we will use "repl" as default so that results are not truncated.
+		return "repl";
 	}
 }
