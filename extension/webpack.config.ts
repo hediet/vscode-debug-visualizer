@@ -21,6 +21,7 @@ module.exports = {
 		"@hediet/debug-visualizer-data-extraction":
 			"@hediet/debug-visualizer-data-extraction",
 		"debug-visualizer-webview": "debug-visualizer-webview",
+		fsevents: "require('fsevents')"
 	},
 	resolve: {
 		extensions: [".ts", ".js"],
