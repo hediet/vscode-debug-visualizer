@@ -12,8 +12,7 @@
 		"build-data-extraction": "yarn workspace @hediet/debug-visualizer-data-extraction build",
 		"build-extension": "yarn workspace debug-visualizer build",
 		"build-visualization": "yarn workspace @hediet/visualization build",
-		"build-ui": "yarn workspace debug-visualizer-webview build",
-		"check": "echo 'todo'"
+		"build-ui": "yarn workspace debug-visualizer-webview build"
 	},
 	"devDependencies": {
 		"prettier": "^1.19.1"
