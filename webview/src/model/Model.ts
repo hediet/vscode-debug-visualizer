@@ -17,7 +17,7 @@ import {
 import { getApi as getVsCodeApi } from "./VsCodeApi";
 import { MonacoBridge } from "./MonacoBridge";
 import { Disposable } from "@hediet/std/disposable";
-import { startInterval } from "@hediet/std/timer";
+import { startInterval, EventTimer } from "@hediet/std/timer";
 
 declare const window: Window & {
 	webViewData?: {
@@ -55,6 +55,11 @@ export class Model {
 		| VisualizationId
 		| undefined = undefined;
 
+	@observable isPolling = false;
+	private readonly pollingTimer = this.dispose.track(
+		new EventTimer(500, "stopped")
+	);
+
 	@action
 	public setPreferredVisualizationId(id: VisualizationId) {
 		this.preferredVisualizationId = id;
@@ -63,6 +68,16 @@ export class Model {
 	@action
 	public setVisualizationError(data: ExtractedData) {
 		this.state = { kind: "visualizationError", data: data };
+	}
+
+	@action
+	public setPolling(value: boolean) {
+		this.isPolling = value;
+		if (value) {
+			this.pollingTimer.start();
+		} else {
+			this.pollingTimer.stop();
+		}
 	}
 
 	@computed get visualizations():
@@ -162,6 +177,10 @@ export class Model {
 			if (state) {
 				this.setExpression(state.expression);
 			}
+		});
+
+		this.pollingTimer.onTick.sub(() => {
+			this.refresh();
 		});
 	}
 

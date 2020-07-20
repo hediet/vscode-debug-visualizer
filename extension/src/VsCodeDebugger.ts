@@ -35,9 +35,6 @@ export class VsCodeDebugger {
 				createDebugAdapterTracker: session => {
 					const extendedSession = this.getDebugSession(session);
 					return {
-						onWillReceiveMessage: msg => {
-							console.log(msg.type, msg.event, msg);
-						},
 						onDidSendMessage: async msg => {
 							type Message =
 								| StoppedEvent
@@ -167,7 +164,7 @@ export class VsCodeDebugSession {
 	public async evaluate(args: {
 		expression: string;
 		frameId: number | undefined;
-		context: "watch" | "repl";
+		context: "watch" | "repl" | "copy";
 	}): Promise<{ result: string }> {
 		const reply = await this.session.customRequest("evaluate", {
 			expression: args.expression,

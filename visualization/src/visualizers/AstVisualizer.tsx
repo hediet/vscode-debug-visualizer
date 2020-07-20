@@ -12,7 +12,7 @@ import { createTreeViewModelFromTreeNodeData } from "./TreeVisualizer/TreeVisual
 import { TreeWithPathView, TreeViewModel } from "./TreeVisualizer/Views";
 import * as React from "react";
 import { observer, disposeOnUnmount } from "mobx-react";
-import { observable, autorun, trace } from "mobx";
+import { observable, autorun, trace, computed } from "mobx";
 import * as monaco from "monaco-editor";
 import { getLanguageId } from "./text-visualizers/MonacoTextVisualizer";
 import LineColumn from "line-column";
@@ -115,80 +115,116 @@ export class MonacoEditor extends React.Component<{
 		}
 	}
 
+	@computed.struct
+	private get markedRanges(): monaco.IRange[] {
+		if (!this.editor || !this.model) {
+			return [];
+		}
+
+		const editorModel = this.model;
+		const ranges = this.props.model.marked.map(s =>
+			this.props.nodeInfoToRange(s.data)
+		);
+		return ranges;
+	}
+
 	@disposeOnUnmount
 	private _updateMarkedDecorations = autorun(
 		() => {
-			if (this.editor && this.model) {
-				const editorModel = this.model;
-				const ranges = this.props.model.marked.map(s =>
-					this.props.nodeInfoToRange(s.data)
+			if (!this.editor) {
+				return;
+			}
+			const ranges = this.markedRanges;
+			this.markedDecorations = this.editor.deltaDecorations(
+				this.markedDecorations,
+				ranges.map(range => ({
+					range,
+					options: { className: "marked" },
+				}))
+			);
+			if (ranges.length > 0) {
+				this.editor.revealRange(
+					ranges[0],
+					monaco.editor.ScrollType.Smooth
 				);
-				this.markedDecorations = this.editor.deltaDecorations(
-					this.markedDecorations,
-					ranges.map(range => ({
-						range,
-						options: { className: "marked" },
-					}))
-				);
-				if (ranges.length > 0) {
-					this.editor.revealRange(
-						ranges[0],
-						monaco.editor.ScrollType.Smooth
-					);
-				}
 			}
 		},
 		{ name: "updateMarkedDecorations" }
 	);
 
+	@computed.struct
+	private get selected(): monaco.IRange | undefined {
+		if (this.editor && this.model) {
+			const selected = this.props.model.selected;
+			if (selected) {
+				const range = this.props.nodeInfoToRange(selected.data);
+				return range;
+			}
+		}
+		return undefined;
+	}
+
 	@disposeOnUnmount
 	private _updateSelectedDecoration = autorun(
 		() => {
-			if (this.editor && this.model) {
-				const selected = this.props.model.selected;
-				if (selected) {
-					const range = this.props.nodeInfoToRange(selected.data);
-					this.selectedDecorations = this.editor.deltaDecorations(
-						this.selectedDecorations,
-						[
-							{
-								range,
-								options: { className: "selected" },
-							},
-						]
-					);
-					this.editor.revealRange(
-						range,
-						monaco.editor.ScrollType.Smooth
-					);
-				} else {
-					this.selectedDecorations = this.editor.deltaDecorations(
-						this.selectedDecorations,
-						[]
-					);
-				}
+			console.log("_updateSelectedDecoration");
+			if (!this.editor) {
+				return;
+			}
+			const range = this.selected;
+			if (range) {
+				this.selectedDecorations = this.editor.deltaDecorations(
+					this.selectedDecorations,
+					[
+						{
+							range,
+							options: { className: "selected" },
+						},
+					]
+				);
+				this.editor.revealRange(range, monaco.editor.ScrollType.Smooth);
+			} else {
+				this.selectedDecorations = this.editor.deltaDecorations(
+					this.selectedDecorations,
+					[]
+				);
 			}
 		},
 		{ name: "updateDecorations" }
 	);
 
+	private test = (() => {
+		console.log("test created");
+	})();
+
+	@computed.struct
+	private get modelData(): { text: string; languageId: string } {
+		const { text, languageId } = this.props;
+		return { text, languageId };
+	}
+
 	@disposeOnUnmount
-	private _updateText = autorun(() => {
-		if (this.editor) {
-			const model = monaco.editor.createModel(
-				this.props.text,
-				this.props.languageId,
-				undefined
-			);
+	private _updateText = autorun(
+		() => {
+			console.log("_updateText rerun");
+			if (this.editor) {
+				const model = monaco.editor.createModel(
+					this.modelData.text,
+					this.modelData.languageId,
+					undefined
+				);
 
-			this.editor.setModel(model);
+				this.editor.setModel(model);
 
-			if (this.modelNotObservable) {
-				this.modelNotObservable.dispose();
+				if (this.modelNotObservable) {
+					this.modelNotObservable.dispose();
+				}
+				this.modelNotObservable = model;
+				this.model = model;
 			}
-			this.model = model;
-		}
-	});
+		},
+		{ name: "Update Model" }
+	);
 
 	private readonly setEditorDiv = (editorDiv: HTMLDivElement) => {
 		if (!editorDiv) {

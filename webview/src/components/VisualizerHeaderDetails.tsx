@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Popover } from "@blueprintjs/core";
+import { Popover, Checkbox } from "@blueprintjs/core";
 import { DataExtractorInfo } from "@hediet/debug-visualizer-data-extraction";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
@@ -79,6 +79,12 @@ export class VisualizerHeaderDetails extends React.Component<{ model: Model }> {
 							  }))
 							: []
 					}
+				/>
+				<div style={{ width: 10 }} />
+				<Checkbox
+					label="Poll"
+					checked={m.isPolling}
+					onChange={e => m.setPolling(e.currentTarget.checked)}
 				/>
 			</div>
 		);

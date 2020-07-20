@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 import "./style.scss";
 import { Model } from "./model/Model";
 import Components = require("./components/GUI");
+import * as mobx from "mobx";
 
 const model = new Model();
 

@@ -103,19 +103,20 @@ export class VisualizerHeaderMain extends React.Component<{ model: Model }> {
 					<ExpressionInput model={m} />
 				</div>
 				<div style={{ width: 4 }} />
-				{m.loading ? (
-					<div style={{ padding: "0 4px" }}>
-						<Spinner size={Spinner.SIZE_SMALL} />
-					</div>
-				) : (
-					<Button
-						minimal
-						small
-						className="part-Icon"
-						icon="refresh"
-						onClick={() => m.refresh()}
-					/>
-				)}
+				{!m.isPolling &&
+					(m.loading ? (
+						<div style={{ padding: "0 4px" }}>
+							<Spinner size={Spinner.SIZE_SMALL} />
+						</div>
+					) : (
+						<Button
+							minimal
+							small
+							className="part-Icon"
+							icon="refresh"
+							onClick={() => m.refresh()}
+						/>
+					))}
 				<Button
 					minimal
 					small

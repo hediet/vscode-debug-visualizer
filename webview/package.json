@@ -19,7 +19,8 @@
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",
 		"react-measure": "^2.3.0",
-		"@hediet/debug-visualizer-data-extraction": "*"
+		"@hediet/debug-visualizer-data-extraction": "*",
+		"@knuddels/mobx-logger": "^1.1.1"
 	},
 	"devDependencies": {
 		"@types/html-webpack-plugin": "^3.2.2",

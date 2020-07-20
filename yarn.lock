@@ -320,6 +320,11 @@
   resolved "https://registry.yarnpkg.com/@istanbuljs/schema/-/schema-0.1.2.tgz#26520bf09abe4a5644cd5414e37125a8954241dd"
   integrity sha512-tsAQNx32a8CoFhjhijUIhI4kccIAgmGhy8LZMZgGfmXcpMbPRUqn5LWmgRttILi6yeGmBJd2xsPkFMs0PzgPCw==
 
+"@knuddels/mobx-logger@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@knuddels/mobx-logger/-/mobx-logger-1.1.1.tgz#64f3d449d5fabfdd710616d668a6d898cc9caa7f"
+  integrity sha512-5iVhsa8e4Gsfg/UbgKGSLOMcZdcjl5usZmpVm50mK/CQgnsjupE6KNS/514VnWcwaW3w38Rv0uherHYhEInDuQ==
+
 "@mapbox/geojson-area@0.2.2":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@mapbox/geojson-area/-/geojson-area-0.2.2.tgz#18d7814aa36bf23fbbcc379f8e26a22927debf10"

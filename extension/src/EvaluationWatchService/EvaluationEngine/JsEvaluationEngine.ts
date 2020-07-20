@@ -25,6 +25,7 @@ export class JsEvaluationEngine implements EvaluationEngine {
 			"extensionHost",
 			"chrome",
 			"pwa-chrome",
+			"pwa-node",
 		];
 		if (supportedDebugAdapters.indexOf(session.session.type) !== -1) {
 			return new JsEvaluator(session);
@@ -37,6 +38,13 @@ class JsEvaluator implements Evaluator {
 	public readonly languageId = "javascript";
 
 	constructor(private readonly session: VsCodeDebugSession) {}
+
+	private getContext(): "copy" | "repl" {
+		if (this.session.session.type.startsWith("pwa-")) {
+			return "copy";
+		}
+		return "repl";
+	}
 
 	public async evaluate({
 		expression,
@@ -75,10 +83,13 @@ class JsEvaluator implements Evaluator {
 				const reply = await this.session.evaluate({
 					expression: wrappedExpr,
 					frameId,
-					context: "repl",
+					context: this.getContext(),
 				});
 				const resultStr = reply.result;
-				const jsonData = resultStr.substr(1, resultStr.length - 2);
+				const jsonData =
+					this.getContext() === "copy"
+						? resultStr
+						: resultStr.substr(1, resultStr.length - 2);
 				const result = JSON.parse(jsonData) as DataResult;
 
 				if (result.kind === "NoExtractors") {
@@ -117,7 +128,7 @@ class JsEvaluator implements Evaluator {
 			await this.session.evaluate({
 				expression,
 				frameId,
-				context: "repl",
+				context: this.getContext(),
 			});
 
 			return true;
