@@ -15,7 +15,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\demos\\php"
+				"${workspaceFolder}/demos/php"
 			],
 			"env": {
 				"HOT_RELOAD": "true",
@@ -31,7 +31,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\demos\\php"
+				"${workspaceFolder}/demos/php"
 			],
 			"env": {
 				"HOT_RELOAD": "true",
@@ -47,7 +47,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\demos\\js"
+				"${workspaceFolder}/demos/python"
 			],
 			"env": {
 				"HOT_RELOAD": "",
@@ -62,7 +62,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}\\demos\\php"
+				"${workspaceFolder}/demos/php"
 			],
 			"env": {
 				"HOT_RELOAD": "",
