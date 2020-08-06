@@ -9,7 +9,7 @@ Like the VS Code's watch view, but with custom visualizations.
 
 ## Supported Languages
 
-See [demos](./demos/) for demos. These languages and debuggers are verified to work with this extension:
+See [demos](../demos/) for demos. These languages and debuggers are verified to work with this extension:
 
 -   JavaScript/TypeScript/... using `node`/`node2`/`extensionHost` or `chrome` debug adapter: [⭐ Full Support](../demos/js)
 -   Go using `go` (Delve) debug adapter: [✅ Rudimentary Support](../demos/golang)
