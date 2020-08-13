@@ -4,16 +4,39 @@ import {
 	ExtractionCollector,
 	DataExtractorContext,
 } from "../DataExtractorApi";
-import { CommonDataTypes } from "../../../CommonDataTypes";
 
-// This class is self contained and can be injected into both nodejs and browser environments.
-export class TypeScriptAstDataExtractor
-	implements DataExtractor<CommonDataTypes.Ast> {
+type AstType = {
+	kind: {
+		tree: true;
+		ast: true;
+		text: true;
+	};
+	root: TreeNode;
+	text: string;
+};
+
+type TreeNode = {
+	children: TreeNode[];
+	items: TreeNodeItem[];
+	segment?: string;
+	isMarked?: boolean;
+	span: {
+		start: number;
+		length: number;
+	};
+};
+
+type TreeNodeItem = {
+	text: string;
+	emphasis?: "style1" | "style2" | "style3";
+};
+
+export class TypeScriptAstDataExtractor implements DataExtractor<AstType> {
 	readonly id = "typescript-ast";
 
 	getExtractions(
 		data: unknown,
-		collector: ExtractionCollector<CommonDataTypes.Ast>,
+		collector: ExtractionCollector<AstType>,
 		{ evalFn }: DataExtractorContext
 	): void {
 		if (!data) {
@@ -68,7 +91,7 @@ export class TypeScriptAstDataExtractor
 			memberName: string,
 			marked: Set<ts.Node>,
 			emphasizedValueFn: (node: ts.Node) => string | undefined
-		): CommonDataTypes.Ast["root"] {
+		): TreeNode {
 			const name = tsApi.SyntaxKind[node.kind];
 			const children = getChildren(node)
 				.map((childNode, idx) => {
@@ -105,16 +128,18 @@ export class TypeScriptAstDataExtractor
 			}
 
 			return {
-				name: name,
-				id: memberName,
+				items: [
+					{ text: memberName, emphasis: "style1" },
+					{ text: name },
+				],
 				children: children,
-				data: {
+				span: {
 					length: node.end - node.pos,
-					position: node.pos,
+					start: node.pos,
 				},
-				emphasizedValue: emphasizedValueFn(node),
+				//emphasizedValue: emphasizedValueFn(node),
 				isMarked: marked.has(node),
-				value,
+				//value,
 			};
 		}
 

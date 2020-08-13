@@ -3,16 +3,13 @@
 	"workspaces": [
 		"./data-extraction",
 		"./extension",
-		"./webview",
-		"./visualization",
-		"./visualization-playground"
+		"./webview"
 	],
 	"scripts": {
-		"build": "yarn build-data-extraction && yarn build-extension && yarn build-visualization && yarn build-ui",
+		"build": "yarn build-data-extraction && yarn build-ui && yarn build-extension",
 		"build-data-extraction": "yarn workspace @hediet/debug-visualizer-data-extraction build",
-		"build-extension": "yarn workspace debug-visualizer build",
-		"build-visualization": "yarn workspace @hediet/visualization build",
-		"build-ui": "yarn workspace debug-visualizer-webview build"
+		"build-ui": "yarn workspace debug-visualizer-webview build",
+		"build-extension": "yarn workspace debug-visualizer build"
 	},
 	"devDependencies": {
 		"prettier": "^1.19.1"

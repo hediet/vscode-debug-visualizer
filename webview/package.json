@@ -20,7 +20,10 @@
 		"react-dom": "^16.12.0",
 		"react-measure": "^2.3.0",
 		"@hediet/debug-visualizer-data-extraction": "*",
-		"@knuddels/mobx-logger": "^1.1.1"
+		"@hediet/visualization-bundle": "^0.1.1",
+		"@hediet/visualization-core": "^0.1.0",
+		"@knuddels/mobx-logger": "^1.1.1",
+		"less-loader": "^6.2.0"
 	},
 	"devDependencies": {
 		"@types/html-webpack-plugin": "^3.2.2",
@@ -35,9 +38,8 @@
 		"fork-ts-checker-webpack-plugin": "^4.0.4",
 		"html-webpack-plugin": "^3.2.0",
 		"monaco-editor-webpack-plugin": "^1.9.0",
-		"node-sass": "^4.13.1",
-		"raw-loader": "^4.0.0",
 		"sass": "^1.25.0",
+		"raw-loader": "^4.0.0",
 		"sass-loader": "^8.0.2",
 		"style-loader": "^1.1.3",
 		"ts-loader": "^6.2.1",

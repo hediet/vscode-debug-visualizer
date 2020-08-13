@@ -3,6 +3,7 @@ import { Model } from "../model/Model";
 import { observer } from "mobx-react";
 import { NoData } from "./NoData";
 import { FormattedMessage } from "debug-visualizer/src/contract";
+import { VisualizationView, Theme } from "@hediet/visualization-core";
 
 @observer
 export class Visualizer extends React.Component<{ model: Model }> {
@@ -10,11 +11,6 @@ export class Visualizer extends React.Component<{ model: Model }> {
 		return (
 			<div className="component-Visualizer">{this.renderContent()}</div>
 		);
-	}
-
-	componentDidCatch() {
-		this.props.model.setVisualizationError({ kind: {} });
-		console.log("broken");
 	}
 
 	renderContent(): JSX.Element {
@@ -38,20 +34,12 @@ export class Visualizer extends React.Component<{ model: Model }> {
 			if (!vis || !vis.visualization) {
 				return <NoData>No Visualization Available</NoData>;
 			}
-
-			try {
-				return vis.visualization.render();
-			} catch (e) {
-				console.error(e);
-				return (
-					<NoData>
-						<>
-							Visualization Error
-							<pre>{e.message}</pre>
-						</>
-					</NoData>
-				);
-			}
+			return (
+				<VisualizationView
+					theme={Theme.light}
+					visualization={vis.visualization}
+				/>
+			);
 		} else {
 			const nvr: never = s;
 			return <div />;

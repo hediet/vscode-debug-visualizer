@@ -9,11 +9,12 @@ import {
 	DataExtractorId,
 	ExtractedData,
 } from "@hediet/debug-visualizer-data-extraction";
+import "@hediet/visualization-bundle";
 import {
-	Visualization,
+	globalVisualizationFactory,
 	VisualizationId,
-	knownVisualizations,
-} from "@hediet/visualization";
+	Visualization,
+} from "@hediet/visualization-core";
 import { getApi as getVsCodeApi } from "./VsCodeApi";
 import { MonacoBridge } from "./MonacoBridge";
 import { Disposable } from "@hediet/std/disposable";
@@ -42,7 +43,7 @@ export class Model {
 	private serverSecret: string;
 
 	@observable expression: string = "";
-	@observable state:
+	@observable.ref state:
 		| DataExtractionState
 		| { kind: "noExpression" }
 		| { kind: "visualizationError"; data: ExtractedData } = {
@@ -87,11 +88,14 @@ export class Model {
 		  }
 		| undefined {
 		if (this.state.kind === "data") {
-			const vis = knownVisualizations.getBestVisualization(
+			const vis = globalVisualizationFactory.getVisualizations(
 				this.state.result.data,
 				this.preferredVisualizationId
 			);
-			return vis;
+			return {
+				visualization: vis.bestVisualization,
+				allVisualizations: vis.allVisualizations,
+			};
 		} else {
 			return undefined;
 		}
