@@ -4,7 +4,7 @@ import { DataExtractorInfo } from "@hediet/debug-visualizer-data-extraction";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
 import { Model } from "../model/Model";
-import { VisualizationId } from "@hediet/visualization";
+import { VisualizationId } from "@hediet/visualization-core";
 
 @observer
 export class VisualizerHeaderDetails extends React.Component<{ model: Model }> {

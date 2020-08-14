@@ -1,5 +1,5 @@
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import { VsCodeDebugSession } from "../../VsCodeDebugger";
+import { EnhancedDebugSession } from "../../debugger/EnhancedDebugSession";
 import { EvaluationEngine, Evaluator } from "./EvaluationEngine";
 import { Config, DebugAdapterConfig } from "../../Config";
 import { GenericEvaluator } from "./GenericEvaluationEngine";
@@ -11,7 +11,7 @@ registerUpdateReconciler(module);
 export class ConfiguredEvaluationEngine implements EvaluationEngine {
 	constructor(private readonly config: Config) {}
 
-	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined {
+	createEvaluator(session: EnhancedDebugSession): Evaluator | undefined {
 		const config = this.config.getDebugAdapterConfig(session.session.type);
 		if (!config) {
 			return undefined;
@@ -22,7 +22,7 @@ export class ConfiguredEvaluationEngine implements EvaluationEngine {
 
 class ConfiguredEvaluator extends GenericEvaluator {
 	constructor(
-		session: VsCodeDebugSession,
+		session: EnhancedDebugSession,
 		private readonly config: DebugAdapterConfig
 	) {
 		super(session);

@@ -5,20 +5,20 @@ import {
 	getExpressionToInitializeDataExtractorApi,
 	DataExtractionResult,
 } from "@hediet/debug-visualizer-data-extraction";
-import { VsCodeDebugSession } from "../../VsCodeDebugger";
+import { EnhancedDebugSession } from "../../debugger/EnhancedDebugSession";
 import {
 	EvaluationEngine,
 	Evaluator,
 	EvaluationArgs,
 } from "./EvaluationEngine";
-import { FormattedMessage } from "../../contract";
+import { FormattedMessage } from "../../webviewContract";
 import { registerUpdateReconciler, hotClass } from "@hediet/node-reload";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
 export class JsEvaluationEngine implements EvaluationEngine {
-	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined {
+	createEvaluator(session: EnhancedDebugSession): Evaluator | undefined {
 		const supportedDebugAdapters = [
 			"node",
 			"node2",
@@ -37,7 +37,7 @@ export class JsEvaluationEngine implements EvaluationEngine {
 class JsEvaluator implements Evaluator {
 	public readonly languageId = "javascript";
 
-	constructor(private readonly session: VsCodeDebugSession) {}
+	constructor(private readonly session: EnhancedDebugSession) {}
 
 	private getContext(): "copy" | "repl" {
 		if (this.session.session.type.startsWith("pwa-")) {

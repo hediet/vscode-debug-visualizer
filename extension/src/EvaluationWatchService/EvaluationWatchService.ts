@@ -1,5 +1,5 @@
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import { DataExtractionState, CompletionItem } from "../contract";
+import { DataExtractionState, CompletionItem } from "../webviewContract";
 
 export interface EvaluationWatchService {
 	createEvaluationWatcher(

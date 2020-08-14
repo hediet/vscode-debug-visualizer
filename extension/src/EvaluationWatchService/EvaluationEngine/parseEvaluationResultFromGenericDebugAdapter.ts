@@ -2,7 +2,7 @@ import {
 	DataExtractionResult,
 	isExtractedData,
 } from "@hediet/debug-visualizer-data-extraction";
-import { FormattedMessage } from "../../contract";
+import { FormattedMessage } from "../../webviewContract";
 
 export interface ParseEvaluationResultContext {
 	debugAdapterType: string;

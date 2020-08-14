@@ -9,6 +9,83 @@ import {
 	DataExtractorId,
 } from "@hediet/debug-visualizer-data-extraction";
 
+interface WebviewConfig {
+	serverSecret: string;
+	serverPort: number;
+	publicPath: string;
+	expression?: string;
+	theme: "light" | "dark";
+}
+
+export interface WebviewUrlParams {
+	serverPort: string;
+	serverSecret: string;
+	mode: "standalone" | "webviewIFrame";
+	expression: string;
+	theme: "light" | "dark";
+}
+
+export interface WindowWithWebviewData {
+	webviewData?: WebviewConfig;
+}
+
+export const webviewContract = contract({
+	client: {
+		updateState: notificationContract({
+			params: types.type({
+				newState: unchecked<DataExtractionState>(),
+			}),
+		}),
+		updateLanguageId: notificationContract({
+			params: types.type({
+				languageId: types.union([types.null, types.string]),
+			}),
+		}),
+		setExpression: requestContract({
+			params: types.type({
+				expression: types.string,
+			}),
+		}),
+		setTheme: notificationContract({
+			params: types.type({
+				theme: types.union([
+					types.literal("light"),
+					types.literal("dark"),
+				]),
+			}),
+		}),
+	},
+	server: {
+		authenticate: requestContract({
+			params: types.type({
+				secret: types.string,
+			}),
+		}),
+		setPreferredDataExtractor: notificationContract({
+			params: types.type({
+				dataExtractorId: unchecked<DataExtractorId>(),
+			}),
+		}),
+		setExpression: notificationContract({
+			params: types.type({
+				newExpression: types.string,
+			}),
+		}),
+		refresh: notificationContract({}),
+		openInBrowser: notificationContract({}),
+
+		getCompletions: requestContract({
+			params: types.type({
+				text: types.string,
+				column: types.number,
+			}),
+			result: types.type({
+				completions: types.array(unchecked<CompletionItem>()),
+			}),
+		}),
+	},
+});
+
 function unchecked<T>(): types.Type<T, any, unknown> {
 	return new types.Type<T, T, unknown>(
 		"unchecked",
@@ -92,52 +169,3 @@ export interface CompletionItem {
 	 */
 	length?: number;
 }
-
-export const debugVisualizerUIContract = contract({
-	client: {
-		updateState: notificationContract({
-			params: types.type({
-				newState: unchecked<DataExtractionState>(),
-			}),
-		}),
-		updateLanguageId: notificationContract({
-			params: types.type({
-				languageId: types.union([types.null, types.string]),
-			}),
-		}),
-		setExpression: requestContract({
-			params: types.type({
-				expression: types.string,
-			}),
-		}),
-	},
-	server: {
-		authenticate: requestContract({
-			params: types.type({
-				secret: types.string,
-			}),
-		}),
-		setPreferredDataExtractor: notificationContract({
-			params: types.type({
-				dataExtractorId: unchecked<DataExtractorId>(),
-			}),
-		}),
-		setExpression: notificationContract({
-			params: types.type({
-				newExpression: types.string,
-			}),
-		}),
-		refresh: notificationContract({}),
-		openInBrowser: notificationContract({}),
-
-		getCompletions: requestContract({
-			params: types.type({
-				text: types.string,
-				column: types.number,
-			}),
-			result: types.type({
-				completions: types.array(unchecked<CompletionItem>()),
-			}),
-		}),
-	},
-});

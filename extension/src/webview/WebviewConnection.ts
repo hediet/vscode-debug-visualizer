@@ -1,28 +1,28 @@
 import { Disposable } from "@hediet/std/disposable";
-import { debugVisualizerUIContract } from "./contract";
+import { webviewContract } from "../webviewContract";
 import { ConsoleRpcLogger, RequestHandlingError } from "@hediet/typed-json-rpc";
 import {
 	EvaluationWatcher,
 	EvaluationWatchService,
-} from "./EvaluationWatchService";
+} from "../EvaluationWatchService";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { observable, autorun } from "mobx";
-import { Server } from "./Server";
+import { WebviewServer } from "./WebviewServer";
 import * as open from "open";
 import chromeLauncher = require("chrome-launcher");
-import { Config } from "./Config";
+import { Config } from "../Config";
 
-export class ClientConnection {
+export class WebviewConnection {
 	public readonly dispose = Disposable.fn();
 	@observable
 	private watcher: EvaluationWatcher | undefined = undefined;
 
-	private readonly client: typeof debugVisualizerUIContract["TClientInterface"];
+	private readonly client: typeof webviewContract["TClientInterface"];
 
 	constructor(
 		evaluationWatchService: EvaluationWatchService,
 		stream: WebSocketStream,
-		server: Server,
+		server: WebviewServer,
 		config: Config,
 		serverSecret: string
 	) {
@@ -34,10 +34,7 @@ export class ClientConnection {
 			}
 		}
 
-		const {
-			client,
-			channel,
-		} = debugVisualizerUIContract.registerServerToStream(
+		const { client, channel } = webviewContract.registerServerToStream(
 			stream,
 			new ConsoleRpcLogger(),
 			{
@@ -76,7 +73,7 @@ export class ClientConnection {
 				openInBrowser: async ({}) => {
 					throwIfNotAuthenticated();
 
-					const url = server.getIndexUrl({
+					const url = server.getWebviewPageUrl({
 						mode: "standalone",
 						expression: this.watcher
 							? this.watcher.expression
@@ -140,6 +137,10 @@ export class ClientConnection {
 
 	public setExpression(expression: string) {
 		this.client.setExpression({ expression });
+	}
+
+	public setTheme(theme: "light" | "dark"): void {
+		this.client.setTheme({ theme });
 	}
 }
 

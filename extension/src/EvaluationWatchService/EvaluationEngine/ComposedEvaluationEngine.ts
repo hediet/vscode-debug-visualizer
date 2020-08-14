@@ -1,10 +1,10 @@
 import { EvaluationEngine, Evaluator } from "./EvaluationEngine";
-import { VsCodeDebugSession } from "../../VsCodeDebugger";
+import { EnhancedDebugSession } from "../../debugger/EnhancedDebugSession";
 
 export class ComposedEvaluationEngine implements EvaluationEngine {
 	constructor(public readonly engines: EvaluationEngine[]) {}
 
-	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined {
+	createEvaluator(session: EnhancedDebugSession): Evaluator | undefined {
 		for (const f of this.engines) {
 			const evaluator = f.createEvaluator(session);
 			if (evaluator) {

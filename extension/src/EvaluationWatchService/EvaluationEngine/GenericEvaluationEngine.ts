@@ -2,21 +2,21 @@ import {
 	DataExtractionResult,
 	DataExtractorId,
 } from "@hediet/debug-visualizer-data-extraction";
-import { VsCodeDebugSession } from "../../VsCodeDebugger";
+import { EnhancedDebugSession } from "../../debugger/EnhancedDebugSession";
 import {
 	EvaluationEngine,
 	Evaluator,
 	EvaluationArgs,
 } from "./EvaluationEngine";
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
-import { FormattedMessage } from "../../contract";
+import { FormattedMessage } from "../../webviewContract";
 import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
 export class GenericEvaluationEngine implements EvaluationEngine {
-	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined {
+	createEvaluator(session: EnhancedDebugSession): Evaluator | undefined {
 		return new GenericEvaluator(session);
 	}
 }
@@ -24,7 +24,7 @@ export class GenericEvaluationEngine implements EvaluationEngine {
 export class GenericEvaluator implements Evaluator {
 	public readonly languageId = "text";
 
-	constructor(private readonly session: VsCodeDebugSession) {}
+	constructor(private readonly session: EnhancedDebugSession) {}
 
 	public async evaluate({
 		expression,

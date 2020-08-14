@@ -6,9 +6,9 @@ import {
 import { observable, autorun, action } from "mobx";
 import { Disposable } from "@hediet/std/disposable";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import { DataExtractionState, CompletionItem } from "../contract";
+import { DataExtractionState, CompletionItem } from "../webviewContract";
 import { hotClass } from "@hediet/node-reload";
-import { VsCodeDebuggerView } from "../VsCodeDebugger";
+import { VsCodeDebuggerView } from "../debugger/VsCodeDebuggerView";
 import { EvaluationEngine } from "./EvaluationEngine/EvaluationEngine";
 
 @hotClass(module)

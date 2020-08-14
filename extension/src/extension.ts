@@ -12,10 +12,11 @@ if (process.env.HOT_RELOAD) {
 }
 registerUpdateReconciler(module);
 
-import { WebViews } from "./WebViews";
-import { Server } from "./Server";
+import { InternalWebviewManager } from "./webview/InternalWebviewManager";
+import { WebviewServer } from "./webview/WebviewServer";
 import { Config } from "./Config";
-import { VsCodeDebugger, VsCodeDebuggerView } from "./VsCodeDebugger";
+import { VsCodeDebugger } from "./debugger/VsCodeDebugger";
+import { VsCodeDebuggerView } from "./debugger/VsCodeDebuggerView";
 import { EvaluationWatchServiceImpl } from "./EvaluationWatchService";
 import {
 	ComposedEvaluationEngine,
@@ -24,11 +25,18 @@ import {
 	ConfiguredEvaluationEngine,
 } from "./EvaluationWatchService/EvaluationEngine";
 
+export function activate(context: ExtensionContext) {
+	context.subscriptions.push(
+		hotRequireExportedFn(module, Extension, Extension => new Extension())
+	);
+}
+
+export function deactivate() {}
+
 export class Extension {
 	public readonly dispose = Disposable.fn();
 
 	private readonly config = new Config();
-
 	private readonly debugger = this.dispose.track(new VsCodeDebugger());
 	private readonly debuggerView = this.dispose.track(
 		new VsCodeDebuggerView(this.debugger)
@@ -43,8 +51,10 @@ export class Extension {
 		])
 	);
 
-	private readonly server = new Server(this.dataSource, this.config);
-	private readonly views = this.dispose.track(new WebViews(this.server));
+	private readonly server = new WebviewServer(this.dataSource, this.config);
+	private readonly views = this.dispose.track(
+		new InternalWebviewManager(this.server, this.config)
+	);
 
 	constructor() {
 		if (getReloadCount(module) > 0) {
@@ -79,10 +89,10 @@ export class Extension {
 					}
 
 					const connections = [...this.server.connections.values()];
-					if (connections.length > 0) {
-						const latestConnection =
-							connections[connections.length - 1];
+					const latestConnection =
+						connections[connections.length - 1];
 
+					if (latestConnection) {
 						latestConnection.setExpression(selectedText);
 					} else {
 						this.views.createNew(selectedText);
@@ -92,11 +102,3 @@ export class Extension {
 		);
 	}
 }
-
-export function activate(context: ExtensionContext) {
-	context.subscriptions.push(
-		hotRequireExportedFn(module, Extension, Extension => new Extension())
-	);
-}
-
-export function deactivate() {}

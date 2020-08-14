@@ -1,7 +1,9 @@
 import {
-	debugVisualizerUIContract,
+	webviewContract,
 	DataExtractionState,
-} from "debug-visualizer/src/contract";
+	WindowWithWebviewData,
+	WebviewUrlParams,
+} from "debug-visualizer/src/webviewContract";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
 import { observable, action, computed, when, runInAction } from "mobx";
@@ -20,21 +22,14 @@ import { MonacoBridge } from "./MonacoBridge";
 import { Disposable } from "@hediet/std/disposable";
 import { startInterval, EventTimer } from "@hediet/std/timer";
 
-declare const window: Window & {
-	webViewData?: {
-		serverSecret: string;
-		serverPort: number;
-		publicPath: string;
-		expression: string | undefined;
-	};
-};
+declare const window: Window & WindowWithWebviewData;
 
 declare let __webpack_public_path__: string;
 
 export class Model {
 	public readonly dispose = Disposable.fn();
-	public readonly runningMode: "standalone" | "webView" | "webViewIFrame" =
-		"webView";
+	public readonly runningMode: "standalone" | "webview" | "webviewIFrame" =
+		"webview";
 
 	@observable
 	public theme: "dark" | "light" = "light";
@@ -103,7 +98,7 @@ export class Model {
 
 	@observable.ref
 	public server:
-		| typeof debugVisualizerUIContract.TServerInterface
+		| typeof webviewContract.TServerInterface
 		| undefined = undefined;
 
 	private readonly vsCodeApi = getVsCodeApi<{ expression: string }>();
@@ -117,57 +112,46 @@ export class Model {
 	private readonly _bridge = new MonacoBridge(this);
 
 	constructor() {
-		if (window.webViewData) {
-			const data = window.webViewData;
+		if (window.webviewData) {
+			const data = window.webviewData;
 			this.port = data.serverPort;
 			this.serverSecret = data.serverSecret;
-			this.runningMode = "webView";
+			this.runningMode = "webview";
 			__webpack_public_path__ = data.publicPath;
 
-			const updateTheme = () => {
-				const isLight = document.body.classList.contains(
-					"vscode-light"
-				);
-				this.theme = isLight ? "light" : "dark";
-			};
-			updateTheme();
+			this.theme = window.webviewData.theme;
 
 			if (data.expression !== undefined) {
 				this.setExpression(data.expression);
 			}
-
-			this.dispose.track(
-				startInterval(1000, () => {
-					updateTheme();
-				})
-			);
 		} else {
 			const url = new URL(window.location.href);
-			const portStr = url.searchParams.get("serverPort");
+			const urlParams = (Object.fromEntries(
+				url.searchParams.entries()
+			) as unknown) as WebviewUrlParams;
+			const portStr = urlParams.serverPort;
 			if (!portStr) {
 				throw new Error("No port given.");
 			}
 			this.port = parseInt(portStr);
 
-			const expr = url.searchParams.get("expression");
+			const expr = urlParams.expression;
 			if (expr) {
 				this.setExpression(expr);
 			}
 
-			const secret = url.searchParams.get("serverSecret");
+			const secret = urlParams.serverSecret;
 			if (!secret) {
 				throw new Error("Server secret not set.");
 			}
 			this.serverSecret = secret;
 
-			const theme = url.searchParams.get("theme");
-			if (theme && theme === "dark") {
-				this.theme = "dark";
-			} else {
-				this.theme = "light";
+			const theme = urlParams.theme;
+			if (theme) {
+				this.theme = theme;
 			}
 
-			const mode = url.searchParams.get("mode");
+			const mode = urlParams.mode;
 			if (mode) {
 				this.runningMode = mode as any;
 			} else {
@@ -225,9 +209,7 @@ export class Model {
 					host: "localhost",
 					port: this.port,
 				});
-				const {
-					server,
-				} = debugVisualizerUIContract.getServerFromStream(
+				const { server } = webviewContract.getServerFromStream(
 					stream,
 					new ConsoleRpcLogger(),
 					{
@@ -244,6 +226,9 @@ export class Model {
 						},
 						updateLanguageId: async ({ languageId }) => {
 							this.languageId = languageId || "text";
+						},
+						setTheme: async ({ theme }) => {
+							this.theme = theme;
 						},
 					}
 				);

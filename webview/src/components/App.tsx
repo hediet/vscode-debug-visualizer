@@ -10,13 +10,14 @@ export class App extends React.Component {
 	constructor(props: any) {
 		super(props);
 
-		if (this.model.runningMode !== "webView") {
+		if (this.model.runningMode !== "webview") {
 			if (this.model.theme === "light") {
 				require("../vscode-light.scss");
 			} else {
 				require("../vscode-dark.scss");
 			}
 		}
+		console.log(this.model.theme);
 	}
 
 	render() {

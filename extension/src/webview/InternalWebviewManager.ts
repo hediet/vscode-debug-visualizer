@@ -1,15 +1,23 @@
 import { window, ViewColumn, WebviewPanel } from "vscode";
-import { Server } from "./Server";
+import { WebviewServer } from "./WebviewServer";
 import { Disposable } from "@hediet/std/disposable";
+import { WindowWithWebviewData } from "../webviewContract";
+import { Config } from "../Config";
 
 export const debugVisualizer = "debugVisualizer";
 
-export class WebViews {
-	private readonly debugVisualizations = new Map<WebviewPanel, WebView>();
+export class InternalWebviewManager {
+	private readonly openedWebviews = new Map<
+		WebviewPanel,
+		DebugVisualizerWebview
+	>();
 
 	public readonly dispose = Disposable.fn();
 
-	constructor(private readonly server: Server) {
+	constructor(
+		private readonly server: WebviewServer,
+		private readonly config: Config
+	) {
 		this.dispose.track(
 			window.registerWebviewPanelSerializer(debugVisualizer, {
 				deserializeWebviewPanel: async (panel, state) => {
@@ -20,7 +28,7 @@ export class WebViews {
 
 		this.dispose.track({
 			dispose: () => {
-				for (const panel of this.debugVisualizations.keys()) {
+				for (const panel of this.openedWebviews.keys()) {
 					panel.dispose();
 				}
 			},
@@ -28,7 +36,7 @@ export class WebViews {
 	}
 
 	public createNew(expression: string | undefined = undefined) {
-		const panel = window.createWebviewPanel(
+		const webviewPanel = window.createWebviewPanel(
 			debugVisualizer,
 			"Debug Visualizer",
 			ViewColumn.Two,
@@ -44,33 +52,38 @@ export class WebViews {
 			}
 		);
 
-		this.setupView(panel, expression);
+		this.initializeView(webviewPanel, expression);
 	}
 
-	public restore(webviewPanel: WebviewPanel) {
-		this.setupView(webviewPanel);
+	private restore(webviewPanel: WebviewPanel) {
+		this.initializeView(webviewPanel);
 	}
 
-	private setupView(
+	private initializeView(
 		webviewPanel: WebviewPanel,
 		expression: string | undefined = undefined
 	) {
-		webviewPanel.webview.html = getWebviewHtml(this.server, expression);
-		const view = new WebView(webviewPanel);
-		this.debugVisualizations.set(webviewPanel, view);
+		webviewPanel.webview.html = getDebugVisualizerWebviewHtml(
+			this.server,
+			expression,
+			this.config
+		);
+		const view = new DebugVisualizerWebview(webviewPanel);
+		this.openedWebviews.set(webviewPanel, view);
 		webviewPanel.onDidDispose(() => {
-			this.debugVisualizations.delete(webviewPanel);
+			this.openedWebviews.delete(webviewPanel);
 		});
 	}
 }
 
-export class WebView {
+export class DebugVisualizerWebview {
 	constructor(private readonly webviewPanel: WebviewPanel) {}
 }
 
-export function getWebviewHtml(
-	server: Server,
-	expression: string | undefined = undefined
+function getDebugVisualizerWebviewHtml(
+	server: WebviewServer,
+	initialExpression: string | undefined = undefined,
+	config: Config
 ) {
 	const isDev = !!process.env.USE_DEV_UI;
 	return `
@@ -86,12 +99,15 @@ export function getWebviewHtml(
             </head>
 			<body>
 				<script>
-					window.webViewData = ${JSON.stringify({
-						serverSecret: server.secret,
-						serverPort: server.port,
-						publicPath: server.publicPath,
-						expression,
-					})};
+					Object.assign(window, ${JSON.stringify({
+						webviewData: {
+							serverSecret: server.secret,
+							serverPort: server.port,
+							publicPath: server.publicPath,
+							expression: initialExpression,
+							theme: config.theme,
+						},
+					} as WindowWithWebviewData)});
 					const api = window.VsCodeApi = acquireVsCodeApi();
 					window.addEventListener('message', event => {
 						if (event.source === window.frames[0]) {
@@ -109,10 +125,13 @@ export function getWebviewHtml(
 				
 				${
 					isDev
-						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.getIndexUrl(
-								{ mode: "webViewIFrame", expression }
+						? `<iframe sandbox="allow-top-navigation allow-scripts allow-same-origin allow-popups allow-pointer-lock allow-forms" src="${server.getWebviewPageUrl(
+								{
+									mode: "webviewIFrame",
+									expression: initialExpression,
+								}
 						  )}"></iframe>`
-						: `<script type="text/javascript" src="${server.mainBundleUrl}"></script>`
+						: `<script type="text/javascript" src="${server.webviewBundleUrl}"></script>`
 				}
             </body>
         </html>

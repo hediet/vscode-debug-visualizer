@@ -2,11 +2,11 @@ import {
 	DataExtractionResult,
 	DataExtractorId,
 } from "@hediet/debug-visualizer-data-extraction";
-import { VsCodeDebugSession } from "../../VsCodeDebugger";
-import { FormattedMessage } from "../../contract";
+import { EnhancedDebugSession } from "../../debugger/EnhancedDebugSession";
+import { FormattedMessage } from "../../webviewContract";
 
 export interface EvaluationEngine {
-	createEvaluator(session: VsCodeDebugSession): Evaluator | undefined;
+	createEvaluator(session: EnhancedDebugSession): Evaluator | undefined;
 }
 
 export interface Evaluator {

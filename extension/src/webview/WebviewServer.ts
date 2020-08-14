@@ -1,22 +1,27 @@
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { AddressInfo } from "net";
 import WebSocket = require("ws");
-import { ClientConnection } from "./ClientConnection";
+import { WebviewConnection } from "./WebviewConnection";
 import * as express from "express";
 import * as http from "http";
 import * as serveStatic from "serve-static";
-import { Config } from "./Config";
+import { Config } from "../Config";
 import cryptoRandomString = require("crypto-random-string");
 import { distPath } from "debug-visualizer-webview";
-import { EvaluationWatchService } from "./EvaluationWatchService/EvaluationWatchService";
+import { EvaluationWatchService } from "../EvaluationWatchService/EvaluationWatchService";
+import { URLSearchParams } from "url";
+import { autorun, reaction } from "mobx";
 
-export class Server {
+export class WebviewServer {
 	private readonly server: http.Server;
-	public readonly secret = cryptoRandomString({ length: 20 });
+	public readonly secret = cryptoRandomString({ length: 30 });
 
-	public readonly connections = new Set<ClientConnection>();
+	public readonly connections = new Set<WebviewConnection>();
 
-	constructor(dataSource: EvaluationWatchService, config: Config) {
+	constructor(
+		dataSource: EvaluationWatchService,
+		private readonly config: Config
+	) {
 		const app = express();
 
 		app.use(serveStatic(distPath));
@@ -32,7 +37,7 @@ export class Server {
 		const wss = new WebSocket.Server({ server: this.server });
 		wss.on("connection", async ws => {
 			const stream = new WebSocketStream(ws);
-			const c = new ClientConnection(
+			const c = new WebviewConnection(
 				dataSource,
 				stream,
 				this,
@@ -43,27 +48,42 @@ export class Server {
 			await stream.onClosed;
 			this.connections.delete(c);
 		});
+
+		reaction(
+			() => config.theme,
+			theme => {
+				for (const c of this.connections) {
+					c.setTheme(theme);
+				}
+			}
+		);
 	}
 
-	public getIndexUrl(args: {
+	public getWebviewPageUrl(args: {
 		expression?: string;
-		mode: "standalone" | "webViewIFrame";
+		mode: "standalone" | "webviewIFrame";
 	}): string {
-		const port = process.env.USE_DEV_UI ? 8080 : this.port;
-		const expr =
-			args.expression !== undefined
-				? `&expression=${encodeURIComponent(args.expression)}`
-				: "";
-		const inWebView =
-			args.mode === "standalone" ? "" : "&mode=webViewIFrame";
-		return `http://localhost:${port}/index.html?serverPort=${this.port}&serverSecret=${this.secret}${inWebView}${expr}`;
+		const port = process.env.USE_DEV_UI ? 8081 : this.port;
+		const params: Record<string, string> = {
+			serverPort: this.port.toString(),
+			serverSecret: this.secret,
+			mode: args.mode,
+			theme: this.config.theme,
+		};
+		if (args.expression !== undefined) {
+			params.expression = args.expression;
+		}
+
+		return `http://localhost:${port}/index.html?${new URLSearchParams(
+			params
+		).toString()}`;
 	}
 
 	public get publicPath(): string {
 		return `http://localhost:${this.port}/`;
 	}
 
-	public get mainBundleUrl(): string {
+	public get webviewBundleUrl(): string {
 		return `${this.publicPath}main.js`;
 	}
 
