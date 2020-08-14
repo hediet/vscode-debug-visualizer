@@ -55,7 +55,7 @@ export class WebViews {
 		webviewPanel: WebviewPanel,
 		expression: string | undefined = undefined
 	) {
-		webviewPanel.webview.html = getHtml(this.server, expression);
+		webviewPanel.webview.html = getWebviewHtml(this.server, expression);
 		const view = new WebView(webviewPanel);
 		this.debugVisualizations.set(webviewPanel, view);
 		webviewPanel.onDidDispose(() => {
@@ -68,7 +68,7 @@ export class WebView {
 	constructor(private readonly webviewPanel: WebviewPanel) {}
 }
 
-export function getHtml(
+export function getWebviewHtml(
 	server: Server,
 	expression: string | undefined = undefined
 ) {

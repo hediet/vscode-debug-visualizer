@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.0.0
+
+-   New Logo
+-   Support for the new JS debug adapters
+-   Moved visualizations to [github.com/hediet/visualization](https://github.com/hediet/visualization).
+-   New Visualizations / Improved design
+
 ## 1.1.0
 
 -   Fixes a bug that occurs when the debug visualizer is opened after the debug session has started.

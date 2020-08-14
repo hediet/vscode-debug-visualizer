@@ -5,7 +5,7 @@
 
 html,
 body,
-.target {
+.react-root {
 	height: 100%;
 }
 
@@ -122,12 +122,6 @@ body {
 	.bp3-popover-target {
 		width: 100%;
 	}
-}
-
-.component-Visualizer {
-	width: 100%;
-	height: 100%;
-	overflow: auto;
 }
 
 .component-NoData {

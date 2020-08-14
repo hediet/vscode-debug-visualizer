@@ -9,7 +9,9 @@ import { VisualizationView, Theme } from "@hediet/visualization-core";
 export class Visualizer extends React.Component<{ model: Model }> {
 	render() {
 		return (
-			<div className="component-Visualizer">{this.renderContent()}</div>
+			<div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+				{this.renderContent()}
+			</div>
 		);
 	}
 
@@ -36,7 +38,11 @@ export class Visualizer extends React.Component<{ model: Model }> {
 			}
 			return (
 				<VisualizationView
-					theme={Theme.light}
+					theme={
+						this.props.model.theme === "dark"
+							? Theme.dark
+							: Theme.light
+					}
 					visualization={vis.visualization}
 				/>
 			);

@@ -2,9 +2,9 @@
 	"name": "debug-visualizer",
 	"private": true,
 	"displayName": "Debug Visualizer",
-	"description": "An extension that visualizes values while debugging.",
+	"description": "A visual watch window that lets you visualize your data structures while debugging.",
 	"icon": "docs/logo.png",
-	"version": "1.1.0",
+	"version": "2.0.0",
 	"license": "GPL-3.0",
 	"engines": {
 		"vscode": "^1.35.0"
@@ -17,7 +17,8 @@
 		"visual",
 		"javascript",
 		"graph",
-		"ast"
+		"ast",
+		"visualization"
 	],
 	"bugs": {
 		"url": "https://github.com/hediet/vscode-debug-visualizer/issues"
