@@ -2,7 +2,7 @@ import * as React from "react";
 import { Model } from "../model/Model";
 import { observer } from "mobx-react";
 import { NoData } from "./NoData";
-import { FormattedMessage } from "debug-visualizer/src/contract";
+import { FormattedMessage } from "debug-visualizer/src/webviewContract";
 import { VisualizationView, Theme } from "@hediet/visualization-core";
 
 @observer
