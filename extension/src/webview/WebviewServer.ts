@@ -63,7 +63,7 @@ export class WebviewServer {
 		expression?: string;
 		mode: "standalone" | "webviewIFrame";
 	}): string {
-		const port = process.env.USE_DEV_UI ? 8081 : this.port;
+		const port = process.env.USE_DEV_UI ? 8080 : this.port;
 		const params: Record<string, string> = {
 			serverPort: this.port.toString(),
 			serverSecret: this.secret,
