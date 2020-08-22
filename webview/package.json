@@ -4,7 +4,7 @@
 	"license": "GPL-3.0",
 	"scripts": {
 		"dev": "webpack-dev-server --hot",
-		"build": "webpack"
+		"build": "node --max_old_space_size=4096 ../node_modules/webpack/bin/webpack.js --mode production"
 	},
 	"main": "./index.js",
 	"dependencies": {

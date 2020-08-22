@@ -9,7 +9,7 @@ import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
 import { observable, action, computed, when, runInAction } from "mobx";
 import {
 	DataExtractorId,
-	ExtractedData,
+	VisualizationData,
 } from "@hediet/debug-visualizer-data-extraction";
 import "@hediet/visualization-bundle";
 import {
@@ -41,7 +41,7 @@ export class Model {
 	@observable.ref state:
 		| DataExtractionState
 		| { kind: "noExpression" }
-		| { kind: "visualizationError"; data: ExtractedData } = {
+		| { kind: "visualizationError"; data: VisualizationData } = {
 		kind: "noExpression",
 	};
 
@@ -62,7 +62,7 @@ export class Model {
 	}
 
 	@action
-	public setVisualizationError(data: ExtractedData) {
+	public setVisualizationError(data: VisualizationData) {
 		this.state = { kind: "visualizationError", data: data };
 	}
 

@@ -1,16 +1,17 @@
-import { ExtractedData } from "../../../DataExtractionResult";
+import { MonacoTextVisualizationData } from "../../../CommonDataTypes";
+import { expect } from "../../../util";
 import {
 	DataExtractor,
 	ExtractionCollector,
 	DataExtractorContext,
 } from "../DataExtractorApi";
 
-export class ToStringDataExtractor implements DataExtractor<ExtractedData> {
+export class ToStringDataExtractor implements DataExtractor {
 	readonly id = "to-string";
 
 	getExtractions(
 		data: unknown,
-		collector: ExtractionCollector<ExtractedData>,
+		collector: ExtractionCollector,
 		context: DataExtractorContext
 	): void {
 		collector.addExtraction({
@@ -18,12 +19,12 @@ export class ToStringDataExtractor implements DataExtractor<ExtractedData> {
 			name: "To String",
 			priority: 100,
 			extractData() {
-				return {
+				return expect<MonacoTextVisualizationData>({
 					kind: {
 						text: true,
 					},
 					text: "" + data,
-				};
+				});
 			},
 		});
 	}

@@ -1,17 +1,17 @@
-import { ExtractedData } from "../../../DataExtractionResult";
+import { PlotlyVisualizationData } from "../../../CommonDataTypes";
+import { expect } from "../../../util";
 import {
 	DataExtractor,
 	ExtractionCollector,
 	DataExtractorContext,
 } from "../DataExtractorApi";
-import { CommonDataTypes } from "../../../CommonDataTypes";
 
-export class PlotDataExtractor implements DataExtractor<ExtractedData> {
+export class PlotlyDataExtractor implements DataExtractor {
 	readonly id = "plot";
 
 	getExtractions(
 		data: unknown,
-		collector: ExtractionCollector<ExtractedData>,
+		collector: ExtractionCollector,
 		context: DataExtractorContext
 	): void {
 		if (!Array.isArray(data)) {
@@ -25,14 +25,13 @@ export class PlotDataExtractor implements DataExtractor<ExtractedData> {
 			id: "plot-y",
 			name: "Plot as y-Values",
 			priority: 1001,
-			extractData() {
-				return {
+			extractData: () =>
+				expect<PlotlyVisualizationData>({
 					kind: {
 						plotly: true,
 					},
 					data: [{ y: data }],
-				} as CommonDataTypes.Plotly;
-			},
+				}),
 		});
 	}
 }

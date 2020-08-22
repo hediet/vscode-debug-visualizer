@@ -1,4 +1,4 @@
-import { ExtractedData } from "../../../DataExtractionResult";
+import { VisualizationData } from "../../../DataExtractionResult";
 import {
 	DataExtractor,
 	ExtractionCollector,
@@ -6,12 +6,12 @@ import {
 } from "../DataExtractorApi";
 import { createGraph, CreateGraphEdge } from "../../helpers";
 
-export class ObjectGraphExtractor implements DataExtractor<ExtractedData> {
+export class ObjectGraphExtractor implements DataExtractor {
 	readonly id = "object-graph";
 
 	getExtractions(
 		data: unknown,
-		collector: ExtractionCollector<ExtractedData>,
+		collector: ExtractionCollector,
 		context: DataExtractorContext
 	): void {
 		function isObject(val: unknown): val is object {

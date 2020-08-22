@@ -1,42 +1,19 @@
 import * as ts from "typescript"; // Only compile-time import!
+import { AstTreeNode } from "../../..";
+import { AstTreeVisualizationData } from "../../../CommonDataTypes";
+import { expect } from "../../../util";
 import {
 	DataExtractor,
 	ExtractionCollector,
 	DataExtractorContext,
 } from "../DataExtractorApi";
 
-type AstType = {
-	kind: {
-		tree: true;
-		ast: true;
-		text: true;
-	};
-	root: TreeNode;
-	text: string;
-};
-
-type TreeNode = {
-	children: TreeNode[];
-	items: TreeNodeItem[];
-	segment?: string;
-	isMarked?: boolean;
-	span: {
-		start: number;
-		length: number;
-	};
-};
-
-type TreeNodeItem = {
-	text: string;
-	emphasis?: "style1" | "style2" | "style3";
-};
-
-export class TypeScriptAstDataExtractor implements DataExtractor<AstType> {
+export class TypeScriptAstDataExtractor implements DataExtractor {
 	readonly id = "typescript-ast";
 
 	getExtractions(
 		data: unknown,
-		collector: ExtractionCollector<AstType>,
+		collector: ExtractionCollector,
 		{ evalFn }: DataExtractorContext
 	): void {
 		if (!data) {
@@ -63,116 +40,21 @@ export class TypeScriptAstDataExtractor implements DataExtractor<AstType> {
 			return;
 		}
 
-		function findKey(value: any, object: any): string | null {
-			for (var key in object) {
-				if (key.startsWith("_")) continue;
-
-				var member = object[key];
-				if (member === value) return key;
-
-				if (Array.isArray(member) && member.indexOf(value) !== -1) {
-					return key;
-				}
-			}
-
-			return null;
-		}
-
-		function getChildren(node: ts.Node): ts.Node[] {
-			const result = new Array<ts.Node>();
-			tsApi.forEachChild(node, n => {
-				result.push(n);
-			});
-			return result;
-		}
-
-		function toTreeNode(
-			node: ts.Node,
-			memberName: string,
-			marked: Set<ts.Node>,
-			emphasizedValueFn: (node: ts.Node) => string | undefined
-		): TreeNode {
-			const name = tsApi.SyntaxKind[node.kind];
-			const children = getChildren(node)
-				.map((childNode, idx) => {
-					let parentPropertyName = findKey(childNode, node) || "";
-					if (childNode.kind == tsApi.SyntaxKind.SyntaxList) {
-						const children = getChildren(childNode);
-						children.some(c => {
-							parentPropertyName = findKey(c, node) || "";
-							return !!parentPropertyName;
-						});
-
-						if (children.length === 0) return null!;
-					}
-
-					if (node.kind == tsApi.SyntaxKind.SyntaxList) {
-						parentPropertyName = "" + idx;
-					}
-
-					return toTreeNode(
-						childNode,
-						parentPropertyName,
-						marked,
-						emphasizedValueFn
-					);
-				})
-				.filter(c => c !== null);
-
-			let value: string | undefined = undefined;
-
-			if (tsApi.isIdentifier(node)) {
-				value = node.text || (node.escapedText as string);
-			} else if (tsApi.isLiteralExpression(node)) {
-				value = node.text;
-			}
-
-			return {
-				items: [
-					{ text: memberName, emphasis: "style1" },
-					{ text: name },
-				],
-				children: children,
-				span: {
-					length: node.end - node.pos,
-					start: node.pos,
-				},
-				//emphasizedValue: emphasizedValueFn(node),
-				isMarked: marked.has(node),
-				//value,
-			};
-		}
-
-		function isNode(node: unknown): node is ts.Node {
-			return (
-				typeof node === "object" &&
-				node !== null &&
-				(tsApi.isToken(node as any) || (tsApi as any).isNode(node))
-			);
-		}
-
-		function getSourceFile(node: ts.Node | any): ts.SourceFile {
-			if (!node) {
-				throw new Error("Detached node");
-			}
-			if (tsApi.isSourceFile(node)) {
-				return node;
-			}
-			if (!("getSourceFile" in node)) {
-				return getSourceFile(node.parent);
-			}
-			return node.getSourceFile();
-		}
+		const helper = new Helper(tsApi);
 
 		let rootSourceFile: ts.SourceFile | undefined = undefined;
 		let rootNode: ts.Node | undefined = undefined;
 		let marked: Set<ts.Node>;
 		let fn: (n: ts.Node) => string | undefined = (n: ts.Node) => undefined;
-		if (Array.isArray(data) && data.every(isNode) && data.length > 0) {
-			rootSourceFile = getSourceFile(data[0] as ts.Node);
+		if (
+			Array.isArray(data) &&
+			data.every(helper.isNode) &&
+			data.length > 0
+		) {
+			rootSourceFile = helper.getSourceFile(data[0] as ts.Node);
 			marked = new Set(data);
-		} else if (isNode(data)) {
-			rootSourceFile = getSourceFile(data);
+		} else if (helper.isNode(data)) {
+			rootSourceFile = helper.getSourceFile(data);
 			marked = new Set([data]);
 		} else if (typeof data === "object" && data) {
 			marked = new Set();
@@ -187,15 +69,18 @@ export class TypeScriptAstDataExtractor implements DataExtractor<AstType> {
 						rootNode = item;
 					}
 					let nodes: Array<ts.Node>;
-					if (isNode(item)) {
+					if (helper.isNode(item)) {
 						nodes = [item];
-					} else if (Array.isArray(item) && item.every(isNode)) {
+					} else if (
+						Array.isArray(item) &&
+						item.every(helper.isNode)
+					) {
 						nodes = item;
 					} else {
 						return;
 					}
 					if (nodes.length > 0 && !rootSourceFile) {
-						rootSourceFile = getSourceFile(nodes[0]);
+						rootSourceFile = helper.getSourceFile(nodes[0]);
 					}
 					for (const n of nodes) {
 						marked.add(n);
@@ -217,9 +102,9 @@ export class TypeScriptAstDataExtractor implements DataExtractor<AstType> {
 			name: "TypeScript AST",
 			priority: 1000,
 			extractData() {
-				return {
+				return expect<AstTreeVisualizationData>({
 					kind: { text: true, tree: true, ast: true },
-					root: toTreeNode(
+					root: helper.toTreeNode(
 						rootNode || finalRootSourceFile,
 						"root",
 						marked,
@@ -227,8 +112,111 @@ export class TypeScriptAstDataExtractor implements DataExtractor<AstType> {
 					),
 					text: finalRootSourceFile.text,
 					fileName: "index.ts",
-				};
+				});
 			},
 		});
+	}
+}
+
+class Helper {
+	constructor(private readonly tsApi: typeof ts) {}
+
+	findKey(value: any, object: any): string | null {
+		for (var key in object) {
+			if (key.startsWith("_")) continue;
+
+			var member = object[key];
+			if (member === value) return key;
+
+			if (Array.isArray(member) && member.indexOf(value) !== -1) {
+				return key;
+			}
+		}
+
+		return null;
+	}
+
+	getChildren(node: ts.Node): ts.Node[] {
+		const result = new Array<ts.Node>();
+		this.tsApi.forEachChild(node, n => {
+			result.push(n);
+		});
+		return result;
+	}
+
+	toTreeNode(
+		node: ts.Node,
+		memberName: string,
+		marked: Set<ts.Node>,
+		emphasizedValueFn: (node: ts.Node) => string | undefined
+	): AstTreeNode {
+		const name = this.tsApi.SyntaxKind[node.kind];
+		const children = this.getChildren(node)
+			.map((childNode, idx) => {
+				let parentPropertyName = this.findKey(childNode, node) || "";
+				if (childNode.kind == this.tsApi.SyntaxKind.SyntaxList) {
+					const children = this.getChildren(childNode);
+					children.some(c => {
+						parentPropertyName = this.findKey(c, node) || "";
+						return !!parentPropertyName;
+					});
+
+					if (children.length === 0) return null!;
+				}
+
+				if (node.kind == this.tsApi.SyntaxKind.SyntaxList) {
+					parentPropertyName = "" + idx;
+				}
+
+				return this.toTreeNode(
+					childNode,
+					parentPropertyName,
+					marked,
+					emphasizedValueFn
+				);
+			})
+			.filter(c => c !== null);
+
+		let value: string | undefined = undefined;
+
+		if (this.tsApi.isIdentifier(node)) {
+			value = node.text || (node.escapedText as string);
+		} else if (this.tsApi.isLiteralExpression(node)) {
+			value = node.text;
+		}
+
+		return {
+			items: [{ text: memberName, emphasis: "style1" }, { text: name }],
+			children: children,
+			span: {
+				length: node.end - node.pos,
+				start: node.pos,
+			},
+			//emphasizedValue: emphasizedValueFn(node),
+			isMarked: marked.has(node),
+			//value,
+		};
+	}
+
+	isNode = (node: unknown): node is ts.Node => {
+		return (
+			typeof node === "object" &&
+			node !== null &&
+			(this.tsApi.isToken(node as any) ||
+				(this.tsApi as any).isNode(node))
+		);
+	};
+
+	getSourceFile(node: ts.Node | any): ts.SourceFile {
+		if (!node) {
+			throw new Error("Detached node");
+		}
+		if (this.tsApi.isSourceFile(node)) {
+			return node;
+		}
+		if (!("getSourceFile" in node)) {
+			return this.getSourceFile(node.parent);
+		}
+		return node.getSourceFile();
 	}
 }

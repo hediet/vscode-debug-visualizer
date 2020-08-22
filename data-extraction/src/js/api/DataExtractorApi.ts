@@ -1,5 +1,5 @@
 import {
-	ExtractedData,
+	VisualizationData,
 	DataExtractionResult,
 } from "../../DataExtractionResult";
 
@@ -7,14 +7,12 @@ export interface DataExtractorApi {
 	/**
 	 * Registers a single extractor.
 	 */
-	registerExtractor<TExtractedData extends ExtractedData>(
-		extractor: DataExtractor<TExtractedData>
-	): void;
+	registerExtractor(extractor: DataExtractor): void;
 
 	/**
 	 * Registers multiple extractors.
 	 */
-	registerExtractors(extractors: DataExtractor<ExtractedData>[]): void;
+	registerExtractors(extractors: DataExtractor[]): void;
 
 	/**
 	 * Extracts data from the result of `valueFn`.
@@ -46,23 +44,23 @@ export interface JSONString<T> extends String {
 	__brand: { json: T };
 }
 
-export interface DataExtractor<T extends ExtractedData> {
+export interface DataExtractor {
 	/**
 	 * Must be unique among all data extractors.
 	 */
 	id: string;
 	getExtractions(
 		data: unknown,
-		extractionCollector: ExtractionCollector<T>,
+		extractionCollector: ExtractionCollector,
 		context: DataExtractorContext
 	): void;
 }
 
-export interface ExtractionCollector<T extends ExtractedData> {
+export interface ExtractionCollector {
 	/**
 	 * Suggests a possible extraction.
 	 */
-	addExtraction(extraction: DataExtraction<T>): void;
+	addExtraction(extraction: DataExtraction): void;
 }
 
 export interface DataExtractorContext {
@@ -72,7 +70,7 @@ export interface DataExtractorContext {
 	evalFn: <TEval>(expression: string) => TEval;
 }
 
-export interface DataExtraction<TData extends ExtractedData> {
+export interface DataExtraction {
 	/**
 	 * Higher priorities are preferred.
 	 */
@@ -87,5 +85,5 @@ export interface DataExtraction<TData extends ExtractedData> {
 	 * A user friendly name of this extraction.
 	 */
 	name: string;
-	extractData(): TData;
+	extractData(): VisualizationData;
 }

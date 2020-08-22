@@ -1,122 +1,256 @@
-import { ExtractedData } from "./DataExtractionResult";
+// This file was created automatically. Do not edit it manually!
 
-export type CommonDataType =
-	| CommonDataTypes.Text
-	| CommonDataTypes.Svg
-	| CommonDataTypes.Html
-	| CommonDataTypes.DotGraph
-	| CommonDataTypes.Tree
-	| CommonDataTypes.Ast
-	| CommonDataTypes.Graph
-	| CommonDataTypes.Plotly
-	| CommonDataTypes.Grid;
+export type KnownVisualizationData =
+	| TreeVisualizationData
+	| AstTreeVisualizationData
+	| GraphvizDotVisualizationData
+	| GraphVisualizationData
+	| GraphVisualizationData
+	| GridVisualizationData
+	| ImageVisualizationData
+	| MonacoTextVisualizationData
+	| TableVisualizationData
+	| PlotlyVisualizationData
+	| SimpleTextVisualizationData
+	| SvgVisualizationData;
 
-export function isCommonDataType<T>(
-	data: ExtractedData,
-	kind: T
-): data is Narrow<CommonDataType, { kind: T }> {
-	for (const key of Object.keys(kind)) {
-		if (!(key in data.kind)) {
-			return false;
-		}
-	}
-	return true;
-}
+export type TreeVisualizationData = {
+	kind: {
+		tree: true;
+	};
+	root: TreeNode;
+};
 
-type Narrow<T, TKind> = T extends TKind ? T : never;
-
-export module CommonDataTypes {
-	export interface Text {
-		kind: { text: true };
-		text: string;
-		mimeType?: string;
-		fileName?: string;
-	}
-
-	export interface Graph {
-		kind: { graph: true };
-		nodes: NodeGraphData[];
-		edges: EdgeGraphData[];
-	}
-
-	export interface Svg extends Text {
-		kind: { text: true; svg: true };
-	}
-
-	export interface Html extends Text {
-		kind: { text: true; html: true };
-	}
-
-	export interface DotGraph extends Text {
-		kind: { text: true; dotGraph: true };
-	}
-
-	export interface Tree<TData = unknown> {
-		kind: { tree: true };
-		root: TreeNode<TData>;
-	}
-
-	export interface Grid {
-		kind: { array: true };
-		columnLabels?: { label?: string }[];
-		rows: {
-			label?: string;
-			columns: {
-				content?: string;
-				tag?: string;
-				color?: string;
-			}[];
-		}[];
-		markers?: {
-			id: string;
-
-			row: number;
-			column: number;
-			rows?: number;
-			columns?: number;
-
-			label?: string;
-			color?: string;
-		}[];
-	}
-
-	export interface Ast
-		extends Tree<{
-				position: number;
-				length: number;
-			}>,
-			Text {
-		kind: { text: true; tree: true; ast: true };
-	}
-
-	export interface Plotly {
-		kind: { plotly: true };
-		data: Partial<Plotly.Data>[];
-	}
-}
-
-export interface TreeNode<TExtraData> {
-	name: string;
-	children: TreeNode<TExtraData>[];
-	data: TExtraData;
-	id?: string;
-	value?: string;
-	emphasizedValue?: string;
+export type TreeNode = {
+	/**
+	 * The children of this tree-node
+	 */
+	children: TreeNode[];
+	/**
+	 * The parts that make up the text of this item
+	 */
+	items: TreeNodeItem[];
+	/**
+	 * If a node is selected, the concatenation of all segment values from root to the selected node is shown to the user.
+	 */
+	segment?: string;
+	/**
+	 * Marked nodes are highlighted and scrolled into view on every visualization update.
+	 */
 	isMarked?: boolean;
-}
+};
 
-export interface NodeGraphData {
+export type TreeNodeItem = {
+	/**
+	 * The text to show
+	 */
+	text: string;
+	/**
+	 * The style of the text
+	 */
+	emphasis?: "style1" | "style2" | "style3" | string;
+};
+
+export type AstTreeVisualizationData = {
+	kind: {
+		ast: true;
+		tree: true;
+		text: true;
+	};
+	root: AstTreeNode;
+	text: string;
+	fileName?: string;
+};
+
+export type AstTreeNode = {
+	children: AstTreeNode[];
+	items: AstTreeNodeItem[];
+	segment?: string;
+	isMarked?: boolean;
+	span: {
+		start: number;
+		length: number;
+	};
+};
+
+export type AstTreeNodeItem = {
+	text: string;
+	emphasis?: "style1" | "style2" | "style3" | string;
+};
+
+export type GraphvizDotVisualizationData = {
+	kind: {
+		dotGraph: true;
+	};
+	text: string;
+};
+
+export type GraphVisualizationData = {
+	kind: {
+		graph: true;
+	};
+	nodes: GraphNode[];
+	edges: GraphEdge[];
+};
+
+export type GraphNode = {
 	id: string;
 	label?: string;
 	color?: string;
 	shape?: "ellipse" | "box";
-}
+};
 
-export interface EdgeGraphData {
+export type GraphEdge = {
 	from: string;
 	to: string;
 	label?: string;
 	id?: string;
 	color?: string;
 	dashes?: boolean;
-}
+};
+
+export type GridVisualizationData = {
+	kind: {
+		grid: true;
+	};
+	columnLabels?: {
+		label?: string;
+	}[];
+	rows: {
+		label?: string;
+		columns: {
+			content?: string;
+			/**
+			 * A value to identify this cell. Should be unique.
+			 */
+			tag?: string;
+			color?: string;
+		}[];
+	}[];
+	markers?: {
+		id: string;
+		row: number;
+		column: number;
+		rows?: number;
+		columns?: number;
+		label?: string;
+		color?: string;
+	}[];
+};
+
+export type ImageVisualizationData = {
+	kind: {
+		imagePng: true;
+	};
+	/**
+	 * The base 64 encoded PNG representation of the image
+	 */
+	base64Data: string;
+};
+
+export type MonacoTextVisualizationData = {
+	kind: {
+		text: true;
+	};
+	/**
+	 * The text to show
+	 */
+	text: string;
+	/**
+	 * An optional filename that might be used for chosing a syntax highlighter
+	 */
+	fileName?: string;
+};
+
+export type TableVisualizationData = {
+	kind: {
+		table: true;
+	};
+	/**
+	 * An array of objects. The properties of the objects are used as columns.
+	 */
+	rows: {}[];
+};
+
+export type PlotlyVisualizationData = {
+	kind: {
+		plotly: true;
+	};
+	/**
+	 * Expecting Plotly.Data[] (https://github.com/DefinitelyTyped/DefinitelyTyped/blob/795ce172038dbafcb9cba030d637d733a7eea19c/types/plotly.js/index.d.ts#L1036)
+	 */
+	data: {
+		text?: string | string[];
+		xaxis?: string;
+		yaxis?: string;
+		x?: (string | number | null)[] | (string | number | null)[][];
+		y?: (string | number | null)[] | (string | number | null)[][];
+		z?: (string | number | null)[] | (string | number | null)[][];
+		type?:
+			| "bar"
+			| "box"
+			| "candlestick"
+			| "choropleth"
+			| "contour"
+			| "heatmap"
+			| "histogram"
+			| "indicator"
+			| "mesh3d"
+			| "ohlc"
+			| "parcoords"
+			| "pie"
+			| "pointcloud"
+			| "scatter"
+			| "scatter3d"
+			| "scattergeo"
+			| "scattergl"
+			| "scatterpolar"
+			| "scatterternary"
+			| "sunburst"
+			| "surface"
+			| "treemap"
+			| "waterfall"
+			| "funnel"
+			| "funnelarea"
+			| "scattermapbox";
+		mode?:
+			| "lines"
+			| "markers"
+			| "text"
+			| "lines+markers"
+			| "text+markers"
+			| "text+lines"
+			| "text+lines+markers"
+			| "none"
+			| "gauge"
+			| "number"
+			| "delta"
+			| "number+delta"
+			| "gauge+number"
+			| "gauge+number+delta"
+			| "gauge+delta";
+	}[];
+	/**
+	 * Expecting Partial<Plotly.Layout> (https://github.com/DefinitelyTyped/DefinitelyTyped/blob/795ce172038dbafcb9cba030d637d733a7eea19c/types/plotly.js/index.d.ts#L329)
+	 */
+	layout?: {
+		title?: string;
+	};
+};
+
+export type SimpleTextVisualizationData = {
+	kind: {
+		text: true;
+	};
+	text: string;
+};
+
+export type SvgVisualizationData = {
+	kind: {
+		svg: true;
+	};
+	/**
+	 * The svg content
+	 */
+	text: string;
+};

@@ -1,18 +1,18 @@
-import { ExtractedData, isExtractedData } from "../../../DataExtractionResult";
+import { isVisualizationData } from "../../../DataExtractionResult";
 import {
 	DataExtractor,
 	ExtractionCollector,
 	DataExtractorContext,
 } from "../..";
 
-export class AsIsDataExtractor implements DataExtractor<ExtractedData> {
+export class AsIsDataExtractor implements DataExtractor {
 	readonly id = "as-is";
 	getExtractions(
 		data: unknown,
-		extractionCollector: ExtractionCollector<ExtractedData>,
+		extractionCollector: ExtractionCollector,
 		context: DataExtractorContext
 	): void {
-		if (!isExtractedData(data)) {
+		if (!isVisualizationData(data)) {
 			return;
 		}
 

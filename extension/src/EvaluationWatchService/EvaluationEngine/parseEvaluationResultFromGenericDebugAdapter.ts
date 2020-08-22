@@ -1,6 +1,6 @@
 import {
 	DataExtractionResult,
-	isExtractedData,
+	isVisualizationData,
 } from "@hediet/debug-visualizer-data-extraction";
 import { FormattedMessage } from "../../webviewContract";
 
@@ -40,7 +40,7 @@ export function parseEvaluationResultFromGenericDebugAdapter(
 			// result is now { kind: { ... }, text: "some\ntext" }
 		}
 
-		if (!isExtractedData(resultObj)) {
+		if (!isVisualizationData(resultObj)) {
 			return {
 				kind: "error",
 				message: {

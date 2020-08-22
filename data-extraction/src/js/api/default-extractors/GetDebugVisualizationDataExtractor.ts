@@ -1,32 +1,33 @@
-import { ExtractedData } from "../../../DataExtractionResult";
+import { VisualizationData } from "../../../DataExtractionResult";
 import {
 	DataExtractor,
 	ExtractionCollector,
 	DataExtractorContext,
 } from "../DataExtractorApi";
 
-export class GetDebugVisualizationDataExtractor
-	implements DataExtractor<ExtractedData> {
-	readonly id = "get-debug-visualization";
+export class GetVisualizationDataExtractor implements DataExtractor {
+	readonly id = "get-visualization-data";
 	getExtractions(
 		data: unknown,
-		collector: ExtractionCollector<ExtractedData>,
+		collector: ExtractionCollector,
 		context: DataExtractorContext
 	): void {
-		if (
-			typeof data !== "object" ||
-			!data ||
-			!("getDebugVisualization" in data)
-		) {
+		if (typeof data !== "object" || !data) {
+			return;
+		}
+
+		const getVisualizationData = (data as any)
+			.getVisualizationData as Function;
+		if (typeof getVisualizationData !== "function") {
 			return;
 		}
 
 		collector.addExtraction({
 			id: this.id,
-			name: "Use Method 'getDebugVisualization'",
+			name: "Use Method 'getVisualizationData'",
 			priority: 600,
 			extractData() {
-				return (data as any).getDebugVisualization();
+				return getVisualizationData.apply(data);
 			},
 		});
 	}

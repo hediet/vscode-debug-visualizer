@@ -1,9 +1,9 @@
 import { DataExtractorApi } from "../DataExtractorApi";
 import { TypeScriptAstDataExtractor } from "./TypeScriptDataExtractors";
 import { AsIsDataExtractor } from "./AsIsDataExtractor";
-import { GetDebugVisualizationDataExtractor } from "./GetDebugVisualizationDataExtractor";
+import { GetVisualizationDataExtractor } from "./GetDebugVisualizationDataExtractor";
 import { ToStringDataExtractor } from "./ToStringExtractor";
-import { PlotDataExtractor } from "./PlotlyDataExtractor";
+import { PlotlyDataExtractor } from "./PlotlyDataExtractor";
 import { ObjectGraphExtractor } from "./ObjectGraphExtractor";
 import { getDataExtractorApi } from "../injection";
 import { GridExtractor } from "./GridExtractor";
@@ -18,9 +18,9 @@ export function registerDefaultExtractors(
 	for (const item of [
 		new TypeScriptAstDataExtractor(),
 		new AsIsDataExtractor(),
-		new GetDebugVisualizationDataExtractor(),
+		new GetVisualizationDataExtractor(),
 		new ToStringDataExtractor(),
-		new PlotDataExtractor(),
+		new PlotlyDataExtractor(),
 		new ObjectGraphExtractor(),
 		new GridExtractor(),
 	]) {

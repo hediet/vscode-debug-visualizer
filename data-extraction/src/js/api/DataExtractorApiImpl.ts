@@ -6,7 +6,10 @@ import {
 	DataExtraction,
 	ExtractionCollector,
 } from "./DataExtractorApi";
-import { ExtractedData, DataExtractorInfo } from "../../DataExtractionResult";
+import {
+	VisualizationData,
+	DataExtractorInfo,
+} from "../../DataExtractionResult";
 import { registerDefaultExtractors } from "./default-extractors";
 
 /**
@@ -15,24 +18,17 @@ import { registerDefaultExtractors } from "./default-extractors";
 export class DataExtractorApiImpl implements DataExtractorApi {
 	public static lastEvalFn: (<T>(expression: string) => T) | undefined;
 
-	private readonly extractors = new Map<
-		string,
-		DataExtractor<ExtractedData>
-	>();
+	private readonly extractors = new Map<string, DataExtractor>();
 
 	private toJson<TData>(data: TData): JSONString<TData> {
 		return JSON.stringify(data) as any;
 	}
 
-	public registerExtractor<TExtractedData extends ExtractedData>(
-		extractor: DataExtractor<TExtractedData>
-	): void {
+	public registerExtractor(extractor: DataExtractor): void {
 		this.extractors.set(extractor.id, extractor);
 	}
 
-	public registerExtractors(
-		extractors: DataExtractor<ExtractedData>[]
-	): void {
+	public registerExtractors(extractors: DataExtractor[]): void {
 		for (const e of extractors) {
 			this.registerExtractor(e);
 		}
@@ -43,8 +39,8 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 		evalFn: <T>(expression: string) => T,
 		preferredDataExtractorId: string | undefined
 	): JSONString<DataResult> {
-		const extractions = new Array<DataExtraction<ExtractedData>>();
-		const extractionCollector: ExtractionCollector<ExtractedData> = {
+		const extractions = new Array<DataExtraction>();
+		const extractionCollector: ExtractionCollector = {
 			addExtraction(extraction) {
 				extractions.push(extraction);
 			},
@@ -72,9 +68,7 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 			}
 		}
 
-		function mapExtractor(
-			e: DataExtraction<ExtractedData>
-		): DataExtractorInfo {
+		function mapExtractor(e: DataExtraction): DataExtractorInfo {
 			return {
 				id: e.id as any,
 				name: e.name,

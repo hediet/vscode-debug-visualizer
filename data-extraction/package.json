@@ -1,7 +1,7 @@
 {
 	"name": "@hediet/debug-visualizer-data-extraction",
 	"description": "A library that helps implementing data extractors for the Debug Visualizer VS Code extension.",
-	"version": "0.12.0",
+	"version": "0.13.0",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"author": {
