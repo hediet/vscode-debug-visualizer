@@ -7,6 +7,10 @@ Like the VS Code's watch view, but with rich visualizations of the watched value
 
 ![](../docs/demo.gif)
 
+## [Visualization Playground](https://hediet.github.io/visualization/)
+
+Click [here](https://hediet.github.io/visualization/) to explore all available visualizations.
+
 ## Supported Languages
 
 See [demos](../demos/) for demos. These languages and debuggers are verified to work with this extension:
@@ -14,7 +18,7 @@ See [demos](../demos/) for demos. These languages and debuggers are verified to 
 -   JavaScript/TypeScript/... using `node`/`node2`/`extensionHost`/`chrome`/`pwa-chrome`/`pwa-node` debug adapter: [⭐ Full Support](../demos/js)
 -   Go using `go` (Delve) debug adapter: [✅ Rudimentary Support](../demos/golang)
 -   Python using `python` debug adapter: [✅ Rudimentary Support](../demos/python)
--   C# using `coreclr` debug adapter: [✅ Rudimentary Support](../demos/csharp)
+-   C# using `coreclr` debug adapter: [✅ Rudimentary Support](../demos/csharp) (work in progress for Full Support)
 -   PHP using `php` debug adapter: [✅ Rudimentary Support](../demos/php)
 -   Java using `java` debug adapter: [✅ Rudimentary Support](../demos/java)
 -   C++ using `cppdbg` debug adapter: [✅ Rudimentary Support](../demos/cpp)
@@ -29,20 +33,21 @@ Fully supported languages offer _Data Extractors_ which convert some well known 
 
 After installing this extension, use the command `Debug Visualizer: New View` to open a new visualizer view.
 In this view you can enter an expression that is evaluated and visualized while stepping through your application.
-This view works the same as the watch view of VS Code, except that the resulting value is presented visually rather than textually. Not all values can be processed -
-see [_Supported Values_](#Supported%20Values) for which values can be visualized.
+This view works the same as the watch view of VS Code, except that the resulting value is presented visually rather than textually and you can only watch one expression (but you can still open multiple windows).
 
 Use the command `Debug Visualizer: Use Selection as Expression` _(Shift + F1)_ to use the currently selected text as expression
 in the most recently opened debug visualizer.
 
 ## Supported Values
 
+Not all values can be processed.
 Visualizers consume specific JSON data. This extension uses [hediet/visualization](https://github.com/hediet/visualization), a generic visualization framework.
 You can see in its [playground](https://hediet.github.io/visualization/) which data can be visualized and how the visualization looks like.
 
 The currently watched expression should evaluate to a JSON Object string,
 matching the [schema](https://hediet.github.io/visualization/docs/visualization-data-schema.json) of one of the supported visualizers. This JSON string may be surrounded by single or double quotation marks (or none at all) and must not be escaped.
 A valid example is `"{ "kind": { "text": true }, "text": "some text\nmore text" }"`.
+Use the watch window to see what an expression evaluates to. This extension simply interprets that result.
 
 For some languages (TypeScript/JavaScript), runtime code is injected to support _Data Extractors_.
 A Data Extractor lifts the requirement for the visualized value to be a JSON string
