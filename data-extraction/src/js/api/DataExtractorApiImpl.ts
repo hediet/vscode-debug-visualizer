@@ -6,10 +6,7 @@ import {
 	DataExtraction,
 	ExtractionCollector,
 } from "./DataExtractorApi";
-import {
-	VisualizationData,
-	DataExtractorInfo,
-} from "../../DataExtractionResult";
+import { DataExtractorInfo } from "../../DataExtractionResult";
 import { registerDefaultExtractors } from "./default-extractors";
 
 /**

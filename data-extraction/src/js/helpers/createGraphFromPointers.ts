@@ -1,4 +1,4 @@
-import { NodeGraphData, CommonDataTypes } from "../../CommonDataTypes";
+import { GraphNode, GraphVisualizationData } from "../../CommonDataTypes";
 import { CreateGraphEdge, createGraph } from "./createGraph";
 
 /**
@@ -12,8 +12,8 @@ export function createGraphFromPointers<T>(
 	) => {
 		id?: string | number;
 		edges: CreateGraphEdge<T>[];
-	} & Omit<NodeGraphData, "id">
-): CommonDataTypes.Graph {
+	} & Omit<GraphNode, "id">
+): GraphVisualizationData {
 	const marker = {};
 
 	interface Pointer {

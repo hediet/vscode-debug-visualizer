@@ -1,11 +1,11 @@
-import { CommonDataTypes } from "../../CommonDataTypes";
+import { GridVisualizationData } from "../../CommonDataTypes";
 
 export function markedGrid(
 	arr: any[],
 	marked: Record<string, number>
-): CommonDataTypes.Grid {
+): GridVisualizationData {
 	return {
-		kind: { array: true },
+		kind: { grid: true },
 		rows: [{ columns: arr.map(d => ({ tag: d })) }],
 		markers: Object.entries(marked).map(([key, val]) => ({
 			id: key,

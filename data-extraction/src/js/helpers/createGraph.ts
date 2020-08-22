@@ -1,10 +1,10 @@
 import {
-	CommonDataTypes,
-	EdgeGraphData,
-	NodeGraphData,
+	GraphEdge,
+	GraphNode,
+	GraphVisualizationData,
 } from "../../CommonDataTypes";
 
-export type CreateGraphEdge<T> = { to: T } & Omit<EdgeGraphData, "from" | "to">;
+export type CreateGraphEdge<T> = { to: T } & Omit<GraphEdge, "from" | "to">;
 
 /**
  * Given a list of roots, it creates a graph by following their edges recursively.
@@ -17,10 +17,10 @@ export function createGraph<T>(
 	) => {
 		id?: string | number;
 		edges: CreateGraphEdge<T>[];
-	} & Omit<NodeGraphData, "id">,
+	} & Omit<GraphNode, "id">,
 	options: { maxSize?: number } = {}
-): CommonDataTypes.Graph {
-	const r: CommonDataTypes.Graph = {
+): GraphVisualizationData {
+	const r: GraphVisualizationData = {
 		kind: {
 			graph: true,
 		},
