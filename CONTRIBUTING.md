@@ -42,16 +42,10 @@ Implements the UI and is hosted inside a webview in VS Code.
 Can be opened in a browser window.
 Uses websockets and JSON RPC to communicate with the extension.
 
-### visualization
+### hediet/visualization
 
-Contains React components that visualize various JSON documents.
-Also provides infrastructure for selecting the best visualization for a given JSON document.
-
-### visualization-playground
-
-A playground to test and play with the visualizations for the web.
-Is hosted at [https://hediet.github.io/vscode-debug-visualizer/](https://hediet.github.io/vscode-debug-visualizer/).
-Aims to have fast build times.
+Contains all the visualizers and visualization infrastructure.
+This external project can be found [here](https://github.com/hediet/visualization).
 
 ### extension
 
