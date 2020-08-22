@@ -2,10 +2,10 @@
 
 ## 2.0.0
 
--   New Logo
 -   Support for the new JS debug adapters
 -   Moved visualizations to [github.com/hediet/visualization](https://github.com/hediet/visualization).
--   New Visualizations / Improved design
+-   New Visualizations / Improved design / Improved dark theme
+-   New Logo
 
 ## 1.1.0
 
