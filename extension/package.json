@@ -3,11 +3,11 @@
 	"private": true,
 	"displayName": "Debug Visualizer",
 	"description": "A visual watch window that lets you visualize your data structures while debugging.",
-	"icon": "docs/logo.png",
+	"icon": "docs/logo.drawio.png",
 	"version": "2.0.0",
 	"license": "GPL-3.0",
 	"engines": {
-		"vscode": "^1.47.0"
+		"vscode": "^1.46.0"
 	},
 	"publisher": "hediet",
 	"keywords": [
@@ -117,7 +117,7 @@
 		"@types/express": "^4.17.2",
 		"@types/serve-static": "^1.13.3",
 		"@types/node": "^13.7.4",
-		"@types/vscode": "1.47.0",
+		"@types/vscode": "1.46.0",
 		"tslint": "^6.0.0",
 		"typescript": "^3.8.2",
 		"webpack": "^4.41.6",
