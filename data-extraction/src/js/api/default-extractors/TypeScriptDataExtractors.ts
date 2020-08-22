@@ -185,16 +185,27 @@ class Helper {
 			value = node.text;
 		}
 
+		const items: AstTreeNode["items"] = [
+			{ text: `${memberName}: `, emphasis: "style1" },
+			{ text: name },
+		];
+
+		const emphasizedVal = emphasizedValueFn(node);
+		if (value) {
+			items.push({ text: value, emphasis: "style2" });
+		}
+		if (emphasizedVal) {
+			items.push({ text: emphasizedVal, emphasis: "style3" });
+		}
+
 		return {
-			items: [{ text: memberName, emphasis: "style1" }, { text: name }],
+			items,
 			children: children,
 			span: {
 				length: node.end - node.pos,
 				start: node.pos,
 			},
-			//emphasizedValue: emphasizedValueFn(node),
 			isMarked: marked.has(node),
-			//value,
 		};
 	}
 
