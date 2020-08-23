@@ -487,10 +487,10 @@
     stacktracey "^1.2.112"
     ws "^7.0.0"
 
-"@hediet/monaco-editor-react@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@hediet/monaco-editor-react/-/monaco-editor-react-0.1.0.tgz#b00dfa28e2ffa09ecc748e35f4befc0e887947f2"
-  integrity sha512-EFAmKW1u9ks2iqTP63qqLPUezKMAnK+UvZrvoRmUMCpRRxG9uduYGPQfASaHcIQYzOqzWaVKvCQN5wQQ+lSxIQ==
+"@hediet/monaco-editor-react@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@hediet/monaco-editor-react/-/monaco-editor-react-0.1.1.tgz#041f805aeb188403c7876f0f364d2a429e706031"
+  integrity sha512-0DZZfLcFNuc3Wrn+2eztnRloCBe6GV8zIrGT3LPdZlWYEigJT+Qh7ANvRHF0tCS5YPAFGQNZJcfzKbBfqRGo4w==
 
 "@hediet/node-reload@^0.7.3":
   version "0.7.3"
@@ -511,6 +511,11 @@
   version "0.3.11"
   resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.11.tgz#9420a89d30645ba333dfd4f3f2c120f973297ee2"
   integrity sha512-KKw6ZcYHiyfhanNmln/WlG4KvZnMi/Ojy8O6HB6sqfDC5XCcNYjccUMMtaX23F/Hox0dWJPFqXYs54KJAA5itg==
+
+"@hediet/semantic-json@^0.3.14":
+  version "0.3.14"
+  resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.14.tgz#876bd5c4b646c134641ad17e9ef352595fb163e7"
+  integrity sha512-u2QGfT98RNrcQjqRHwFUy+TU8+sLneBOYvHHNbkHyYNokqi8kCpE9LReTygGT+6SfMtydTWN6JT9L2ffxrvV6w==
 
 "@hediet/std@^0.6.0":
   version "0.6.0"
@@ -550,16 +555,16 @@
     "@hediet/std" "^0.6.0"
     io-ts "^1.8.6"
 
-"@hediet/visualization-bundle@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.1.1.tgz#dc36d772def977cb97292890afb3b369760c620b"
-  integrity sha512-X0Y0MQQHpZkMDSM9naLC5F3LVlSq+nQ6dNYkNz+3sF6PdvSf6xxUbRL4qbum2QCLqNRoiEu/HO6fjCU/gBvysA==
+"@hediet/visualization-bundle@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.1.4.tgz#ddaba4818501b8ca6a0cdd355afeb02bfb4dc731"
+  integrity sha512-FPR9zhyEDlYMk9vscWgEe9B2NQzvFxjc85tjDUR9GZbr42RtLTMd0Xyf0AlSl+plV98mD1XERWowagHqleU7Xg==
   dependencies:
     "@finos/perspective-viewer" "^0.5.2"
     "@finos/perspective-viewer-d3fc" "^0.5.2"
     "@finos/perspective-viewer-datagrid" "^0.5.2"
-    "@hediet/monaco-editor-react" "^0.1.0"
-    "@hediet/semantic-json" "^0.3.11"
+    "@hediet/monaco-editor-react" "^0.1.1"
+    "@hediet/semantic-json" "^0.3.14"
     "@hediet/std" "^0.6.0"
     classnames "^2.2.6"
     line-column "^1.0.2"
