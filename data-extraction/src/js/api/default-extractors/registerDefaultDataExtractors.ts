@@ -7,6 +7,7 @@ import { PlotlyDataExtractor } from "./PlotlyDataExtractor";
 import { ObjectGraphExtractor } from "./ObjectGraphExtractor";
 import { getDataExtractorApi } from "../injection";
 import { GridExtractor } from "./GridExtractor";
+import { TableDataExtractor } from "./TableExtractor";
 
 /**
  * The default data extractors should be registered by VS Code automatically.
@@ -23,6 +24,7 @@ export function registerDefaultExtractors(
 		new PlotlyDataExtractor(),
 		new ObjectGraphExtractor(),
 		new GridExtractor(),
+		new TableDataExtractor(),
 	]) {
 		api.registerExtractor(item);
 	}

@@ -20,8 +20,8 @@
 		"react-dom": "^16.12.0",
 		"react-measure": "^2.3.0",
 		"@hediet/debug-visualizer-data-extraction": "*",
-		"@hediet/visualization-bundle": "^0.1.4",
-		"@hediet/visualization-core": "^0.1.0",
+		"@hediet/visualization-bundle": "^0.1.6",
+		"@hediet/visualization-core": "^0.1.1",
 		"@knuddels/mobx-logger": "^1.1.1",
 		"less-loader": "^6.2.0"
 	},

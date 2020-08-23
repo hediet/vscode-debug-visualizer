@@ -24,7 +24,7 @@ export class GridExtractor implements DataExtractor {
 			extractData: () =>
 				expect<GridVisualizationData>({
 					kind: { grid: true },
-					rows: [{ columns: data.map(d => ({ tag: d })) }],
+					rows: [{ columns: data.map(d => ({ tag: "" + d })) }],
 				}),
 		});
 	}

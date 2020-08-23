@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.6
+
+-   Fixes grid extractor bug
+-   Fixes Perspective.js bug
+-   Fixes AST visualizer bug
+-   Adds table data extractor
+-   Improves typescript data extractor
+
 ## 2.0.0
 
 -   Support for the new JS debug adapters

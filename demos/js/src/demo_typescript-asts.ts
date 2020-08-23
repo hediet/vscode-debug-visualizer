@@ -18,6 +18,7 @@ class Main {
 class Test1 {
 	public foo(a: number) {
 		const x = { a: 5 };
+		const y = { a: 5 };
 	}
 }
 `,

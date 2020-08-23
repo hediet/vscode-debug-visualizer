@@ -47,7 +47,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/extension",
-				"${workspaceFolder}/demos/python"
+				"${workspaceFolder}/demos/js"
 			],
 			"env": {
 				"HOT_RELOAD": "",

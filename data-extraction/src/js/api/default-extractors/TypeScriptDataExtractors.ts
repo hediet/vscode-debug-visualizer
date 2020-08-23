@@ -107,6 +107,7 @@ export class TypeScriptAstDataExtractor implements DataExtractor {
 					root: helper.toTreeNode(
 						rootNode || finalRootSourceFile,
 						"root",
+						"",
 						marked,
 						fn
 					),
@@ -121,19 +122,24 @@ export class TypeScriptAstDataExtractor implements DataExtractor {
 class Helper {
 	constructor(private readonly tsApi: typeof ts) {}
 
-	findKey(value: any, object: any): string | null {
-		for (var key in object) {
-			if (key.startsWith("_")) continue;
+	getPropertyNameInParent(value: any, parent: any): string | undefined {
+		for (const propertyName in parent) {
+			if (propertyName.startsWith("_")) continue;
 
-			var member = object[key];
-			if (member === value) return key;
+			const member = parent[propertyName];
+			if (member === value) {
+				return propertyName;
+			}
 
-			if (Array.isArray(member) && member.indexOf(value) !== -1) {
-				return key;
+			if (Array.isArray(member)) {
+				const index = member.indexOf(value);
+				if (index !== -1) {
+					return `${propertyName}[${index}]`;
+				}
 			}
 		}
 
-		return null;
+		return undefined;
 	}
 
 	getChildren(node: ts.Node): ts.Node[] {
@@ -147,30 +153,38 @@ class Helper {
 	toTreeNode(
 		node: ts.Node,
 		memberName: string,
+		segmentName: string,
 		marked: Set<ts.Node>,
 		emphasizedValueFn: (node: ts.Node) => string | undefined
 	): AstTreeNode {
 		const name = this.tsApi.SyntaxKind[node.kind];
 		const children = this.getChildren(node)
 			.map((childNode, idx) => {
-				let parentPropertyName = this.findKey(childNode, node) || "";
+				let parentPropertyName =
+					this.getPropertyNameInParent(childNode, node) || "";
+
 				if (childNode.kind == this.tsApi.SyntaxKind.SyntaxList) {
 					const children = this.getChildren(childNode);
-					children.some(c => {
-						parentPropertyName = this.findKey(c, node) || "";
-						return !!parentPropertyName;
-					});
-
-					if (children.length === 0) return null!;
+					for (const c of children) {
+						const name =
+							this.getPropertyNameInParent(c, node) || "";
+						if (name) {
+							parentPropertyName = name;
+							break;
+						}
+					}
 				}
 
+				let segmentName = "." + parentPropertyName;
 				if (node.kind == this.tsApi.SyntaxKind.SyntaxList) {
 					parentPropertyName = "" + idx;
+					segmentName = `[${idx}]`;
 				}
 
 				return this.toTreeNode(
 					childNode,
 					parentPropertyName,
+					segmentName,
 					marked,
 					emphasizedValueFn
 				);
@@ -201,6 +215,7 @@ class Helper {
 		return {
 			items,
 			children: children,
+			segment: segmentName,
 			span: {
 				length: node.end - node.pos,
 				start: node.pos,

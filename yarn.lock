@@ -507,11 +507,6 @@
     stack-trace "^0.0.10"
     ws "^7.0.0"
 
-"@hediet/semantic-json@^0.3.11":
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.11.tgz#9420a89d30645ba333dfd4f3f2c120f973297ee2"
-  integrity sha512-KKw6ZcYHiyfhanNmln/WlG4KvZnMi/Ojy8O6HB6sqfDC5XCcNYjccUMMtaX23F/Hox0dWJPFqXYs54KJAA5itg==
-
 "@hediet/semantic-json@^0.3.14":
   version "0.3.14"
   resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.14.tgz#876bd5c4b646c134641ad17e9ef352595fb163e7"
@@ -555,10 +550,10 @@
     "@hediet/std" "^0.6.0"
     io-ts "^1.8.6"
 
-"@hediet/visualization-bundle@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.1.4.tgz#ddaba4818501b8ca6a0cdd355afeb02bfb4dc731"
-  integrity sha512-FPR9zhyEDlYMk9vscWgEe9B2NQzvFxjc85tjDUR9GZbr42RtLTMd0Xyf0AlSl+plV98mD1XERWowagHqleU7Xg==
+"@hediet/visualization-bundle@^0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.1.6.tgz#a8ab11be910a30d0d26a88044caf11cab4a60f98"
+  integrity sha512-IQZDORYlRTojBwJUIADpg4NRxCqK6Q+bl1H2IP7Bq28wdwsRtuERB2UcGPufn00NGhJbOw6FAH2e1zwsQAkboQ==
   dependencies:
     "@finos/perspective-viewer" "^0.5.2"
     "@finos/perspective-viewer-d3fc" "^0.5.2"
@@ -581,12 +576,12 @@
     vis-network "^8.0.0"
     viz.js "^2.1.2"
 
-"@hediet/visualization-core@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.1.0.tgz#f23706cbc6a9ffd411c300767077ca4c0c494c15"
-  integrity sha512-v7aZnyJ0ax09x6mBqhVaJQVwos1X7nyEfymr85/wbvLuleDjisKUuLHBxGpmWYSBRFMZUKIHllaY48DEHjP8Ug==
+"@hediet/visualization-core@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.1.1.tgz#240b96ac48e24b7ae81f2b0360cebd57091eb600"
+  integrity sha512-2WNP75TZg87bejt5XB+11jzbAoJ5EGbVrW+srSHRjUSdezZQ53x16E4XVV/q9W6HD6okTuz7wGjDrapNzK1EMw==
   dependencies:
-    "@hediet/semantic-json" "^0.3.11"
+    "@hediet/semantic-json" "^0.3.14"
     "@hediet/std" "^0.6.0"
     react "^16.12.0"
     react-dom "^16.12.0"
