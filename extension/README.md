@@ -56,6 +56,24 @@ When multiple Data Extractors are applicable, a preferred one can be selected in
 
 There is a [JSON Schema for all supported visualizations](https://hediet.github.io/visualization/docs/visualization-data-schema.json) and a [typescript declaration file](https://hediet.github.io/visualization/docs/visualization-data.ts).
 
+## Selected Demos
+
+### Reversing a Doubly Linked List
+
+![](../docs/doubly-linked-list-reverse-demo.gif)
+
+### Random Walk
+
+![](../docs/visualization-plotly-random-walk.gif)
+
+### Ast Visualizer
+
+![](../docs/ast-demo.gif)
+
+### Table Visualizer
+
+![](../docs/table-demo.gif)
+
 ## JavaScript/TypeScript Integrated Data Extractors
 
 Data extractors convert arbitrary values into data consumable by visualizers.
