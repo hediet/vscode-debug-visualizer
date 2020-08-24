@@ -11,14 +11,27 @@ setTimeout(() => {
 
 class Main {
 	run() {
-		const list = new DoublyLinkedList("1");
-		list.setNext(new DoublyLinkedList("2"));
-		list.next!.setNext(new DoublyLinkedList("3"));
-		list.next!.next!.setNext(new DoublyLinkedList("4"));
+		const head = new DoublyLinkedListNode("1");
+		head.setNext(new DoublyLinkedListNode("2"));
+		head.next!.setNext(new DoublyLinkedListNode("3"));
+		const tail = new DoublyLinkedListNode("4");
+		head.next!.next!.setNext(tail);
+		reverse(new DoublyLinkedList(head, tail));
+		console.log("finished");
+	}
+}
 
-		// Use `visualize()` as expression to visualize in the Debug Visualizer!
-		const visualize = () =>
-			createGraphFromPointers({ list, last, cur }, i => ({
+function reverse(list: DoublyLinkedList) {
+	// Open a new Debug Visualizer
+	// and enter `visualize()`!
+	const visualize = () =>
+		createGraphFromPointers(
+			{
+				last,
+				"list.head": list.head,
+				"list.tail": list.tail
+			},
+			i => ({
 				id: i.id,
 				label: i.name,
 				color: finished.has(i) ? "lime" : undefined,
@@ -28,31 +41,37 @@ class Main {
 				].filter(r => !!r.to),
 			}));
 
-		const finished = new Set();
-		var cur: DoublyLinkedList | undefined = list;
-		// Reverses `list`. Finished nodes have correct pointers,
-		// their next node is also finished.
-		var last: DoublyLinkedList | undefined = undefined;
-		while (cur) {
-			cur.prev = cur.next;
-			cur.next = last;
-			finished.add(cur);
-			last = cur;
-			cur = cur.prev;
-		}
-		console.log("finished");
+	// Finished nodes have correct pointers,
+	// their next node is also finished.
+	const finished = new Set();
+	var last: DoublyLinkedListNode | null = null;
+	list.tail = list.head;
+	while (list.head) {
+		list.head.prev = list.head.next;
+		list.head.next = last;
+		finished.add(list.head);
+		last = list.head;
+		list.head = list.head.prev;
 	}
+	list.head = last;
+}
+
+class DoublyLinkedList {
+	constructor(
+		public head: DoublyLinkedListNode | null,
+		public tail: DoublyLinkedListNode | null
+	) { }
 }
 
 let id = 0;
-class DoublyLinkedList {
+class DoublyLinkedListNode {
 	public readonly id = (id++).toString();
-	constructor(public name: string) {}
+	constructor(public name: string) { }
 
-	next: DoublyLinkedList | undefined;
-	prev: DoublyLinkedList | undefined;
+	next: DoublyLinkedListNode | null = null;
+	prev: DoublyLinkedListNode | null = null;
 
-	public setNext(val: DoublyLinkedList): void {
+	public setNext(val: DoublyLinkedListNode): void {
 		val.prev = this;
 		this.next = val;
 	}

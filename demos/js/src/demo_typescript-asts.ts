@@ -11,7 +11,7 @@ setTimeout(() => {
 
 class Main {
 	run() {
-		const files = new Map<string, string>([
+		/*const files = new Map<string, string>([
 			[
 				"main.ts",
 				`
@@ -35,7 +35,7 @@ class Test1 {
 		const c = prog.getTypeChecker();
 		let myValue = undefined; // Visualize `myValue` here!
 		const sourceFileAst = prog.getSourceFiles()[0];
-		myValue = sourceFileAst.getText();
+		myValue = sourceFileAst;
 		console.log("myValue is the source code of the AST");
 		debugger;
 
@@ -65,7 +65,24 @@ class Test1 {
 			},
 		};
 		console.log("myValue is AST, annotated with symbol information");
-		debugger;
+		debugger;*/
+		require;
+
+		const sf = ts.createSourceFile("main.ts",
+			`
+class Test1 {
+	public foo(a: number) {
+		const x = { a: 5 };
+		const y = { a: 24 };
+	}
+}
+			`, ts.ScriptTarget.ESNext, true);
+		const traverse = (node: ts.Node) => {
+			ts.forEachChild(node, child => {
+				traverse(child);
+			});
+		};
+		traverse(sf);
 	}
 }
 

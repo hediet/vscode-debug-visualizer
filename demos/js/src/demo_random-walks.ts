@@ -1,12 +1,20 @@
 // visualize `data`
 const data = new Array<number>();
-let value = 0;
-for (let i = 0; i < 100000; i++) {
-	const delta = Math.random() > 0.5 ? 1 : -1;
-	data.push(value);
-	value += delta;
+let curValue = 0;
 
-	if (i % 1000 === 0) {
-		debugger;
+for (let j = 0; j < 100; j++) {
+	addManyRandomValues();
+}
+
+function addManyRandomValues() {
+	for (let i = 0; i < 100; i++) {
+		addRandomValue();
 	}
+}
+
+function addRandomValue() {
+	const delta = Math.random()
+		> 0.5 ? 1 : -1;
+	data.push(curValue);
+	curValue += delta;
 }
