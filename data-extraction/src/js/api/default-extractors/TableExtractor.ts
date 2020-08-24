@@ -34,5 +34,19 @@ export class TableDataExtractor implements DataExtractor {
 				});
 			},
 		});
+
+		collector.addExtraction({
+			id: "table-with-type-name",
+			name: "Table (With Type Name)",
+			priority: 950,
+			extractData() {
+				return expect<TableVisualizationData>({
+					kind: {
+						table: true,
+					},
+					rows: data.map(d => ({ type: d.constructor.name, ...d })),
+				});
+			},
+		});
 	}
 }
