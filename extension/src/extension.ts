@@ -82,7 +82,26 @@ export class Extension {
 					}
 
 					const selection = editor.selection;
-					const selectedText = editor.document.getText(selection);
+
+					let selectedText;
+					if (selection.isEmpty) {
+						const lineText = editor.document.lineAt(selection.start)
+							.text;
+						const regexp = /`(.*)`/g;
+						selectedText = "";
+						let match;
+						while ((match = regexp.exec(lineText))) {
+							if (
+								match.index <= selection.start.character &&
+								selection.start.character <=
+									match.index + match[0].length
+							) {
+								selectedText = match[1];
+							}
+						}
+					} else {
+						selectedText = editor.document.getText(selection);
+					}
 
 					if (!selectedText) {
 						return;
