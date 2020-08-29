@@ -7,8 +7,18 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
-            "program": "${workspaceFolder}/target/debug/rust_demo",
+            "name": "run rust demo",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust_demo",
+                    "--package=rust_demo",
+                ],
+                "filter": {
+                    "name": "rust_demo",
+                    "kind": "bin",
+                },
+            },
             "args": [],
             "cwd": "${workspaceFolder}"
         }
