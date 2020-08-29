@@ -1,0 +1,8 @@
+{
+    "debugVisualizer.debugAdapterConfigurations": {
+        "lldb": {
+            "expressionTemplate": "${expr}",
+            "context": "watch"
+        }
+    }
+}

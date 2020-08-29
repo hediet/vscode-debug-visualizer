@@ -1,77 +1,77 @@
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
-struct Label {
-    label: Option<String>,
-}
-#[derive(Debug, Serialize)]
-struct Row {
-    label: Option<String>,
-    columns: Vec<Column>,
-}
-#[derive(Debug, Serialize)]
-struct Column {
-    content: Option<String>,
-    tag: Option<String>,
-    color: Option<String>,
-}
-#[derive(Debug, Serialize)]
-struct Marker {
-    id: String,
-    row: u64,
-    column: u64,
-    rows: Option<u64>,
-    columns: Option<u64>,
-    label: Option<String>,
-    color: Option<String>,
-}
+// expected to mirror
+// https://hediet.github.io/visualization/docs/visualization-data-schema.json
+//
+// implements the grid visualizer as an example
 
-#[allow(clippy::trivially_copy_pass_by_ref)]
-fn is_false(b: &bool) -> bool {
-    !*b
-}
+pub type Label = String;
 
-#[derive(Debug, Serialize)]
-struct Kind {
-    #[serde(skip_serializing_if = "is_false")]
-    array: bool,
-}
-
+/// `GridVisualizationData` in schema
 #[derive(Debug, Serialize)]
 pub struct Grid {
     kind: Kind,
-    #[serde(rename = "columnLabels")]
-    column_labels: Option<Vec<Label>>,
     rows: Vec<Row>,
-    markers: Option<Vec<Marker>>,
+
+    #[serde(rename = "columnLabels")]
+    #[serde(skip_serializing_if="Option::is_none")]
+    column_labels: Option<Vec<Label>>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Kind {
+    grid: bool,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Row {
+    columns: Vec<Column>,
+
+    #[serde(skip_serializing_if="Option::is_none")]
+    label: Option<Label>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct Column {
+    /// value to display to the user
+    #[serde(skip_serializing_if="Option::is_none")]
+    content: Option<String>,
+
+    /// unique value to identify this cell, if desired
+    #[serde(skip_serializing_if="Option::is_none")]
+    tag: Option<String>,
+
+    // TODO: valid values / syntax?
+    #[serde(skip_serializing_if="Option::is_none")]
+    color: Option<String>,
 }
 
 fn show_arr(a: &[i32]) -> String {
-    let n = a.len();
-    let labels: Vec<Label> = (0..n)
-        .map(|i| Label {
-            label: Some(i.to_string()),
-        })
-        .collect();
     let columns: Vec<Column> = a
         .iter()
         .map(|x| Column {
             content: Some(format!("{:?}", x)),
-            tag: Some(x.to_string()),
-            color: None,
+            tag: None,
+
+            // TODO: `color` value doesn't seem to change visualizer's output at all
+            color: "who-knows".to_owned().into(),
         })
         .collect();
+
     let row = Row {
-        label: None,
         columns,
+        // TODO: visualizer doesn't seem to render this
+        label: "my row".to_owned().into(),
     };
-    let kind = Kind { array: true };
+
+    let kind = Kind { grid: true };
 
     let grid = Grid {
         kind,
-        column_labels: Some(labels),
         rows: vec![row],
-        markers: None,
+
+        // TODO: visualizer doesn't seem to work if this is non-`None`
+        column_labels: None,
     };
 
     serde_json::to_string(&grid).unwrap()
@@ -81,9 +81,9 @@ fn main() {
     let mut arr = vec![1, 2, 3];
     let mut _s = show_arr(&arr);
     for _ in 0..5 {
-        arr.swap(0, 2); // break point
+        arr.swap(0, 2); // set a break-point here, to easily observe the change
         _s = show_arr(&arr);
     }
-    dbg!(arr); // break point
-    println!("Hello, world!");
+    dbg!(arr);
+    println!("break-point here, too");
 }
