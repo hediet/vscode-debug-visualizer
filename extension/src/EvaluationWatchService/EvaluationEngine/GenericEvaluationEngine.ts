@@ -51,12 +51,7 @@ export class GenericEvaluator implements Evaluator {
 			// Use structural information about variables
 			// from the evaluation response if present.
 			if (reply.variablesReference) {
-				let graph: GraphVisualizationData = {
-					kind: { graph: true },
-					nodes: [],
-					edges: []
-				};
-				await this.constructGraphFromVariablesReference(reply.result, reply.variablesReference, graph);
+				const graph = await this.constructGraphFromVariablesReference(reply.result, reply.variablesReference);
 
 				return {
 					kind: "data",
@@ -97,54 +92,85 @@ export class GenericEvaluator implements Evaluator {
 		}
 	}
 
+	/**
+	 * Constructs GraphVisualizationData from a DAP variables
+	 * reference by successively querying the debug adapter for
+	 * variables. Objects are considered to be equivalent if
+	 * they share the same variables reference (this is important
+	 * for representing cyclic relationships).
+	 * 
+	 * @param rootLabel - The root object's label
+	 * @param rootVariablesReference - The root object's DAP variables reference
+	 * @param maxDepth - The maximum depth to search at
+	 * @param maxKnownNodes - The maximum number of nodes
+	 */
 	private async constructGraphFromVariablesReference(
-		label: string,
-		variablesReference: number,
-		graph: GraphVisualizationData,
-		isTopLevel: boolean = true,
-		knownNodeIds: { [ref: number]: string; } = {},
-		recursionDepth: number = 0,
-		maxRecursionDepth: number = 30,
+		rootLabel: string,
+		rootVariablesReference: number,
+		maxDepth: number = 30,
 		maxKnownNodes: number = 100,
-	): Promise<string> {
-		const hasChilds = variablesReference > 0;
-		const knownCount = Object.keys(knownNodeIds).length + 1;
-		const canRecurse = recursionDepth < maxRecursionDepth && knownCount < maxKnownNodes;
-		let result: GraphNode = {
-			id: hasChilds ? `${variablesReference}` : `__${label}@${knownCount}__`,
-			label,
-			color: isTopLevel ? "lightblue" : undefined,
-			shape: "box",
+	): Promise<GraphVisualizationData> {
+		// Perform a breadth-first search on the object to construct the graph
+
+		const graph: GraphVisualizationData = {
+			kind: { graph: true },
+			nodes: [],
+			edges: []
 		};
-		knownNodeIds[variablesReference] = result.id;
+		const knownNodeIds: { [ref: number]: string; } = {};
+		const bfsQueue: { source: { id: string, name: string } | undefined, label: string, variablesReference: number, depth: number }[] = [{
+			source: undefined,
+			label: rootLabel,
+			variablesReference: rootVariablesReference,
+			depth: 0,
+		}];
 
-		if (hasChilds && canRecurse) {
-			for (const variable of await this.session.getVariables({ variablesReference })) {
-				let childId: string;
+		let knownCount: number = 0;
 
-				if (variable.variablesReference > 0 && variable.variablesReference in knownNodeIds) {
-					// If the object is known, we have a (potentially cyclic) reference.
-					childId = knownNodeIds[variable.variablesReference];
-				} else {
-					// Otherwise recurse
-					childId = await this.constructGraphFromVariablesReference(
-						variable.value,
-						variable.variablesReference,
-						graph,
-						false, // isTopLevel
-						knownNodeIds,
-						recursionDepth + 1,
-						maxRecursionDepth,
-						maxKnownNodes
-					);
+		do {
+			const variable = bfsQueue.shift()!;
+			const hasChilds = variable.variablesReference > 0;
+
+			if (variable.depth > maxDepth) {
+				break;
+			}
+
+			let nodeId: string;
+
+			if (!hasChilds || !(variable.variablesReference in knownNodeIds)) {
+				// The variable is a leaf or an unvisited object: create the node.
+
+				const node: GraphNode = {
+					id: hasChilds ? `${variable.variablesReference}` : `__${variable.label}@${knownCount}__`,
+					label: variable.label,
+					color: variable.depth == 0 ? "lightblue" : undefined,
+					shape: "box",
+				};
+
+				graph.nodes.push(node);
+				knownCount++;
+
+				if (hasChilds) {
+					knownNodeIds[variable.variablesReference] = node.id;
+
+					for (const child of await this.session.getVariables({ variablesReference: variable.variablesReference })) {
+						bfsQueue.push({ source: { id: node.id, name: child.name }, label: child.value, variablesReference: child.variablesReference, depth: variable.depth + 1 });
+					}
 				}
 
-				graph.edges.push({ from: result.id, to: childId, label: variable.name });
-			}
-		}
+				nodeId = node.id;
+			} else {
+				// The variable is a visited object (e.g. due to a cyclic reference)
 
-		graph.nodes.push(result);
-		return result.id;
+				nodeId = knownNodeIds[variable.variablesReference];
+			}
+
+			if (variable.source) {
+				graph.edges.push({ from: variable.source.id, to: nodeId, label: variable.source.name });
+			}
+		} while (bfsQueue.length > 0 && knownCount <= maxKnownNodes);
+
+		return graph;
 	}
 
 	protected getFinalExpression(args: {
