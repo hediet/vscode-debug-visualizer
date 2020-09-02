@@ -120,10 +120,13 @@ export class GenericEvaluator implements Evaluator {
 		variablesReference: number,
 		knownObjects: { [ref: number]: any; } = {},
 		recursionDepth: number = 0,
-		maxRecursionDepth: number = 50,
+		maxRecursionDepth: number = 30,
+		maxKnownObjects: number = 100,
 	): Promise<any> {
 		var result: any = {};
 		knownObjects[variablesReference] = result;
+
+		const canRecurse = recursionDepth < maxRecursionDepth && Object.keys(knownObjects).length < maxKnownObjects;
 
 		for (const variable of await this.session.getVariables({ variablesReference })) {
 			let child: any;
@@ -131,7 +134,7 @@ export class GenericEvaluator implements Evaluator {
 			if (variable.variablesReference > 0 && variable.variablesReference in knownObjects) {
 				// If the object is known, we have a (potentially cyclic) reference
 				child = knownObjects[variable.variablesReference];
-			} else if (variable.variablesReference > 0 && recursionDepth < maxRecursionDepth) {
+			} else if (variable.variablesReference > 0 && canRecurse) {
 				// Recurse on a new object
 				child = await this.constructObjectFromVariablesReference(variable.variablesReference, knownObjects, recursionDepth + 1, maxRecursionDepth);
 			} else {
