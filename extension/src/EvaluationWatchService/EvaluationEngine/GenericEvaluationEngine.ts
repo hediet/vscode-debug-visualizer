@@ -40,7 +40,7 @@ export class GenericEvaluator implements Evaluator {
 			expression,
 			preferredExtractorId,
 		});
-		let reply;
+		let reply: { result: string, variablesReference: number };
 		try {
 			reply = await this.session.evaluate({
 				expression: finalExpression,
@@ -76,12 +76,13 @@ export class GenericEvaluator implements Evaluator {
 									}
 								}
 
-								const label = `${item}`;
+								const isTopLevel = item === obj;
+								const label = isObject(item) ? "object" : `${item}`;
 
 								return {
 									shape: "box",
 									edges,
-									color: item === obj ? "lightblue" : undefined,
+									color: isTopLevel ? "lightblue" : undefined,
 									label,
 								};
 							}
