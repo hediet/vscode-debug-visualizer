@@ -45,6 +45,27 @@ export class GenericEvaluator implements Evaluator {
 				frameId,
 				context: this.getContext(),
 			});
+
+			// Use structural information about variables
+			// from the evaluation response if present.
+			if (reply.variablesReference) {
+				return {
+					kind: "data",
+					result: {
+						availableExtractors: [],
+						usedExtractor: {
+							id: "generic" as any,
+							name: "Generic",
+							priority: 1,
+						},
+						data: await this.constructObjectFromVariablesReference(reply.variablesReference),
+					},
+				}
+			} else {
+				return parseEvaluationResultFromGenericDebugAdapter(reply.result, {
+					debugAdapterType: this.session.session.configuration.type,
+				});
+			}
 		} catch (error) {
 			return {
 				kind: "error",
@@ -65,10 +86,18 @@ export class GenericEvaluator implements Evaluator {
 				},
 			};
 		}
+	}
 
-		return parseEvaluationResultFromGenericDebugAdapter(reply.result, {
-			debugAdapterType: this.session.session.configuration.type,
-		});
+	private async constructObjectFromVariablesReference(variablesReference: number): Promise<any> {
+		var result: any = {};
+		for (const child of await this.session.getVariables({ variablesReference })) {
+			if (child.variablesReference > 0) {
+				result[child.name] = await this.constructObjectFromVariablesReference(child.variablesReference);
+			} else {
+				result[child.name] = child.value;
+			}
+		}
+		return result;
 	}
 
 	protected getFinalExpression(args: {
