@@ -107,24 +107,29 @@ export class GenericEvaluator implements Evaluator {
 		knownNodeIds: { [ref: number]: string; } = {},
 		recursionDepth: number = 0,
 		maxRecursionDepth: number = 30,
-		maxKnownObjects: number = 100,
-	): Promise<any> {
-		var result: GraphNode = {
-			id: `${variablesReference}`,
+		maxKnownNodes: number = 100,
+	): Promise<string> {
+		const hasChilds = variablesReference > 0;
+		const knownCount = Object.keys(knownNodeIds).length + 1;
+		const canRecurse = recursionDepth < maxRecursionDepth && knownCount < maxKnownNodes;
+		let result: GraphNode = {
+			id: hasChilds ? `${variablesReference}` : `__${label}@${knownCount}__`,
 			label,
 			color: isTopLevel ? "lightblue" : undefined,
 			shape: "box",
 		};
 		knownNodeIds[variablesReference] = result.id;
 
-		const canRecurse = recursionDepth < maxRecursionDepth && Object.keys(knownNodeIds).length < maxKnownObjects;
-
-		if (variablesReference > 0 && canRecurse) {
+		if (hasChilds && canRecurse) {
 			for (const variable of await this.session.getVariables({ variablesReference })) {
-				// If the object is known, we have a (potentially cyclic) reference
-				// Otherwise, recurse on the object.
-				if (!(variable.variablesReference in knownNodeIds)) {
-					await this.constructGraphFromVariablesReference(
+				let childId: string;
+
+				if (variable.variablesReference > 0 && variable.variablesReference in knownNodeIds) {
+					// If the object is known, we have a (potentially cyclic) reference.
+					childId = knownNodeIds[variable.variablesReference];
+				} else {
+					// Otherwise recurse
+					childId = await this.constructGraphFromVariablesReference(
 						variable.value,
 						variable.variablesReference,
 						graph,
@@ -132,15 +137,16 @@ export class GenericEvaluator implements Evaluator {
 						knownNodeIds,
 						recursionDepth + 1,
 						maxRecursionDepth,
-						maxKnownObjects
+						maxKnownNodes
 					);
 				}
 
-				graph.edges.push({ from: result.id, to: knownNodeIds[variable.variablesReference] });
+				graph.edges.push({ from: result.id, to: childId, label: variable.name });
 			}
 		}
 
 		graph.nodes.push(result);
+		return result.id;
 	}
 
 	protected getFinalExpression(args: {
