@@ -3,6 +3,8 @@ import {
 	CreateGraphEdge,
 	DataExtractionResult,
 	DataExtractorId,
+	GraphNode,
+	GraphVisualizationData,
 } from "@hediet/debug-visualizer-data-extraction";
 import { EnhancedDebugSession } from "../../debugger/EnhancedDebugSession";
 import {
@@ -51,7 +53,12 @@ export class GenericEvaluator implements Evaluator {
 			// Use structural information about variables
 			// from the evaluation response if present.
 			if (reply.variablesReference) {
-				let obj = await this.constructObjectFromVariablesReference(reply.variablesReference);
+				let graph: GraphVisualizationData = {
+					kind: { graph: true },
+					nodes: [],
+					edges: []
+				};
+				await this.constructGraphFromVariablesReference(reply.result, reply.variablesReference, graph);
 
 				return {
 					kind: "data",
@@ -62,31 +69,7 @@ export class GenericEvaluator implements Evaluator {
 							name: "Generic",
 							priority: 1,
 						},
-						data: createGraph(
-							[obj],
-							(item: any) => {
-								function isObject(val: any): boolean {
-									return val && typeof val === "object";
-								}
-
-								const edges = new Array<CreateGraphEdge<any>>();
-								for (const [key, val] of Object.entries(item)) {
-									if (isObject(val)) {
-										edges.push({ label: key, to: val });
-									}
-								}
-
-								const isTopLevel = item === obj;
-								const label = isObject(item) ? "object" : `${item}`;
-
-								return {
-									shape: "box",
-									edges,
-									color: isTopLevel ? "lightblue" : undefined,
-									label,
-								};
-							}
-						),
+						data: graph,
 					},
 				}
 			} else {
@@ -116,36 +99,48 @@ export class GenericEvaluator implements Evaluator {
 		}
 	}
 
-	private async constructObjectFromVariablesReference(
+	private async constructGraphFromVariablesReference(
+		label: string,
 		variablesReference: number,
-		knownObjects: { [ref: number]: any; } = {},
+		graph: GraphVisualizationData,
+		isTopLevel: boolean = true,
+		knownNodeIds: { [ref: number]: string; } = {},
 		recursionDepth: number = 0,
 		maxRecursionDepth: number = 30,
 		maxKnownObjects: number = 100,
 	): Promise<any> {
-		var result: any = {};
-		knownObjects[variablesReference] = result;
+		var result: GraphNode = {
+			id: `${variablesReference}`,
+			label,
+			color: isTopLevel ? "lightblue" : undefined,
+			shape: "box",
+		};
+		knownNodeIds[variablesReference] = result.id;
 
-		const canRecurse = recursionDepth < maxRecursionDepth && Object.keys(knownObjects).length < maxKnownObjects;
+		const canRecurse = recursionDepth < maxRecursionDepth && Object.keys(knownNodeIds).length < maxKnownObjects;
 
-		for (const variable of await this.session.getVariables({ variablesReference })) {
-			let child: any;
-
-			if (variable.variablesReference > 0 && variable.variablesReference in knownObjects) {
+		if (variablesReference > 0 && canRecurse) {
+			for (const variable of await this.session.getVariables({ variablesReference })) {
 				// If the object is known, we have a (potentially cyclic) reference
-				child = knownObjects[variable.variablesReference];
-			} else if (variable.variablesReference > 0 && canRecurse) {
-				// Recurse on a new object
-				child = await this.constructObjectFromVariablesReference(variable.variablesReference, knownObjects, recursionDepth + 1, maxRecursionDepth);
-			} else {
-				// If there are no childs, just assign the value
-				child = variable.value;
-			}
+				// Otherwise, recurse on the object.
+				if (!(variable.variablesReference in knownNodeIds)) {
+					await this.constructGraphFromVariablesReference(
+						variable.value,
+						variable.variablesReference,
+						graph,
+						false, // isTopLevel
+						knownNodeIds,
+						recursionDepth + 1,
+						maxRecursionDepth,
+						maxKnownObjects
+					);
+				}
 
-			result[variable.name] = child;
+				graph.edges.push({ from: result.id, to: knownNodeIds[variable.variablesReference] });
+			}
 		}
 
-		return result;
+		graph.nodes.push(result);
 	}
 
 	protected getFinalExpression(args: {
