@@ -22,7 +22,7 @@ class Text(DataType):
 
         self.kind["text"] = True
         self.text = text_data
-        if mimeType is None:
+        if mimeType is not None:
             self.mimeType = mimeType
         if fileName is None:
             self.fileName = fileName

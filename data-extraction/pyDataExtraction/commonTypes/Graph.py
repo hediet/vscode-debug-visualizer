@@ -44,11 +44,10 @@ class Node(DataType):
 
 
 class Graph(DataType):
-    """
-
+    """An implementation of the Graph data type for the visualizer
 
     Args:
-        DataType (Union[Dict[str,list],Dict[int,list]]): 
+        DataType (Union[Dict[str, list], Dict[int, list]]): 
         either expects a dictionary with a list as values or a 2d array
         some representation of a basic graph 
     """
@@ -57,20 +56,14 @@ class Graph(DataType):
         super().__init__()
         self.kind["graph"] = True
         # TODO get working for both a dictionary and an nxn array
-        # self.nodes = [Node(node) for node in graph data]
         self.nodes = []
         self.edges = []
         if isinstance(graph_data, dict):
-            # self.nodes = [Node(node) for node in graph data]
             for node in graph_data:
                 self.nodes.append({"id": str(node)})
                 # TODO change prints to log statements
                 # print("node: ", node)
                 # print("edges: ", graph_data[node])
                 for edge in graph_data[node]:
-                    # print(edge_i)
                     # print("edge: ", graph_data[node][edge_i])
                     self.edges.append({"from": node, "to": edge})
-                    # edge_i += 1
-                # edge_i = 0
-                # node_i += 1

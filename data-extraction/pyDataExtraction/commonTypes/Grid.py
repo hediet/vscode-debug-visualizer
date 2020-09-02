@@ -1,3 +1,5 @@
+from pyDataExtraction.commonTypes.base import DataType
+
 """
 export interface Grid {
 	kind: { array: true };

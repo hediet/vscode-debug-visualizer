@@ -1,5 +1,5 @@
-from json import dumps
-from abc import ABC, abstractmethod
+import json
+from abc import ABC
 
 # import logging
 # TODO fix the import structure
@@ -20,5 +20,5 @@ class DataType(ABC):
     def __repr__(self):
         """returns json object format when printed or using str()
         """
-        return dumps(self.__dict__)
+        return json.dumps(self.__dict__)
 
