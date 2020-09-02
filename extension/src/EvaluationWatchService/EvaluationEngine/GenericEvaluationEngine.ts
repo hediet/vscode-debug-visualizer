@@ -58,7 +58,7 @@ export class GenericEvaluator implements Evaluator {
 							name: "Generic",
 							priority: 1,
 						},
-						data: await this.constructObjectFromVariablesReference(reply.variablesReference),
+						data: await this.constructObjectFromVariablesReference(reply.variablesReference, {}),
 					},
 				}
 			} else {
@@ -88,15 +88,29 @@ export class GenericEvaluator implements Evaluator {
 		}
 	}
 
-	private async constructObjectFromVariablesReference(variablesReference: number): Promise<any> {
+	private async constructObjectFromVariablesReference(variablesReference: number, knownObjects: { [ref: number]: any; }): Promise<any> {
 		var result: any = {};
-		for (const child of await this.session.getVariables({ variablesReference })) {
-			if (child.variablesReference > 0) {
-				result[child.name] = await this.constructObjectFromVariablesReference(child.variablesReference);
+		knownObjects[variablesReference] = result;
+
+		for (const variable of await this.session.getVariables({ variablesReference })) {
+			let child: any;
+
+			if (variable.variablesReference > 0) {
+				if (variable.variablesReference in knownObjects) {
+					// If the object is known, we have a (potentially cyclic) reference
+					child = knownObjects[variable.variablesReference];
+				} else {
+					// Recurse on a new object
+					child = await this.constructObjectFromVariablesReference(variable.variablesReference, knownObjects);
+				}
 			} else {
-				result[child.name] = child.value;
+				// If there are no childs, just assign the value
+				child = variable.value;
 			}
+
+			result[variable.name] = child;
 		}
+
 		return result;
 	}
 
