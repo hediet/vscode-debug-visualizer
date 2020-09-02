@@ -108,7 +108,7 @@ export class GenericEvaluator implements Evaluator {
 		rootLabel: string,
 		rootVariablesReference: number,
 		maxDepth: number = 30,
-		maxKnownNodes: number = 100,
+		maxKnownNodes: number = 50,
 	): Promise<GraphVisualizationData> {
 		// Perform a breadth-first search on the object to construct the graph
 
