@@ -1,4 +1,6 @@
 import {
+	createGraph,
+	CreateGraphEdge,
 	DataExtractionResult,
 	DataExtractorId,
 } from "@hediet/debug-visualizer-data-extraction";
@@ -49,6 +51,8 @@ export class GenericEvaluator implements Evaluator {
 			// Use structural information about variables
 			// from the evaluation response if present.
 			if (reply.variablesReference) {
+				let obj = await this.constructObjectFromVariablesReference(reply.variablesReference);
+
 				return {
 					kind: "data",
 					result: {
@@ -58,7 +62,30 @@ export class GenericEvaluator implements Evaluator {
 							name: "Generic",
 							priority: 1,
 						},
-						data: await this.constructObjectFromVariablesReference(reply.variablesReference),
+						data: createGraph(
+							[obj],
+							(item: any) => {
+								function isObject(val: any): boolean {
+									return val && typeof val === "object";
+								}
+
+								const edges = new Array<CreateGraphEdge<any>>();
+								for (const [key, val] of Object.entries(item)) {
+									if (isObject(val)) {
+										edges.push({ label: key, to: val });
+									}
+								}
+
+								const label = `${item}`;
+
+								return {
+									shape: "box",
+									edges,
+									color: item === obj ? "lightblue" : undefined,
+									label,
+								};
+							}
+						),
 					},
 				}
 			} else {
