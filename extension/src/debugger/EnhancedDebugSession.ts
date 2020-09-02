@@ -46,6 +46,23 @@ export class EnhancedDebugSession {
 		}
 	}
 
+	public async getVariables(args: {
+		variablesReference: number
+	}): Promise<Variable[]> {
+		try {
+			const reply = await this.session.customRequest("variables", {
+				variablesReference: args.variablesReference
+			});
+			if (!reply) {
+				return [];
+			}
+			return reply.variables;
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
+	}
+
 	/**
 	 * Evaluates the given expression.
 	 * If context is "watch", long results are usually shortened.
@@ -64,6 +81,13 @@ export class EnhancedDebugSession {
 		return { result: reply.result, variablesReference: reply.variablesReference };
 	}
 }
+
+interface Variable {
+	name: string;
+	value: string;
+	variablesReference: number;
+}
+
 interface StackFrame {
 	id: number;
 	name: string;
