@@ -58,7 +58,7 @@ export class GenericEvaluator implements Evaluator {
 							name: "Generic",
 							priority: 1,
 						},
-						data: await this.constructObjectFromVariablesReference(reply.variablesReference, {}),
+						data: await this.constructObjectFromVariablesReference(reply.variablesReference),
 					},
 				}
 			} else {
@@ -88,21 +88,24 @@ export class GenericEvaluator implements Evaluator {
 		}
 	}
 
-	private async constructObjectFromVariablesReference(variablesReference: number, knownObjects: { [ref: number]: any; }): Promise<any> {
+	private async constructObjectFromVariablesReference(
+		variablesReference: number,
+		knownObjects: { [ref: number]: any; } = {},
+		recursionDepth: number = 0,
+		maxRecursionDepth: number = 50,
+	): Promise<any> {
 		var result: any = {};
 		knownObjects[variablesReference] = result;
 
 		for (const variable of await this.session.getVariables({ variablesReference })) {
 			let child: any;
 
-			if (variable.variablesReference > 0) {
-				if (variable.variablesReference in knownObjects) {
-					// If the object is known, we have a (potentially cyclic) reference
-					child = knownObjects[variable.variablesReference];
-				} else {
-					// Recurse on a new object
-					child = await this.constructObjectFromVariablesReference(variable.variablesReference, knownObjects);
-				}
+			if (variable.variablesReference > 0 && variable.variablesReference in knownObjects) {
+				// If the object is known, we have a (potentially cyclic) reference
+				child = knownObjects[variable.variablesReference];
+			} else if (variable.variablesReference > 0 && recursionDepth < maxRecursionDepth) {
+				// Recurse on a new object
+				child = await this.constructObjectFromVariablesReference(variable.variablesReference, knownObjects, recursionDepth + 1, maxRecursionDepth);
 			} else {
 				// If there are no childs, just assign the value
 				child = variable.value;
