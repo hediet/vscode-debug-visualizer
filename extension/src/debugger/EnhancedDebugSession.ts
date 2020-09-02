@@ -55,13 +55,13 @@ export class EnhancedDebugSession {
 		expression: string;
 		frameId: number | undefined;
 		context: "watch" | "repl" | "copy";
-	}): Promise<{ result: string }> {
+	}): Promise<{ result: string, variablesReference: number }> {
 		const reply = await this.session.customRequest("evaluate", {
 			expression: args.expression,
 			frameId: args.frameId,
 			context: args.context,
 		});
-		return { result: reply.result };
+		return { result: reply.result, variablesReference: reply.variablesReference };
 	}
 }
 interface StackFrame {
