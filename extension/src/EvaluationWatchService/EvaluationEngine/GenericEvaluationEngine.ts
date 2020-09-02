@@ -1,6 +1,4 @@
 import {
-	createGraph,
-	CreateGraphEdge,
 	DataExtractionResult,
 	DataExtractorId,
 	GraphNode,
