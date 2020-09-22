@@ -70,6 +70,12 @@
 			},
 			"outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
 			"preLaunchTask": "npm: dev - extension"
-		}
+		},
+		{
+			"type": "dart",
+			"request": "launch",
+			"name": "Run Dart samples",
+			"program": "demos/dart/demo.dart"
+		},
 	]
 }
