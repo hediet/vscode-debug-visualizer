@@ -16,6 +16,7 @@ Click [here](https://hediet.github.io/visualization/) to explore all available v
 See [demos](../demos/) for demos. These languages and debuggers are verified to work with this extension:
 
 -   JavaScript/TypeScript/... using `node`/`node2`/`extensionHost`/`chrome`/`pwa-chrome`/`pwa-node` debug adapter: [⭐ Full Support](../demos/js)
+-   Dart/Flutter using `dart` debug adapter: [✅ Rudimentary Support](../demos/dart)
 -   Go using `go` (Delve) debug adapter: [✅ Rudimentary Support](../demos/golang)
 -   Python using `python` debug adapter: [✅ Rudimentary Support](../demos/python)
 -   C# using `coreclr` debug adapter: [✅ Rudimentary Support](../demos/csharp) (work in progress for Full Support)
