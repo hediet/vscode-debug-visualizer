@@ -5,6 +5,7 @@
 	"dependencies": {
 		"@hediet/node-reload": "0.7.3",
 		"@types/node": "^13.7.4",
+		"node-fetch": "^2.6.1",
 		"typescript": "^3.8.2"
 	},
 	"scripts": {
