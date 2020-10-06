@@ -9,6 +9,7 @@ export type KnownVisualizationData =
 	| GridVisualizationData
 	| ImageVisualizationData
 	| MonacoTextVisualizationData
+	| MonacoTextDiffVisualizationData
 	| TableVisualizationData
 	| PlotlyVisualizationData
 	| SimpleTextVisualizationData
@@ -156,6 +157,24 @@ export type MonacoTextVisualizationData = {
 	 * The text to show
 	 */
 	text: string;
+	/**
+	 * An optional filename that might be used for chosing a syntax highlighter
+	 */
+	fileName?: string;
+};
+
+export type MonacoTextDiffVisualizationData = {
+	kind: {
+		text: true;
+	};
+	/**
+	 * The text to show
+	 */
+	text: string;
+	/**
+	 * The text to compare against
+	 */
+	otherText: string;
 	/**
 	 * An optional filename that might be used for chosing a syntax highlighter
 	 */
