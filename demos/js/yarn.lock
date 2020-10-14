@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@hediet/debug-visualizer-data-extraction@^0.13.1":
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/@hediet/debug-visualizer-data-extraction/-/debug-visualizer-data-extraction-0.13.1.tgz#bf9598412f0933cfd4492c86e3e5e5074c94c2b3"
+  integrity sha512-RsN7HivhUFm1HycIca4p9waPFJNOzTXiVzyDC+MXI9ACVVUpa38bVmj8TAyqKTfrSZZ/LJJjBirB5nmfBoBhbw==
+
 "@hediet/live-debug@^0.5.1":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@hediet/live-debug/-/live-debug-0.5.2.tgz#f2ee0034f014836bfd68e26c35a168ab42b15486"

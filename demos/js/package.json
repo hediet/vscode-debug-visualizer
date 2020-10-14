@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"license": "MIT",
 	"dependencies": {
+		"@hediet/debug-visualizer-data-extraction": "^0.13.1",
 		"@hediet/node-reload": "0.7.3",
 		"@types/node": "^13.7.4",
 		"node-fetch": "^2.6.1",
