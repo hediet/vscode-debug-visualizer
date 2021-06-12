@@ -107,7 +107,7 @@ export type GraphEdge = {
 	label?: string;
 	id?: string;
 	color?: string;
-	dashes?: boolean;
+	style?: "solid" | "dashed" | "dotted";
 };
 
 export type GridVisualizationData = {
@@ -157,10 +157,36 @@ export type MonacoTextVisualizationData = {
 	 * The text to show
 	 */
 	text: string;
+	decorations?: {
+		range: LineColumnRange;
+		label?: string;
+	}[];
 	/**
 	 * An optional filename that might be used for chosing a syntax highlighter
 	 */
 	fileName?: string;
+};
+
+export type LineColumnRange = {
+	/**
+	 * The start position
+	 */
+	start: LineColumnPosition;
+	/**
+	 * The end position
+	 */
+	end: LineColumnPosition;
+};
+
+export type LineColumnPosition = {
+	/**
+	 * The 0-based line number
+	 */
+	line: number;
+	/**
+	 * The 0-based column number
+	 */
+	column: number;
 };
 
 export type MonacoTextDiffVisualizationData = {

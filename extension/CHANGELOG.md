@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.0
+
+-   Adds text diff and text decoration viewer.
+-   Supports more js debug adapters
+
 ## 2.0.6
 
 -   Fixes grid extractor bug

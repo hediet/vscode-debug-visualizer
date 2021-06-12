@@ -46,12 +46,27 @@ export class EnhancedDebugSession {
 		}
 	}
 
+	public async getScopes(args: { frameId: number }): Promise<Scope[]> {
+		try {
+			const reply = await this.session.customRequest("scopes", {
+				frameId: args.frameId,
+			});
+			if (!reply) {
+				return [];
+			}
+			return reply.scopes;
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
+	}
+
 	public async getVariables(args: {
-		variablesReference: number
+		variablesReference: number;
 	}): Promise<Variable[]> {
 		try {
 			const reply = await this.session.customRequest("variables", {
-				variablesReference: args.variablesReference
+				variablesReference: args.variablesReference,
 			});
 			if (!reply) {
 				return [];
@@ -72,14 +87,23 @@ export class EnhancedDebugSession {
 		expression: string;
 		frameId: number | undefined;
 		context: "watch" | "repl" | "copy";
-	}): Promise<{ result: string, variablesReference: number }> {
+	}): Promise<{ result: string; variablesReference: number }> {
 		const reply = await this.session.customRequest("evaluate", {
 			expression: args.expression,
 			frameId: args.frameId,
 			context: args.context,
 		});
-		return { result: reply.result, variablesReference: reply.variablesReference };
+		return {
+			result: reply.result,
+			variablesReference: reply.variablesReference,
+		};
 	}
+}
+
+interface Scope {
+	name: string;
+	expensive: boolean;
+	variablesReference: number;
 }
 
 interface Variable {

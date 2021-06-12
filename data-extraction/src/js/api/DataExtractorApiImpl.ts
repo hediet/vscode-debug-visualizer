@@ -14,6 +14,9 @@ import { registerDefaultExtractors } from "./default-extractors";
  */
 export class DataExtractorApiImpl implements DataExtractorApi {
 	public static lastEvalFn: (<T>(expression: string) => T) | undefined;
+	public static lastVariablesInScope:
+		| Record<string, unknown>
+		| undefined = undefined;
 
 	private readonly extractors = new Map<string, DataExtractor>();
 
@@ -34,7 +37,8 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 	public getData(
 		valueFn: () => unknown,
 		evalFn: <T>(expression: string) => T,
-		preferredDataExtractorId: string | undefined
+		preferredDataExtractorId: string | undefined,
+		variablesInScope: Record<string, unknown>
 	): JSONString<DataResult> {
 		const extractions = new Array<DataExtraction>();
 		const extractionCollector: ExtractionCollector = {
@@ -43,13 +47,20 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 			},
 		};
 
+		DataExtractorApiImpl.lastVariablesInScope = variablesInScope;
 		DataExtractorApiImpl.lastEvalFn = evalFn;
 		const value = valueFn();
-		DataExtractorApiImpl.lastEvalFn = undefined;
 
 		for (const e of this.extractors.values()) {
-			e.getExtractions(value, extractionCollector, { evalFn });
+			e.getExtractions(value, extractionCollector, {
+				evalFn,
+				variablesInScope,
+			});
 		}
+
+		DataExtractorApiImpl.lastVariablesInScope = undefined;
+		DataExtractorApiImpl.lastEvalFn = undefined;
+
 		extractions.sort((a, b) => b.priority - a.priority);
 		let usedExtraction = extractions[0];
 		if (!usedExtraction) {

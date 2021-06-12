@@ -507,10 +507,10 @@
     stack-trace "^0.0.10"
     ws "^7.0.0"
 
-"@hediet/semantic-json@^0.3.14":
-  version "0.3.14"
-  resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.14.tgz#876bd5c4b646c134641ad17e9ef352595fb163e7"
-  integrity sha512-u2QGfT98RNrcQjqRHwFUy+TU8+sLneBOYvHHNbkHyYNokqi8kCpE9LReTygGT+6SfMtydTWN6JT9L2ffxrvV6w==
+"@hediet/semantic-json@^0.3.15":
+  version "0.3.15"
+  resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.15.tgz#e38f799b1a7dd2624a3ee2e05bca58cfe76cb58d"
+  integrity sha512-8t1NXiYDF2wqIt1jEknxNnpucdtgFAI2MGSWnnewDhaYqWOJLMY/MxH60gDX03vycf2ySb6vEYpEwsiB6r0O3Q==
 
 "@hediet/std@^0.6.0":
   version "0.6.0"
@@ -550,16 +550,16 @@
     "@hediet/std" "^0.6.0"
     io-ts "^1.8.6"
 
-"@hediet/visualization-bundle@^0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.1.6.tgz#a8ab11be910a30d0d26a88044caf11cab4a60f98"
-  integrity sha512-IQZDORYlRTojBwJUIADpg4NRxCqK6Q+bl1H2IP7Bq28wdwsRtuERB2UcGPufn00NGhJbOw6FAH2e1zwsQAkboQ==
+"@hediet/visualization-bundle@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.1.tgz#397a6bff0ea12018a7a1cb1c182ef8c5de87328f"
+  integrity sha512-Qfyn8WbWGwuE5J1z8U7l8E5VKuG3DpS2JJOtKhlW1QW/rhqBWOLd5avifxqjWxiMIfqh3NTShp9gLHpmI2Bysw==
   dependencies:
     "@finos/perspective-viewer" "^0.5.2"
     "@finos/perspective-viewer-d3fc" "^0.5.2"
     "@finos/perspective-viewer-datagrid" "^0.5.2"
     "@hediet/monaco-editor-react" "^0.1.1"
-    "@hediet/semantic-json" "^0.3.14"
+    "@hediet/semantic-json" "^0.3.15"
     "@hediet/std" "^0.6.0"
     classnames "^2.2.6"
     line-column "^1.0.2"
@@ -576,12 +576,12 @@
     vis-network "^8.0.0"
     viz.js "^2.1.2"
 
-"@hediet/visualization-core@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.1.1.tgz#240b96ac48e24b7ae81f2b0360cebd57091eb600"
-  integrity sha512-2WNP75TZg87bejt5XB+11jzbAoJ5EGbVrW+srSHRjUSdezZQ53x16E4XVV/q9W6HD6okTuz7wGjDrapNzK1EMw==
+"@hediet/visualization-core@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.2.0.tgz#8fca0044d5d91e8c45354984ae9c131ef7850a76"
+  integrity sha512-r/SYDUipaUSdu1JXL1X0Le5ZkBXVGbKXo6jkX0jFq3NPz/60+B4MnIQnk8D7TCWLXftGFtE6MSFejrE+miup4w==
   dependencies:
-    "@hediet/semantic-json" "^0.3.14"
+    "@hediet/semantic-json" "^0.3.15"
     "@hediet/std" "^0.6.0"
     react "^16.12.0"
     react-dom "^16.12.0"

@@ -26,7 +26,11 @@ export class JsEvaluationEngine implements EvaluationEngine {
 			"chrome",
 			"pwa-chrome",
 			"pwa-node",
+			"pwa-extensionHost",
+			"node-terminal",
+			"pwa-msedge",
 		];
+
 		if (supportedDebugAdapters.indexOf(session.session.type) !== -1) {
 			return new JsEvaluator(session);
 		}
@@ -54,6 +58,31 @@ class JsEvaluator implements Evaluator {
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	> {
+		const variableNames = new Array<string>();
+		if (frameId) {
+			const scopes = await this.session.getScopes({ frameId });
+			const scopeVariables = await Promise.all(
+				scopes
+					.filter(s => !s.expensive)
+					.map(s =>
+						this.session.getVariables({
+							variablesReference: s.variablesReference,
+						})
+					)
+			);
+			for (const variables of scopeVariables) {
+				variableNames.push(
+					...variables
+						.filter(v => v.value !== "undefined")
+						.map(v => v.name)
+				);
+			}
+
+			if (variableNames.length > 100) {
+				variableNames.length = 100;
+			}
+		}
+
 		while (true) {
 			try {
 				const preferredExtractorExpr = preferredExtractorId
@@ -63,7 +92,8 @@ class JsEvaluator implements Evaluator {
 				const body = `${getExpressionForDataExtractorApi()}.getData(
                     e => (${expression}),
                     expr => eval(expr),
-                    ${preferredExtractorExpr}
+                    ${preferredExtractorExpr},
+					{${variableNames.map(n => `${n}: ${n}`).join(",")}},
                 )`;
 
 				const wrappedExpr = `

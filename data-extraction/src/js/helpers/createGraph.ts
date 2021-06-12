@@ -4,7 +4,8 @@ import {
 	GraphVisualizationData,
 } from "../../CommonDataTypes";
 
-export type CreateGraphEdge<T> = { to: T } & Omit<GraphEdge, "from" | "to">;
+export type CreateGraphEdge<T> = ({ to: T } | { from: T } | { include: T }) &
+	Omit<GraphEdge, "from" | "to">;
 
 /**
  * Given a list of roots, it creates a graph by following their edges recursively.
@@ -58,13 +59,31 @@ export function createGraph<T>(
 		const fromId = getId(item);
 		r.nodes.push({ ...nodeInfo, id: fromId, ["edges" as any]: undefined });
 		for (const e of nodeInfo.edges) {
-			const toId = getId(e.to);
-			r.edges.push({
-				...e,
-				from: fromId,
-				to: toId,
-			});
-			let shouldPush = !processed.has(e.to);
+			let other: T;
+			let toId: string | undefined;
+			let fromId_: string | undefined;
+			if ("to" in e) {
+				other = e.to;
+				toId = getId(e.to);
+				fromId_ = fromId;
+			} else if ("from" in e) {
+				other = e.from;
+				toId = getId(e.from);
+				fromId_ = fromId;
+			} else if ("include" in e) {
+				other = e.include;
+			} else {
+				throw new Error("Every edge must either have 'to' or 'from'");
+			}
+
+			if (fromId_ !== undefined && toId !== undefined) {
+				r.edges.push({
+					...e,
+					from: fromId_,
+					to: toId,
+				});
+			}
+			let shouldPush = !processed.has(other);
 			if (
 				options.maxSize &&
 				processed.size + queue.length > options.maxSize
@@ -72,7 +91,7 @@ export function createGraph<T>(
 				shouldPush = false;
 			}
 			if (shouldPush) {
-				queue.push({ item: e.to, dist: dist + 1 });
+				queue.push({ item: other, dist: dist + 1 });
 			}
 		}
 	}

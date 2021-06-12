@@ -5,11 +5,13 @@ import {
 } from "./EvaluationWatchService";
 import { observable, autorun, action } from "mobx";
 import { Disposable } from "@hediet/std/disposable";
+import { CancellationTokenSource, CancellationToken } from "vscode";
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 import { DataExtractionState, CompletionItem } from "../webviewContract";
 import { hotClass } from "@hediet/node-reload";
 import { VsCodeDebuggerView } from "../debugger/VsCodeDebuggerView";
 import { EvaluationEngine } from "./EvaluationEngine/EvaluationEngine";
+import { wait } from "@hediet/std/timer";
 
 @hotClass(module)
 export class EvaluationWatchServiceImpl implements EvaluationWatchService {
@@ -63,7 +65,25 @@ export class EvaluationWatchServiceImpl implements EvaluationWatchService {
 		return evaluator.languageId;
 	}
 
-	public async refresh(w: ObservableEvaluationWatcher): Promise<void> {
+	private runningRefreshOperation: Disposable | undefined;
+
+	public refresh(w: ObservableEvaluationWatcher): void {
+		if (this.runningRefreshOperation) {
+			this.runningRefreshOperation.dispose();
+		}
+		const tokenSource = new CancellationTokenSource();
+		this.runningRefreshOperation = {
+			dispose: () => {
+				tokenSource.cancel();
+			},
+		};
+		this._refresh(w, tokenSource.token);
+	}
+
+	private async _refresh(
+		w: ObservableEvaluationWatcher,
+		token: CancellationToken
+	): Promise<void> {
 		const session = this.vsCodeDebuggerView.activeDebugSession;
 		if (!session) {
 			w._state = { kind: "noDebugSession" };
@@ -88,6 +108,15 @@ export class EvaluationWatchServiceImpl implements EvaluationWatchService {
 			frameId,
 			preferredExtractorId: w.preferredDataExtractor,
 		});
+
+		if (result.kind === "error") {
+			// give cancellation requested more time in case of errors
+			await wait(330);
+		}
+
+		if (token.isCancellationRequested) {
+			return;
+		}
 
 		w._state = result;
 	}

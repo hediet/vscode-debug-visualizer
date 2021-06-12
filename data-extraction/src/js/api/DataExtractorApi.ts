@@ -22,7 +22,8 @@ export interface DataExtractorApi {
 	getData(
 		valueFn: () => unknown,
 		evalFn: <T>(expression: string) => T,
-		preferredDataExtractorId: string | undefined
+		preferredDataExtractorId: string | undefined,
+		variablesInScope: Record<string, unknown>
 	): JSONString<DataResult>;
 
 	/**
@@ -68,6 +69,8 @@ export interface DataExtractorContext {
 	 * Evaluates an expression in the context of the active stack frame.
 	 */
 	evalFn: <TEval>(expression: string) => TEval;
+
+	variablesInScope: Record<string, unknown>;
 }
 
 export interface DataExtraction {
