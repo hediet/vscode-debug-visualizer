@@ -112,68 +112,71 @@ Also, a global object of name `hedietDbgVis` with helper functions is injected.
 
 This extension provides these configuration options:
 
--   `debugVisualizer.debugAdapterConfigurations`
+### **debugVisualizer.debugAdapterConfigurations**
 
-    Allows to set expression templates for specific debug adapter types.
-    Example:
+Allows to set expression templates for specific debug adapter types.
+Example:
 
-    ```json
-    "debugVisualizer.debugAdapterConfigurations": {
-    	"lldb": {
-    		"expressionTemplate": "script to_json(\"${expr}\")",
-    		"context": "repl"
-    	}
+```json
+"debugVisualizer.debugAdapterConfigurations": {
+    "lldb": {
+        "expressionTemplate": "script to_json(\"${expr}\")",
+        "context": "repl"
     }
-    ```
+}
+```
 
-    Configurations here overwrite the built-in support for the corresponding debug adapter type.
+Configurations here overwrite the built-in support for the corresponding debug adapter type.
 
--   `debugVisualizer.useChromeKioskMode`
+### **debugVisualizer.useChromeKioskMode**
 
-    Specifies whether to pop out Debug Visualization Views with Chrome in Kiosk Mode. Uses the default browser otherwise or if Chrome is not found. Defaults to `true`.
+Specifies whether to pop out Debug Visualization Views with Chrome in Kiosk Mode. Uses the default browser otherwise or if Chrome is not found. Defaults to `true`.
 
--   `debugVisualizer.js.customScriptPaths`
+### **debugVisualizer.js.customScriptPaths**
 
-    Specifies a list of JavaScript files that are injected into the debugee when debugging JavaScript.
-    Each script must assign `module.exports` with a function of type `import("@hediet/debug-visualizer-data-extraction").LoadDataExtractorsFn`.
-    Paths must be absolute and can use the variable `${workspaceFolder}`.
-    Scripts are automatically reloaded when they are changed.
+Specifies a list of JavaScript files that are injected into the debugee when debugging JavaScript.
+Each script must assign `module.exports` with a function of type `import("@hediet/debug-visualizer-data-extraction").LoadDataExtractorsFn`.
+Paths must be absolute and can use the variable `${workspaceFolder}`.
+Scripts are automatically reloaded when they are changed.
 
-    Example:
+Example:
 
-    ```js
-    // @ts-check
-    /**
-     * @type {import("@hediet/debug-visualizer-data-extraction").LoadDataExtractorsFn}
-     */
-    module.exports = (register, helpers) => {
-    	register({
-    		id: "map",
-    		getExtractions(data, collector, context) {
-    			if (!(data instanceof Map)) {
-    				return;
-    			}
+```js
+// @ts-check
+/**
+ * @type {import("@hediet/debug-visualizer-data-extraction").LoadDataExtractorsFn}
+ */
+module.exports = (register, helpers) => {
+	register({
+		id: "map",
+		getExtractions(data, collector, context) {
+			if (!(data instanceof Map)) {
+				return;
+			}
 
-    			collector.addExtraction({
-    				priority: 1000,
-    				id: "map",
-    				name: "Map",
-    				extractData() {
-    					return helpers.asData({
-    						kind: { table: true },
-    						rows: [...data].map(([k, v]) => ({
-    							key: k,
-    							value: v,
-    						})),
-    					});
-    				},
-    			});
-    		},
-    	});
-    };
-    ```
+			collector.addExtraction({
+				priority: 1000,
+				id: "map",
+				name: "Map",
+				extractData() {
+					return helpers.asData({
+						kind: { table: true },
+						rows: [...data].map(([k, v]) => ({
+							key: k,
+							value: v,
+						})),
+					});
+				},
+			});
+		},
+	});
+};
+```
 
-    ![](../docs/custom-script-map.png)
+![](../docs/custom-script-map.png)
+
+Use the `helpers` object to access some magic functions.
+`helpers.find(val => ...)` can be used to find an object that is reachable by any variable in scope.
 
 # See Also
 
