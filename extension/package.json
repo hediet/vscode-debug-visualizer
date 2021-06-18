@@ -4,7 +4,7 @@
 	"displayName": "Debug Visualizer",
 	"description": "A visual watch window that lets you visualize your data structures while debugging.",
 	"icon": "docs/logo.drawio.png",
-	"version": "2.2.0",
+	"version": "2.2.1",
 	"license": "GPL-3.0",
 	"engines": {
 		"vscode": "^1.46.0"
@@ -136,6 +136,7 @@
 		"webpack": "^4.41.6",
 		"webpack-cli": "^3.3.11",
 		"ts-loader": "^6.2.1",
-		"shx": "^0.3.2"
+		"shx": "^0.3.2",
+		"vsce": "^1.93.0"
 	}
 }
