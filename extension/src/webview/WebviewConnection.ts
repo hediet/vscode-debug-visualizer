@@ -2,9 +2,9 @@ import { Disposable } from "@hediet/std/disposable";
 import { webviewContract } from "../webviewContract";
 import { ConsoleRpcLogger, RequestHandlingError } from "@hediet/typed-json-rpc";
 import {
-	EvaluationWatcher,
-	EvaluationWatchService,
-} from "../EvaluationWatchService";
+	VisualizationWatch,
+	VisualizationWatchModel,
+} from "../VisualizationWatchModel";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { observable, autorun } from "mobx";
 import { WebviewServer } from "./WebviewServer";
@@ -15,12 +15,12 @@ import { Config } from "../Config";
 export class WebviewConnection {
 	public readonly dispose = Disposable.fn();
 	@observable
-	private watcher: EvaluationWatcher | undefined = undefined;
+	private watcher: VisualizationWatch | undefined = undefined;
 
 	private readonly client: typeof webviewContract["TClientInterface"];
 
 	constructor(
-		evaluationWatchService: EvaluationWatchService,
+		evaluationWatchService: VisualizationWatchModel,
 		stream: WebSocketStream,
 		server: WebviewServer,
 		config: Config,
@@ -55,19 +55,16 @@ export class WebviewConnection {
 				setExpression: async ({ newExpression }) => {
 					throwIfNotAuthenticated();
 
-					let oldPreferredDataExtractor: EvaluationWatcher["preferredDataExtractor"];
+					let oldPreferredDataExtractor: VisualizationWatch["preferredDataExtractor"];
 					if (this.watcher) {
 						oldPreferredDataExtractor = this.watcher
 							.preferredDataExtractor;
 						this.dispose.untrack(this.watcher).dispose();
 					}
 					this.watcher = this.dispose.track(
-						evaluationWatchService.createEvaluationWatcher(
-							newExpression,
-							{
-								preferredDataExtractor: oldPreferredDataExtractor,
-							}
-						)
+						evaluationWatchService.createWatch(newExpression, {
+							preferredDataExtractor: oldPreferredDataExtractor,
+						})
 					);
 				},
 				openInBrowser: async ({}) => {

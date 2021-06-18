@@ -7,7 +7,11 @@
 	"plantuml.exportOutDir": "docs/exported",
 	"typescript.updateImportsOnFileMove.enabled": "prompt",
 	"mochaExplorer.files": "./data-extraction/test/**/*.test.ts",
-	"mochaExplorer.require": ["ts-node/register", "source-map-support/register"],
+	"mochaExplorer.require": [
+		"ts-node/register",
+		"source-map-support/register"
+	],
 	"tasksStatusbar.taskLabelFilter": "dev",
-	"editor.formatOnSave": true
+	"editor.formatOnSave": true,
+	"typescript.tsdk": "node_modules\\typescript\\lib"
 }

@@ -1,11 +1,11 @@
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
 import { DataExtractionState, CompletionItem } from "../webviewContract";
 
-export interface EvaluationWatchService {
-	createEvaluationWatcher(
+export interface VisualizationWatchModel {
+	createWatch(
 		expression: string,
-		options: EvaluationWatcherOptions
-	): EvaluationWatcher;
+		options: VisualizationWatchOptions
+	): VisualizationWatch;
 
 	getCompletions(text: string, column: number): Promise<CompletionItem[]>;
 
@@ -17,14 +17,17 @@ export interface EvaluationWatchService {
 	readonly languageId: string | undefined;
 }
 
-export interface EvaluationWatcherOptions {
+export interface VisualizationWatchOptions {
 	preferredDataExtractor?: DataExtractorId | undefined;
 }
 
-export interface EvaluationWatcher {
+export interface VisualizationWatch {
+	/** This field is constant. */
 	readonly expression: string;
+
 	/** This field is observable */
 	readonly state: DataExtractionState;
+
 	/** This field is observable */
 	readonly preferredDataExtractor: DataExtractorId | undefined;
 

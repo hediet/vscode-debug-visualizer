@@ -2,8 +2,8 @@ import { DebugSession } from "vscode";
 import { CompletionItem } from "../webviewContract";
 import { observable } from "mobx";
 
-export class EnhancedDebugSession {
-	@observable protected activeStackFrame: number | undefined;
+export class DebugSessionProxy {
+	@observable private _activeStackFrameId: number | undefined;
 
 	constructor(public readonly session: DebugSession) {}
 

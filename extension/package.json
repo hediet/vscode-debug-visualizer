@@ -4,7 +4,7 @@
 	"displayName": "Debug Visualizer",
 	"description": "A visual watch window that lets you visualize your data structures while debugging.",
 	"icon": "docs/logo.drawio.png",
-	"version": "2.1.0",
+	"version": "2.2.0",
 	"license": "GPL-3.0",
 	"engines": {
 		"vscode": "^1.46.0"
@@ -41,6 +41,11 @@
 		"onDebug",
 		"onWebviewPanel:debugVisualizer"
 	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": false
+		}
+	},
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
@@ -63,6 +68,14 @@
 		"configuration": {
 			"title": "Debug Visualizer",
 			"properties": {
+				"debugVisualizer.js.customScriptPaths": {
+					"type": "array",
+					"description": "Defines JavaScript sources that are injected into the debuggee.",
+					"items": {
+						"type": "string",
+						"description": "The file path to a custom js script. Must be absolute. You can use ${workspaceFolder}."
+					}
+				},
 				"debugVisualizer.useChromeKioskMode": {
 					"type": "boolean",
 					"default": true,

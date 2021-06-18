@@ -13,9 +13,13 @@ hedietDbgVis.markedGrid(
 */
 
 // From https://github.com/AvraamMavridis/Algorithms-Data-Structures-in-Typescript/blob/master/algorithms/quickSort.md
-const array = [1, 2, 33, 31, 1, 2, 63, 123, 6, 32, 943, 346, 24];
-const sorted = quickSort(array, 0, array.length - 1);
-console.log(sorted);
+/** @pure */
+function main() {
+	const array = [1, 2, 33, 31, 1, 2, 63, 123, 6, 32, 943, 346, 24];
+	const sorted = quickSort(array, 0, array.length - 1);
+	console.log(sorted);
+}
+main();
 
 function swap(array: Array<number>, i: number, j: number) {
 	[array[i], array[j]] = [array[j], array[i]];

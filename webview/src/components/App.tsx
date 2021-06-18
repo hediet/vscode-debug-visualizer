@@ -17,7 +17,6 @@ export class App extends React.Component {
 				require("../vscode-dark.scss");
 			}
 		}
-		console.log(this.model.theme);
 	}
 
 	render() {

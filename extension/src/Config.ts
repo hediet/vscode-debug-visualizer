@@ -21,6 +21,29 @@ export class Config {
 		{ serializer: serializerWithDefault<DebugAdapterConfigs>({}) }
 	);
 
+	private readonly _customScriptPaths = new VsCodeSetting(
+		"debugVisualizer.js.customScriptPaths",
+		{ serializer: serializerWithDefault<string[]>([]) }
+	);
+
+	public get customScriptPaths(): string[] {
+		return this._customScriptPaths.get().map(p => {
+			const tpl = new SimpleTemplate(p);
+			return tpl.render({
+				workspaceFolder: () => {
+					const workspaceFolder = (workspace.workspaceFolders ||
+						[])[0];
+					if (!workspaceFolder) {
+						throw new Error(
+							`Cannot get workspace folder - '${p}' cannot be evaluated!`
+						);
+					}
+					return workspaceFolder.uri.fsPath;
+				},
+			});
+		});
+	}
+
 	@observable
 	private _vsCodeTheme = window.activeColorTheme;
 
@@ -84,4 +107,14 @@ function evaluateTemplate(
 		result = result.split(`\${${key}}`).join(val);
 	}
 	return result;
+}
+
+export class SimpleTemplate {
+	constructor(private readonly str: string) {}
+
+	render(data: Record<string, () => string>): string {
+		return this.str.replace(/\$\{([a-zA-Z0-9]+)\}/g, (substr, grp1) => {
+			return data[grp1]();
+		});
+	}
 }

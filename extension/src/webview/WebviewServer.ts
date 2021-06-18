@@ -8,7 +8,7 @@ import * as serveStatic from "serve-static";
 import { Config } from "../Config";
 import cryptoRandomString = require("crypto-random-string");
 import { distPath } from "debug-visualizer-webview";
-import { EvaluationWatchService } from "../EvaluationWatchService/EvaluationWatchService";
+import { VisualizationWatchModel } from "../VisualizationWatchModel/VisualizationWatchModel";
 import { URLSearchParams } from "url";
 import { autorun, reaction } from "mobx";
 
@@ -19,7 +19,7 @@ export class WebviewServer {
 	public readonly connections = new Set<WebviewConnection>();
 
 	constructor(
-		dataSource: EvaluationWatchService,
+		dataSource: VisualizationWatchModel,
 		private readonly config: Config
 	) {
 		const app = express();
@@ -28,11 +28,13 @@ export class WebviewServer {
 
 		this.server = app.listen();
 
+		/*
 		console.log(
 			`Serving "${distPath}" on port ${
 				(this.server.address() as AddressInfo).port
 			}`
 		);
+		*/
 
 		const wss = new WebSocket.Server({ server: this.server });
 		wss.on("connection", async ws => {

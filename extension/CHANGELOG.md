@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.0
+
+-   Adds setting `debugVisualizer.js.customScriptPaths` to inject custom scripts when debugging JavaScript. Such scripts are reloaded automatically when changed.
+
 ## 2.1.0
 
 -   Adds text diff and text decoration viewer.

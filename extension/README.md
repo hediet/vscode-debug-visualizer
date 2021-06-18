@@ -16,18 +16,18 @@ Click [here](https://hediet.github.io/visualization/) to explore all available v
 See [demos](../demos/) for demos. These languages and debuggers are verified to work with this extension:
 
 -   JavaScript/TypeScript/... using `node`/`node2`/`extensionHost`/`chrome`/`pwa-chrome`/`pwa-node` debug adapter: [⭐ Full Support](../demos/js)
--   Dart/Flutter using `dart` debug adapter: [✅ Rudimentary Support](../demos/dart)
--   Go using `go` (Delve) debug adapter: [✅ Rudimentary Support](../demos/golang)
--   Python using `python` debug adapter: [✅ Rudimentary Support](../demos/python)
--   C# using `coreclr` debug adapter: [✅ Rudimentary Support](../demos/csharp) (work in progress for Full Support)
--   PHP using `php` debug adapter: [✅ Rudimentary Support](../demos/php)
--   Java using `java` debug adapter: [✅ Rudimentary Support](../demos/java)
--   C++ using `cppdbg` debug adapter: [✅ Rudimentary Support](../demos/cpp)
--   Swift using `lldb` debug adapter: [✅ Rudimentary Support](../demos/swift)
--   Rust using `lldb` debug adapter: [✅ Rudimentary Support](../demos/rust)
+-   Dart/Flutter using `dart` debug adapter: [✅ Basic Support](../demos/dart)
+-   Go using `go` (Delve) debug adapter: [✅ Basic Support](../demos/golang)
+-   Python using `python` debug adapter: [✅ Basic Support](../demos/python)
+-   C# using `coreclr` debug adapter: [✅ Basic Support](../demos/csharp) (work in progress for Full Support)
+-   PHP using `php` debug adapter: [✅ Basic Support](../demos/php)
+-   Java using `java` debug adapter: [✅ Basic Support](../demos/java)
+-   C++ using `cppdbg` debug adapter: [✅ Basic Support](../demos/cpp)
+-   Swift using `lldb` debug adapter: [✅ Basic Support](../demos/swift)
+-   Rust using `lldb` debug adapter: [✅ Basic Support](../demos/rust)
 
 All other languages and debuggers might work too.
-For languages with _Rudimentary Support_, only JSON strings can be visualized - you must implement some logic that builds this JSON for your data structure!
+For languages with _Basic Support_, only JSON strings can be visualized - you must implement some logic that builds this JSON for your data structure!
 Fully supported languages offer _Data Extractors_ which convert some well known data structures to json.
 
 ## Usage
@@ -131,6 +131,49 @@ This extension provides these configuration options:
 -   `debugVisualizer.useChromeKioskMode`
 
     Specifies whether to pop out Debug Visualization Views with Chrome in Kiosk Mode. Uses the default browser otherwise or if Chrome is not found. Defaults to `true`.
+
+-   `debugVisualizer.js.customScriptPaths`
+
+    Specifies a list of JavaScript files that are injected into the debugee when debugging JavaScript.
+    Each script must assign `module.exports` with a function of type `import("@hediet/debug-visualizer-data-extraction").LoadDataExtractorsFn`.
+    Paths must be absolute and can use the variable `${workspaceFolder}`.
+    Scripts are automatically reloaded when they are changed.
+
+    Example:
+
+    ```js
+    // @ts-check
+    /**
+     * @type {import("@hediet/debug-visualizer-data-extraction").LoadDataExtractorsFn}
+     */
+    module.exports = (register, helpers) => {
+    	register({
+    		id: "map",
+    		getExtractions(data, collector, context) {
+    			if (!(data instanceof Map)) {
+    				return;
+    			}
+
+    			collector.addExtraction({
+    				priority: 1000,
+    				id: "map",
+    				name: "Map",
+    				extractData() {
+    					return helpers.asData({
+    						kind: { table: true },
+    						rows: [...data].map(([k, v]) => ({
+    							key: k,
+    							value: v,
+    						})),
+    					});
+    				},
+    			});
+    		},
+    	});
+    };
+    ```
+
+    ![](../docs/custom-script-map.png)
 
 # See Also
 

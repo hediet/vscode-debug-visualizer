@@ -108,7 +108,7 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 	@action.bound
 	submit() {
 		const val = this.model.getValue();
-		console.log(val);
+		//console.log(val);
 		this.props.model.setExpression(val);
 	}
 }

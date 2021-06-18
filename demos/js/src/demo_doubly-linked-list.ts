@@ -10,7 +10,9 @@ setTimeout(() => {
 }, 0);
 
 class Main {
+	/** @pure */
 	run() {
+		id = 0;
 		const head = new DoublyLinkedListNode("1");
 		head.setNext(new DoublyLinkedListNode("2"));
 		head.next!.setNext(new DoublyLinkedListNode("3"));
@@ -34,9 +36,9 @@ function reverse(list: DoublyLinkedList) {
 			i => ({
 				id: i.id,
 				label: i.name,
-				color: finished.has(i) ? "lime" : undefined,
+				color: finished.has(i) ? "lime" : "lightblue",
 				edges: [
-					{ to: i.next!, label: "next" },
+					{ to: i.next!, label: "next", color: "lightblue", },
 					{ to: i.prev!, label: "prev", color: "lightgray" },
 				].filter(r => !!r.to),
 			}));

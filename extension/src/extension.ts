@@ -15,15 +15,16 @@ registerUpdateReconciler(module);
 import { InternalWebviewManager } from "./webview/InternalWebviewManager";
 import { WebviewServer } from "./webview/WebviewServer";
 import { Config } from "./Config";
-import { VsCodeDebugger } from "./debugger/VsCodeDebugger";
-import { VsCodeDebuggerView } from "./debugger/VsCodeDebuggerView";
-import { EvaluationWatchServiceImpl } from "./EvaluationWatchService";
+import { DebuggerProxy } from "./proxies/DebuggerProxy";
+import { DebuggerViewProxy } from "./proxies/DebuggerViewProxy";
+import { VisualizationWatchModelImpl } from "./VisualizationWatchModel";
 import {
-	ComposedEvaluationEngine,
+	ComposedVisualizationSupport,
 	JsEvaluationEngine,
-	GenericEvaluationEngine,
-	ConfiguredEvaluationEngine,
-} from "./EvaluationWatchService/EvaluationEngine";
+	GenericVisualizationSupport,
+	ConfigurableVisualizationSupport,
+} from "./VisualizationBackend";
+import { DispatchingVisualizationBackend } from "./VisualizationBackend/DispatchingVisualizationBackend";
 
 export function activate(context: ExtensionContext) {
 	context.subscriptions.push(
@@ -37,18 +38,23 @@ export class Extension {
 	public readonly dispose = Disposable.fn();
 
 	private readonly config = new Config();
-	private readonly debugger = this.dispose.track(new VsCodeDebugger());
+	private readonly debugger = this.dispose.track(new DebuggerProxy());
 	private readonly debuggerView = this.dispose.track(
-		new VsCodeDebuggerView(this.debugger)
+		new DebuggerViewProxy(this.debugger)
 	);
 
-	public readonly dataSource = new EvaluationWatchServiceImpl(
-		this.debuggerView,
-		new ComposedEvaluationEngine([
-			new ConfiguredEvaluationEngine(this.config),
-			new JsEvaluationEngine(),
-			new GenericEvaluationEngine(),
-		])
+	public readonly dataSource = new VisualizationWatchModelImpl(
+		new DispatchingVisualizationBackend(
+			new ComposedVisualizationSupport([
+				new ConfigurableVisualizationSupport(
+					this.config,
+					this.debuggerView
+				),
+				new JsEvaluationEngine(this.debuggerView, this.config),
+				new GenericVisualizationSupport(this.debuggerView),
+			]),
+			this.debuggerView
+		)
 	);
 
 	private readonly server = new WebviewServer(this.dataSource, this.config);

@@ -2,26 +2,24 @@ import { Disposable } from "@hediet/std/disposable";
 import { debug, DebugSession } from "vscode";
 import { EventEmitter } from "@hediet/std/events";
 import { runInAction } from "mobx";
-import { EnhancedDebugSession } from "./EnhancedDebugSession";
+import { DebugSessionProxy } from "./DebugSessionProxy";
 
 /**
  * Decorates DebugSession instances and emits an event for new debug sessions.
  */
-export class VsCodeDebugger {
+export class DebuggerProxy {
 	public readonly dispose = Disposable.fn();
-	private readonly sessions = new Map<DebugSession, EnhancedDebugSession>();
+	private readonly sessions = new Map<DebugSession, DebugSessionProxy>();
 
 	private readonly _onDidStartDebugSession = new EventEmitter<{
-		session: EnhancedDebugSession;
+		session: DebugSessionProxy;
 	}>();
 	public readonly onDidStartDebugSession = this._onDidStartDebugSession.asEvent();
 
-	public getEnhancedDebugSession(
-		session: DebugSession
-	): EnhancedDebugSession {
+	public getDebugSessionProxy(session: DebugSession): DebugSessionProxy {
 		let result = this.sessions.get(session);
 		if (!result) {
-			result = new EnhancedDebugSession(session);
+			result = new DebugSessionProxy(session);
 			this.sessions.set(session, result);
 		}
 		return result;
@@ -38,9 +36,7 @@ export class VsCodeDebugger {
 			}),
 			debug.registerDebugAdapterTrackerFactory("*", {
 				createDebugAdapterTracker: session => {
-					const extendedSession = this.getEnhancedDebugSession(
-						session
-					);
+					const extendedSession = this.getDebugSessionProxy(session);
 					return {
 						onDidSendMessage: async msg => {
 							type Message =
@@ -90,7 +86,7 @@ export class VsCodeDebugger {
 										startFrame: 0,
 										levels: 1,
 									});
-									extendedSession["activeStackFrame"] =
+									extendedSession["_activeStackFrameId"] =
 										r.stackFrames.length > 0
 											? r.stackFrames[0].id
 											: undefined;
@@ -103,7 +99,7 @@ export class VsCodeDebugger {
 									m.command === "stepOut"
 								) {
 									extendedSession[
-										"activeStackFrame"
+										"_activeStackFrameId"
 									] = undefined;
 								}
 							}

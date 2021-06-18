@@ -20,14 +20,16 @@ export function getExpressionToInitializeDataExtractorApi(): string {
 }
 
 /**
- * Returns standalone JS code representing an expression returns the data extraction API.
+ * Returns standalone JS code representing an expression that returns the data extraction API.
  * This expression returns an object of type `DataExtractorApi`.
- * If the API must be initialized with `getExpressionToInitializeDataExtractorApi()`,
- * it throws an exception containing the text of `ApiHasNotBeenInitializedCode`.
  * This function is called in the VS Code extension, the expression is evaluated in the debugee.
  */
 export function getExpressionForDataExtractorApi(): string {
 	return `((${selfContainedGetInitializedDataExtractorApi.toString()})())`;
+}
+
+export function getExpressionToDetectDataExtractorApiPresence(): string {
+	return `((${selfContainedIsDataExtractorApiInitialized.toString()})())`;
 }
 
 const apiKey = "@hediet/data-extractor-api/v2";
@@ -43,10 +45,15 @@ export function getDataExtractorApi(): DataExtractorApi {
 }
 
 /**
- * This code is used to detect if the API has not been initialized yet.
  * @internal
  */
-export const ApiHasNotBeenInitializedCode = "EgH0cybXij1jYUozyakO" as const;
+function selfContainedIsDataExtractorApiInitialized(): boolean {
+	const globalObj =
+		typeof window === "object" ? (window as any) : (global as any);
+	const key: typeof apiKey = "@hediet/data-extractor-api/v2";
+	let api: DataExtractorApi | undefined = globalObj[key];
+	return api !== undefined;
+}
 
 /**
  * @internal
@@ -57,11 +64,7 @@ function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi {
 	const key: typeof apiKey = "@hediet/data-extractor-api/v2";
 	let api: DataExtractorApi | undefined = globalObj[key];
 	if (!api) {
-		const code: typeof ApiHasNotBeenInitializedCode =
-			"EgH0cybXij1jYUozyakO";
-		throw new Error(
-			`Data Extractor API has not been initialized. Code: ${code}`
-		);
+		throw new Error(`Data Extractor API has not been initialized.`);
 	}
 	return api;
 }

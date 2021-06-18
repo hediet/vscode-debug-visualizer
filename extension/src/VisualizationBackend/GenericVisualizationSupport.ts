@@ -4,45 +4,60 @@ import {
 	GraphNode,
 	GraphVisualizationData,
 } from "@hediet/debug-visualizer-data-extraction";
-import { EnhancedDebugSession } from "../../debugger/EnhancedDebugSession";
+import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
 import {
-	EvaluationEngine,
-	Evaluator,
-	EvaluationArgs,
-} from "./EvaluationEngine";
+	DebugSessionVisualizationSupport,
+	VisualizationBackend,
+	GetVisualizationDataArgs,
+	VisualizationBackendBase,
+} from "./VisualizationBackend";
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
-import { FormattedMessage } from "../../webviewContract";
+import { FormattedMessage } from "../webviewContract";
 import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
+import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
-export class GenericEvaluationEngine implements EvaluationEngine {
-	createEvaluator(session: EnhancedDebugSession): Evaluator | undefined {
-		return new GenericEvaluator(session);
+export class GenericVisualizationSupport
+	implements DebugSessionVisualizationSupport {
+	constructor(private readonly debuggerView: DebuggerViewProxy) {}
+
+	createBackend(
+		session: DebugSessionProxy
+	): VisualizationBackend | undefined {
+		return new GenericVisualizationBackend(session, this.debuggerView);
 	}
 }
 
-export class GenericEvaluator implements Evaluator {
-	public readonly languageId = "text";
+export class GenericVisualizationBackend extends VisualizationBackendBase {
+	public readonly expressionLanguageId = "text";
 
-	constructor(private readonly session: EnhancedDebugSession) {}
+	constructor(
+		debugSession: DebugSessionProxy,
+		debuggerView: DebuggerViewProxy
+	) {
+		super(debugSession, debuggerView);
+	}
 
-	public async evaluate({
+	public async getVisualizationData({
 		expression,
 		preferredExtractorId,
-		frameId,
-	}: EvaluationArgs): Promise<
+	}: GetVisualizationDataArgs): Promise<
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	> {
+		const frameId = this.debuggerView.getActiveStackFrameId(
+			this.debugSession
+		);
+
 		const finalExpression = this.getFinalExpression({
 			expression,
 			preferredExtractorId,
 		});
-		let reply: { result: string, variablesReference: number };
+		let reply: { result: string; variablesReference: number };
 		try {
-			reply = await this.session.evaluate({
+			reply = await this.debugSession.evaluate({
 				expression: finalExpression,
 				frameId,
 				context: this.getContext(),
@@ -51,7 +66,10 @@ export class GenericEvaluator implements Evaluator {
 			// Use structural information about variables
 			// from the evaluation response if present.
 			if (reply.variablesReference) {
-				const graph = await this.constructGraphFromVariablesReference(reply.result, reply.variablesReference);
+				const graph = await this.constructGraphFromVariablesReference(
+					reply.result,
+					reply.variablesReference
+				);
 
 				return {
 					kind: "data",
@@ -64,11 +82,15 @@ export class GenericEvaluator implements Evaluator {
 						},
 						data: graph,
 					},
-				}
+				};
 			} else {
-				return parseEvaluationResultFromGenericDebugAdapter(reply.result, {
-					debugAdapterType: this.session.session.configuration.type,
-				});
+				return parseEvaluationResultFromGenericDebugAdapter(
+					reply.result,
+					{
+						debugAdapterType: this.debugSession.session
+							.configuration.type,
+					}
+				);
 			}
 		} catch (error) {
 			return {
@@ -78,7 +100,7 @@ export class GenericEvaluator implements Evaluator {
 					items: [
 						"An error occurred while evaluating the expression:",
 						error.message,
-						`Used debug adapter: ${this.session.session.configuration.type}`,
+						`Used debug adapter: ${this.debugSession.session.configuration.type}`,
 						{
 							kind: "inlineList",
 							items: [
@@ -98,7 +120,7 @@ export class GenericEvaluator implements Evaluator {
 	 * variables. Objects are considered to be equivalent if
 	 * they share the same variables reference (this is important
 	 * for representing cyclic relationships).
-	 * 
+	 *
 	 * @param rootLabel - The root object's label
 	 * @param rootVariablesReference - The root object's DAP variables reference
 	 * @param maxDepth - The maximum depth to search at
@@ -108,22 +130,29 @@ export class GenericEvaluator implements Evaluator {
 		rootLabel: string,
 		rootVariablesReference: number,
 		maxDepth: number = 30,
-		maxKnownNodes: number = 50,
+		maxKnownNodes: number = 50
 	): Promise<GraphVisualizationData> {
 		// Perform a breadth-first search on the object to construct the graph
 
 		const graph: GraphVisualizationData = {
 			kind: { graph: true },
 			nodes: [],
-			edges: []
+			edges: [],
 		};
-		const knownNodeIds: { [ref: number]: string; } = {};
-		const bfsQueue: { source: { id: string, name: string } | undefined, label: string, variablesReference: number, depth: number }[] = [{
-			source: undefined,
-			label: rootLabel,
-			variablesReference: rootVariablesReference,
-			depth: 0,
-		}];
+		const knownNodeIds: { [ref: number]: string } = {};
+		const bfsQueue: {
+			source: { id: string; name: string } | undefined;
+			label: string;
+			variablesReference: number;
+			depth: number;
+		}[] = [
+			{
+				source: undefined,
+				label: rootLabel,
+				variablesReference: rootVariablesReference,
+				depth: 0,
+			},
+		];
 
 		let knownCount: number = 0;
 
@@ -141,7 +170,9 @@ export class GenericEvaluator implements Evaluator {
 				// The variable is a leaf or an unvisited object: create the node.
 
 				const node: GraphNode = {
-					id: hasChilds ? `${variable.variablesReference}` : `__${variable.label}@${knownCount}__`,
+					id: hasChilds
+						? `${variable.variablesReference}`
+						: `__${variable.label}@${knownCount}__`,
 					label: variable.label,
 					color: variable.depth == 0 ? "lightblue" : undefined,
 					shape: "box",
@@ -153,8 +184,15 @@ export class GenericEvaluator implements Evaluator {
 				if (hasChilds) {
 					knownNodeIds[variable.variablesReference] = node.id;
 
-					for (const child of await this.session.getVariables({ variablesReference: variable.variablesReference })) {
-						bfsQueue.push({ source: { id: node.id, name: child.name }, label: child.value, variablesReference: child.variablesReference, depth: variable.depth + 1 });
+					for (const child of await this.debugSession.getVariables({
+						variablesReference: variable.variablesReference,
+					})) {
+						bfsQueue.push({
+							source: { id: node.id, name: child.name },
+							label: child.value,
+							variablesReference: child.variablesReference,
+							depth: variable.depth + 1,
+						});
 					}
 				}
 
@@ -166,7 +204,11 @@ export class GenericEvaluator implements Evaluator {
 			}
 
 			if (variable.source) {
-				graph.edges.push({ from: variable.source.id, to: nodeId, label: variable.source.name });
+				graph.edges.push({
+					from: variable.source.id,
+					to: nodeId,
+					label: variable.source.name,
+				});
 			}
 		} while (bfsQueue.length > 0 && knownCount <= maxKnownNodes);
 

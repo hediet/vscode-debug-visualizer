@@ -37,7 +37,6 @@ export class MonacoBridge {
 		);
 
 		for (const file of commonTypes.keys()) {
-			console.log(file);
 			this.dispose.track(
 				monaco.languages.typescript.javascriptDefaults.addExtraLib(
 					commonTypes(file).default,
