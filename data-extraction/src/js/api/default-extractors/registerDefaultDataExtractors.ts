@@ -9,7 +9,6 @@ import { getDataExtractorApi } from "../injection";
 import { GridExtractor } from "./GridExtractor";
 import { TableDataExtractor } from "./TableExtractor";
 import { StringDiffExtractor } from "./StringDiffExtractor";
-import { InjectedExtractor } from "./InjectedExtractor";
 
 /**
  * The default data extractors should be registered by VS Code automatically.
@@ -28,7 +27,6 @@ export function registerDefaultExtractors(
 		new GridExtractor(),
 		new TableDataExtractor(),
 		new StringDiffExtractor(),
-		new InjectedExtractor(),
 	]) {
 		api.registerExtractor(item);
 	}

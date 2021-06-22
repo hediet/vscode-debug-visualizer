@@ -2,6 +2,7 @@ import {
 	VisualizationData,
 	DataExtractionResult,
 } from "../../DataExtractionResult";
+import { LoadDataExtractorsFn } from "./LoadDataExtractorsFn";
 
 export interface DataExtractorApi {
 	/**
@@ -31,6 +32,9 @@ export interface DataExtractorApi {
 	 * @preferExisting if `true`, existing extractors with the same id are not overwritten.
 	 */
 	registerDefaultExtractors(preferExisting?: boolean): void;
+
+	registerDataExtractorsSource(id: string, fn: LoadDataExtractorsFn): void;
+	unregisterDataExtractorsSource(id: string): void;
 }
 
 export type DataResult =
@@ -70,7 +74,7 @@ export interface DataExtractorContext {
 	 */
 	evalFn: <TEval>(expression: string) => TEval;
 
-	variablesInScope: Record<string, unknown>;
+	variablesInScope: Record<string, () => unknown>;
 }
 
 export interface DataExtraction {

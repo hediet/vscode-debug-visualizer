@@ -30,17 +30,17 @@ export function tryEval(
 	obj: Record<string, string> | string[] | string
 ): Record<string, unknown> | unknown {
 	const result: Record<string, unknown> = {};
-	const evalFn = DataExtractorApiImpl.lastEvalFn!;
+	const context = DataExtractorApiImpl.lastContext!;
 	if (Array.isArray(obj)) {
 		for (const val of obj) {
 			try {
-				result[val] = evalFn(val);
+				result[val] = context.evalFn(val);
 			} catch (e) {}
 		}
 	} else {
 		for (const [key, val] of Object.entries(obj)) {
 			try {
-				result[key] = evalFn(val);
+				result[key] = context.evalFn(val);
 			} catch (e) {}
 		}
 	}

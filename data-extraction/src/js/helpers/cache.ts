@@ -12,8 +12,8 @@ export function cache<T>(
 	let resultFn: () => any;
 	let key: string;
 	if (typeof expression === "string") {
-		const evalFn = DataExtractorApiImpl.lastEvalFn!;
-		resultFn = () => evalFn(expression);
+		const context = DataExtractorApiImpl.lastContext!;
+		resultFn = () => context.evalFn(expression);
 		key = JSON.stringify({ expr: expression, id });
 	} else {
 		resultFn = () => expression();

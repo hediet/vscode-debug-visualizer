@@ -487,10 +487,10 @@
     stacktracey "^1.2.112"
     ws "^7.0.0"
 
-"@hediet/monaco-editor-react@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@hediet/monaco-editor-react/-/monaco-editor-react-0.1.1.tgz#041f805aeb188403c7876f0f364d2a429e706031"
-  integrity sha512-0DZZfLcFNuc3Wrn+2eztnRloCBe6GV8zIrGT3LPdZlWYEigJT+Qh7ANvRHF0tCS5YPAFGQNZJcfzKbBfqRGo4w==
+"@hediet/monaco-editor-react@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@hediet/monaco-editor-react/-/monaco-editor-react-0.2.0.tgz#4a98102baf1942f210fc19fd406b6c82da3bf583"
+  integrity sha512-EA71+iv9sV25+YgBQDJ4Ou17sOJCXQat7r5AOD5STZHcUQdSuQufI2t9ue+wJIm4048P9sQ/ruW3pYmwxF9Amw==
 
 "@hediet/node-reload@^0.7.3":
   version "0.7.3"
@@ -550,22 +550,22 @@
     "@hediet/std" "^0.6.0"
     io-ts "^1.8.6"
 
-"@hediet/visualization-bundle@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.1.tgz#397a6bff0ea12018a7a1cb1c182ef8c5de87328f"
-  integrity sha512-Qfyn8WbWGwuE5J1z8U7l8E5VKuG3DpS2JJOtKhlW1QW/rhqBWOLd5avifxqjWxiMIfqh3NTShp9gLHpmI2Bysw==
+"@hediet/visualization-bundle@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.3.tgz#8323706dcaaafc973fdc57da68e6527265e5bfcc"
+  integrity sha512-RpzAST/K5O9FaEaCshHEY7VeGRVlwoTLLcWPkgxzeuZlRr5CNTw8d7Lznh+RaLD1rbz/UEezq2pI3qFYnq/z4w==
   dependencies:
     "@finos/perspective-viewer" "^0.5.2"
     "@finos/perspective-viewer-d3fc" "^0.5.2"
     "@finos/perspective-viewer-datagrid" "^0.5.2"
-    "@hediet/monaco-editor-react" "^0.1.1"
+    "@hediet/monaco-editor-react" "^0.2.0"
     "@hediet/semantic-json" "^0.3.15"
     "@hediet/std" "^0.6.0"
     classnames "^2.2.6"
     line-column "^1.0.2"
     mobx "^5.15.4"
     mobx-react "^6.1.8"
-    monaco-editor "^0.20.0"
+    monaco-editor "^0.25.2"
     plotly.js "^1.54.7"
     react "^16.12.0"
     react-dom "^16.12.0"
@@ -6861,17 +6861,17 @@ moment@^2.19.1:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
 
-monaco-editor-webpack-plugin@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.9.0.tgz#5b547281b9f404057dc5d8c5722390df9ac90be6"
-  integrity sha512-tOiiToc94E1sb50BgZ8q8WK/bxus77SRrwCqIpAB5er3cpX78SULbEBY4YPOB8kDolOzKRt30WIHG/D6gz69Ww==
+monaco-editor-webpack-plugin@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-4.0.0.tgz#95be3f48f4220999b909266a9997727f0deab947"
+  integrity sha512-4BT9XDRQXraMQjxEUjR+uuubRe3RIPkvVoGw8zwWG++s7wq6TAiXaSOMdkdS9TrjCREgSnygCOlVzY6MS8RPuA==
   dependencies:
-    loader-utils "^1.2.3"
+    loader-utils "^2.0.0"
 
-monaco-editor@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.20.0.tgz#5d5009343a550124426cb4d965a4d27a348b4dea"
-  integrity sha512-hkvf4EtPJRMQlPC3UbMoRs0vTAFAYdzFQ+gpMb8A+9znae1c43q8Mab9iVsgTcg/4PNiLGGn3SlDIa8uvK1FIQ==
+monaco-editor@^0.25.2:
+  version "0.25.2"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.25.2.tgz#119e2b15bbd968a1a99c03cac9c329316d7c37e9"
+  integrity sha512-5iylzSJevCnzJn9UVsW8yOZ3yHjmAs4TfvH3zsbftKiFKmHG0xirGN6DK9Kk04VSWxYCZZAIafYJoNJJMAU1KA==
 
 monotone-convex-hull-2d@^1.0.1:
   version "1.0.1"
@@ -8063,10 +8063,10 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha1-IZMqVJ9eUv/ZqCf1cOBL5iqX2lQ=
 
-prettier@^1.19.1:
-  version "1.19.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.19.1.tgz#f7d7f5ff8a9cd872a7be4ca142095956a60797cb"
-  integrity sha512-s7PoyDv/II1ObgQunCbB9PdLmUcBZcnWOcxDh7O0N/UwDEsHyqkW+Qh28jW+mVuCdx7gLB0BotYI1Y6uI9iyew==
+prettier@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.3.1.tgz#76903c3f8c4449bc9ac597acefa24dc5ad4cbea6"
+  integrity sha512-p+vNbgpLjif/+D+DwAZAbndtRrR0md0MwfmOVN9N+2RgyACMT+7tfaRnT+WDPkqnuVwleyuBIG2XBxKDme3hPA==
 
 pretty-error@^2.0.2:
   version "2.1.1"

@@ -1,31 +1,25 @@
 import {
-	getExpressionForDataExtractorApi,
-	DataResult,
-	getExpressionToInitializeDataExtractorApi,
 	DataExtractionResult,
-	getExpressionToDetectDataExtractorApiPresence,
+	DataResult,
+	 getExpressionForDataExtractorApi,
+	getExpressionToInitializeDataExtractorApi,
+	ApiHasNotBeenInitializedCode,
 } from "@hediet/debug-visualizer-data-extraction";
-import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
-import {
-	DebugSessionVisualizationSupport,
-	VisualizationBackend,
-	GetVisualizationDataArgs,
-	VisualizationBackendBase,
-} from "./VisualizationBackend";
-import { FormattedMessage } from "../webviewContract";
-import { registerUpdateReconciler, hotClass } from "@hediet/node-reload";
+import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
+import { existsSync, readFileSync, watch } from "fs";
+import { observable, reaction } from "mobx";
+import { window, workspace } from "vscode";
 import { Config } from "../Config";
 import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
-import { readFileSync, existsSync } from "fs";
-import { reaction, observable } from "mobx";
+import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
+import { FormattedMessage } from "../webviewContract";
 import {
-	workspace,
-	FileSystemWatcher,
-	CancellationTokenSource,
-	CancellationToken,
-	window,
-} from "vscode";
-import { ResettableTimeout } from "@hediet/std/timer";
+	DebugSessionVisualizationSupport,
+	GetVisualizationDataArgs,
+	VisualizationBackend,
+	VisualizationBackendBase,
+} from "./VisualizationBackend";
+import { Disposable } from "@hediet/std/disposable";
 
 registerUpdateReconciler(module);
 
@@ -64,8 +58,7 @@ export class JsEvaluationEngine implements DebugSessionVisualizationSupport {
 
 class JsVisualizationBackend extends VisualizationBackendBase {
 	public readonly expressionLanguageId = "javascript";
-	private apiInitialized = false;
-	private initializedPromise: Promise<void> | undefined = undefined;
+	private initializePromise: Promise<void> | undefined = undefined;
 
 	constructor(
 		debugSession: DebugSessionProxy,
@@ -82,16 +75,41 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 		return "repl";
 	}
 
-	public async getVisualizationData({
+	public async getVisualizationData(
+		args: GetVisualizationDataArgs
+	): Promise<
+		| { kind: "data"; result: DataExtractionResult }
+		| { kind: "error"; message: FormattedMessage }
+	> {
+		const result = await this._getVisualizationData(args);
+
+		if (result.kind === "not-initialized") {
+			await this.initializeApiSafe();
+
+			const result2 = await this._getVisualizationData(args);
+
+			if (result2.kind !== "not-initialized") {
+				return result2;
+			} else {
+				return {
+					kind: "error",
+					message: "Could not initialize API",
+				};
+			}
+		}
+
+		return result;
+	}
+
+	private async _getVisualizationData({
 		expression,
 		preferredExtractorId,
 	}: GetVisualizationDataArgs): Promise<
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
+		| { kind: "not-initialized" }
 	> {
 		try {
-			await this.ensureRuntimeIsInjected();
-
 			const frameId = this.debuggerView.getActiveStackFrameId(
 				this.debugSession
 			);
@@ -101,8 +119,8 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 				const scopes = await this.debugSession.getScopes({ frameId });
 				const scopeVariables = await Promise.all(
 					scopes
-						.filter(s => !s.expensive)
-						.map(s =>
+						.filter((s) => !s.expensive && s.name !== "Global")
+						.map((s) =>
 							this.debugSession.getVariables({
 								variablesReference: s.variablesReference,
 							})
@@ -111,13 +129,13 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 				for (const variables of scopeVariables) {
 					variableNames.push(
 						...variables
-							.filter(v => v.value !== "undefined")
-							.map(v => v.name)
+							.filter((v) => v.value !== "undefined")
+							.map((v) => v.name)
 					);
 				}
 
-				if (variableNames.length > 100) {
-					variableNames.length = 100;
+				if (variableNames.length > 50) {
+					variableNames.length = 50;
 				}
 			}
 
@@ -129,7 +147,7 @@ class JsVisualizationBackend extends VisualizationBackendBase {
                     e => (${expression}),
                     expr => eval(expr),
                     ${preferredExtractorExpr},
-					{${variableNames.map(n => `${n}: ${n}`).join(",")}},
+					{${variableNames.map((n) => `${n}: () => ${n}`).join(",")}},
                 )`;
 
 			const wrappedExpr = `
@@ -171,6 +189,15 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 				throw new Error("Invalid Data");
 			}
 		} catch (error) {
+			if (
+				typeof error.message === "string" &&
+				error.message.indexOf(ApiHasNotBeenInitializedCode) !== -1
+			) {
+				return {
+					kind: "not-initialized",
+				};
+			}
+
 			return {
 				kind: "error",
 				message: error.message,
@@ -178,128 +205,123 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 		}
 	}
 
-	private ensureRuntimeIsInjected(): Promise<void> | undefined {
-		if (this.apiInitialized) {
-			return;
+	private initializeApiSafe(): Promise<void> {
+		if (!this.initializePromise) {
+			this.initializePromise = this.initializeApi().finally(
+				() => (this.initializePromise = undefined)
+			);
 		}
-
-		if (this.initializedPromise) {
-			return this.initializedPromise;
-		} else {
-			this.initializedPromise = this._ensureRuntimeIsInjected();
-		}
+		return this.initializePromise;
 	}
 
-	private async _ensureRuntimeIsInjected(): Promise<void> {
-		const body = getExpressionToDetectDataExtractorApiPresence();
+	private async initializeApi(): Promise<void> {
+		// prefer existing is true, so that manually registered (possibly newer) extractors are not overwritten.
+		const expression = `${getExpressionToInitializeDataExtractorApi()}.registerDefaultExtractors(true);`;
 
-		const reply = await this.debugSession.evaluate({
-			expression: body,
+		await this.debugSession.evaluate({
+			expression,
 			frameId: undefined,
 			context: this.getContext(),
 		});
-		const isApiInitialized = reply.result === "true";
-
-		if (!isApiInitialized) {
-			await this.initializeApi();
-		}
 
 		await this.initializeCustomScripts();
 	}
 
-	private async initializeApi(): Promise<boolean> {
-		try {
-			// prefer existing is true, so that manually registered (possibly newer) extractors are not overwritten.
-			const expression = `${getExpressionToInitializeDataExtractorApi()}.registerDefaultExtractors(true);`;
+	private customScripts: undefined | CustomScripts;
 
-			await this.debugSession.evaluate({
-				expression,
-				frameId: undefined,
-				context: this.getContext(),
-			});
-
-			return true;
-		} catch (error) {
-			return false;
-		}
+	private async initializeCustomScripts(): Promise<void> {
+		this.dispose.untrack(this.customScripts);
+		this.customScripts?.dispose();
+		this.customScripts = this.dispose.track(new CustomScripts(this.debugSession, this.config, () => this.onChangeEmitter.emit()));
 	}
+}
+
+class CustomScripts {
+	public readonly dispose = Disposable.fn();
 
 	@observable
 	private filesVersionId: number = 0;
 
 	private readonly fileChangeDebouncedScheduler = new DebouncedScheduler(100);
 
-	private async initializeCustomScripts(): Promise<void> {
-		await this.debugSession.evaluate({
-			expression: `global["${injectedScriptsKey}"] = {};`,
-			frameId: undefined,
-			context: "repl",
-		});
+	constructor(private readonly debugSession: DebugSessionProxy, private readonly config: Config, private readonly changeHandler: () => void) {
+		this.init();
+	}
 
+	private init(): void {
 		const watchers = new Map<string, WatchedFile>();
 		this.dispose.track({
 			dispose: () => {
 				for (const w of watchers.values()) {
-					w.watcher.dispose();
+					w.dispose();
 				}
 			},
 		});
 
-		reaction(
-			() => ({
-				customScriptPaths: [...this.config.customScriptPaths],
-				version: this.filesVersionId,
-			}),
-			async ({ customScriptPaths }) => {
-				const promises = new Array<Promise<[Result, WatchedFile]>>();
+		this.dispose.track({
+			dispose: reaction(
+				() => ({
+					customScriptPaths: [...this.config.customScriptPaths],
+					version: this.filesVersionId,
+				}),
+				async ({ customScriptPaths }) => {
+					const promises = new Array<
+						Promise<[Result, WatchedFile]>
+					>();
 
-				const activePaths = new Set<string>();
-				for (const fsPath of customScriptPaths) {
-					activePaths.add(fsPath);
-					let entry = watchers.get(fsPath);
-					if (!entry) {
-						entry = new WatchedFile(fsPath, this.debugSession);
-						watchers.set(fsPath, entry);
-						entry.watcher.onDidChange(() => {
-							this.fileChangeDebouncedScheduler.run(() => {
-								this.filesVersionId++;
-							});
-						});
+					const activePaths = new Set<string>();
+					for (const fsPath of customScriptPaths) {
+						activePaths.add(fsPath);
+						let entry = watchers.get(fsPath);
+						if (!entry) {
+							entry = new WatchedFile(
+								fsPath,
+								this.debugSession,
+								() => {
+									this.fileChangeDebouncedScheduler.run(
+										() => {
+											this.filesVersionId++;
+										}
+									);
+								}
+							);
+							watchers.set(fsPath, entry);
+						}
+
+						promises.push(entry.update().then((e) => [e, entry!]));
 					}
 
-					promises.push(entry.update().then(e => [e, entry!]));
-				}
-
-				for (const [fsPath, entry] of watchers) {
-					if (!activePaths.has(fsPath)) {
-						promises.push(entry.remove().then(e => [e, entry]));
-						entry.watcher.dispose();
-						watchers.delete(fsPath);
+					for (const [fsPath, entry] of watchers) {
+						if (!activePaths.has(fsPath)) {
+							promises.push(
+								entry.remove().then((e) => [e, entry])
+							);
+							entry.dispose();
+							watchers.delete(fsPath);
+						}
 					}
-				}
 
-				const results = await Promise.all(promises);
-				const errors = results.filter(([r]) => r.error);
-				for (const [e, watcher] of errors) {
-					window.showErrorMessage(
-						`Error while evaluating "${watcher.fsPath}": ${
-							e.error!.message
-						}`
-					);
-				}
+					const results = await Promise.all(promises);
+					const errors = results.filter(([r]) => r.error);
+					for (const [e, watcher] of errors) {
+						window.showErrorMessage(
+							`Error while evaluating "${watcher.fsPath}": ${
+								e.error!.message
+							}`
+						);
+					}
 
-				if (promises.length > 0) {
-					this.onChangeEmitter.emit();
+					if (promises.length > 0) {
+						this.changeHandler();
+					}
+				},
+				{
+					fireImmediately: true,
 				}
-			},
-			{
-				fireImmediately: true,
-			}
-		);
+			),
+		});
 	}
 }
-
-const injectedScriptsKey = `@hediet/debug-visualizer/injectedScripts`;
 
 interface Result {
 	error?: { message: string };
@@ -307,14 +329,23 @@ interface Result {
 
 class WatchedFile {
 	public static nextId = 0;
-	public readonly watcher = workspace.createFileSystemWatcher(this.fsPath);
+	private readonly watcher = watch(
+		this.fsPath,
+		{ encoding: "utf-8" },
+		this.changeHandler
+	);
 	public readonly id = WatchedFile.nextId++;
 	public lastContent: string | undefined = undefined;
 
 	constructor(
 		public readonly fsPath: string,
-		private readonly debugSession: DebugSessionProxy
+		private readonly debugSession: DebugSessionProxy,
+		private readonly changeHandler: () => void
 	) {}
+
+	public dispose(): void {
+		this.watcher.close();
+	}
 
 	public async update(): Promise<Result> {
 		if (!existsSync(this.fsPath)) {
@@ -337,7 +368,9 @@ class WatchedFile {
 				load => {
 					var module = {};
 					load(module);
-					global["${injectedScriptsKey}"]["${this.id}"] = module.exports;
+					${getExpressionForDataExtractorApi()}.registerDataExtractorsSource("${
+			this.id
+		}", module.exports);
 				}
 			)
 			(
@@ -357,7 +390,9 @@ class WatchedFile {
 	}
 
 	public async remove(): Promise<Result> {
-		const expression = `(() => { delete global["${injectedScriptsKey}"]["${this.id}"]; })()`;
+		const expression = `${getExpressionForDataExtractorApi()}.unregisterDataExtractorsSource("${
+			this.id
+		}")`;
 		try {
 			await this.debugSession.evaluate({
 				expression,

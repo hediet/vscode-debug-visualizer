@@ -5,20 +5,21 @@ import {
 	DataExtractor,
 	DataExtraction,
 	ExtractionCollector,
+	DataExtractorContext,
 } from "./DataExtractorApi";
 import { DataExtractorInfo } from "../../DataExtractionResult";
 import { registerDefaultExtractors } from "./default-extractors";
+import { LoadDataExtractorsFn } from "./LoadDataExtractorsFn";
+import * as helpers from "../helpers";
 
 /**
  * @internal
  */
 export class DataExtractorApiImpl implements DataExtractorApi {
-	public static lastEvalFn: (<T>(expression: string) => T) | undefined;
-	public static lastVariablesInScope:
-		| Record<string, unknown>
-		| undefined = undefined;
+	public static lastContext: DataExtractorContext | undefined = undefined;
 
 	private readonly extractors = new Map<string, DataExtractor>();
+	private readonly extractorSources = new Map<string, LoadDataExtractorsFn>();
 
 	private toJson<TData>(data: TData): JSONString<TData> {
 		return JSON.stringify(data) as any;
@@ -38,7 +39,7 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 		valueFn: () => unknown,
 		evalFn: <T>(expression: string) => T,
 		preferredDataExtractorId: string | undefined,
-		variablesInScope: Record<string, unknown>
+		variablesInScope: Record<string, () => unknown>
 	): JSONString<DataResult> {
 		const extractions = new Array<DataExtraction>();
 		const extractionCollector: ExtractionCollector = {
@@ -47,19 +48,27 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 			},
 		};
 
-		DataExtractorApiImpl.lastVariablesInScope = variablesInScope;
-		DataExtractorApiImpl.lastEvalFn = evalFn;
+		const context: DataExtractorContext = {
+			evalFn,
+			variablesInScope,
+		};
+
+		DataExtractorApiImpl.lastContext = context;
 		const value = valueFn();
 
-		for (const e of this.extractors.values()) {
-			e.getExtractions(value, extractionCollector, {
-				evalFn,
-				variablesInScope,
-			});
+		const extractors = new Array<DataExtractor>();
+
+		for (const fn of this.extractorSources.values()) {
+			fn((extractor) => {
+				extractors.push(extractor);
+			}, helpers);
 		}
 
-		DataExtractorApiImpl.lastVariablesInScope = undefined;
-		DataExtractorApiImpl.lastEvalFn = undefined;
+		for (const e of [...this.extractors.values(), ...extractors]) {
+			e.getExtractions(value, extractionCollector, context);
+		}
+
+		DataExtractorApiImpl.lastContext = undefined;
 
 		extractions.sort((a, b) => b.priority - a.priority);
 		let usedExtraction = extractions[0];
@@ -69,7 +78,7 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 
 		if (preferredDataExtractorId) {
 			const preferred = extractions.find(
-				e => e.id === preferredDataExtractorId
+				(e) => e.id === preferredDataExtractorId
 			);
 			if (preferred) {
 				usedExtraction = preferred;
@@ -98,5 +107,16 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 	public registerDefaultExtractors(preferExisting: boolean = false): void {
 		// TODO consider preferExisting
 		registerDefaultExtractors(this);
+	}
+
+	public registerDataExtractorsSource(
+		id: string,
+		fn: LoadDataExtractorsFn
+	): void {
+		this.extractorSources.set(id, fn);
+	}
+
+	public unregisterDataExtractorsSource(id: string): void {
+		this.extractorSources.delete(id);
 	}
 }

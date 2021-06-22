@@ -3,6 +3,7 @@ import { DataExtractorApi } from "./DataExtractorApi";
 import { DataExtractorApiImpl } from "./DataExtractorApiImpl";
 import * as helpers from "../helpers";
 import * as globalHelpers from "../global-helpers";
+import { getGlobal } from "../../getGlobal";
 
 /**
  * Returns standalone JS code representing an expression that initializes the data extraction API.
@@ -28,16 +29,11 @@ export function getExpressionForDataExtractorApi(): string {
 	return `((${selfContainedGetInitializedDataExtractorApi.toString()})())`;
 }
 
-export function getExpressionToDetectDataExtractorApiPresence(): string {
-	return `((${selfContainedIsDataExtractorApiInitialized.toString()})())`;
-}
-
-const apiKey = "@hediet/data-extractor-api/v2";
+const apiKey = "@hediet/data-extractor-api/v3";
 
 export function getDataExtractorApi(): DataExtractorApi {
 	installHelpers();
-	const globalObj =
-		typeof window === "object" ? (window as any) : (global as any);
+	const globalObj = getGlobal();
 	if (!globalObj[apiKey]) {
 		globalObj[apiKey] = new DataExtractorApiImpl();
 	}
@@ -45,33 +41,31 @@ export function getDataExtractorApi(): DataExtractorApi {
 }
 
 /**
+ * This code is used to detect if the API has not been initialized yet.
  * @internal
  */
-function selfContainedIsDataExtractorApiInitialized(): boolean {
-	const globalObj =
-		typeof window === "object" ? (window as any) : (global as any);
-	const key: typeof apiKey = "@hediet/data-extractor-api/v2";
-	let api: DataExtractorApi | undefined = globalObj[key];
-	return api !== undefined;
-}
+ export const ApiHasNotBeenInitializedCode = "EgH0cybXij1jYUozyakO" as const;
 
-/**
- * @internal
- */
-function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi {
-	const globalObj =
-		typeof window === "object" ? (window as any) : (global as any);
-	const key: typeof apiKey = "@hediet/data-extractor-api/v2";
-	let api: DataExtractorApi | undefined = globalObj[key];
-	if (!api) {
-		throw new Error(`Data Extractor API has not been initialized.`);
-	}
-	return api;
-}
+ /**
+  * @internal
+  */
+ function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi {
+	 const globalObj =
+		 typeof window === "object" ? (window as any) : (global as any);
+	 const key: typeof apiKey = "@hediet/data-extractor-api/v3";
+	 let api: DataExtractorApi | undefined = globalObj[key];
+	 if (!api) {
+		 const code: typeof ApiHasNotBeenInitializedCode =
+			 "EgH0cybXij1jYUozyakO";
+		 throw new Error(
+			 `Data Extractor API has not been initialized. Code: ${code}`
+		 );
+	 }
+	 return api;
+ }
 
 export function installHelpers(): void {
-	const globalObj =
-		typeof window === "object" ? (window as any) : (global as any);
+	const globalObj = getGlobal();
 	// `hediet` as prefix to avoid name collision (I own `hediet.de`).
 	globalObj["hedietDbgVis"] = { ...helpers, ...globalHelpers };
 }
