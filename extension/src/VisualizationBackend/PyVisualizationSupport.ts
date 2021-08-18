@@ -94,8 +94,8 @@ export class PyVisualizationBackend extends VisualizationBackendBase {
 
 			let result = reply.result;
 			// remove the initial escape by the the debug session e.g. `''{"kind": {"text": true}, "text": "{"asdf1\'"}''`
-			result = result.replaceAll(/\\'/g, "'");
-			result = result.replaceAll(/\\\\/g, "\\");
+			result = result.replace(/\\'/g, "'");
+			result = result.replace(/\\\\/g, "\\");
 
 			return parseEvaluationResultFromGenericDebugAdapter(
 				result,
