@@ -1,5 +1,4 @@
 """Python demo for sorting using VS Code Debug Visualizer."""
-import json
 
 
 def serialize(arr):
@@ -14,7 +13,7 @@ def serialize(arr):
             }
         ],
     }
-    return json.dumps(formatted)
+    return formatted
 
 
 arr = [6, 9, 3, 12, 1, 11, 5, 13, 8, 14, 2, 4, 10, 0, 7]

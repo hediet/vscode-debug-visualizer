@@ -23,10 +23,9 @@ for i in range(2,100):
     # connects the node to a random edge
     targetId = str(randint(1, i - 1))
     graph["edges"].append({"from": id, "to": targetId})
-    json_graph = dumps(graph)
     print("i is " + str(i))
     # try setting a breakpoint right above
-    # then put json_graph into the visualization console and press enter
+    # then put graph into the visualization console and press enter
     # when you step through the code each time you hit the breakpoint
     # the graph should automatically refresh!
     
