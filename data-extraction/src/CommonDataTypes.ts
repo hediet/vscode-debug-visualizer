@@ -228,6 +228,16 @@ export type PlotlyVisualizationData = {
 		text?: string | string[];
 		xaxis?: string;
 		yaxis?: string;
+		cells?: {
+			values?: string[][];
+		};
+		header?: {
+			values?: string[];
+		};
+		domain?: {
+			x?: number[],
+			y?: number[],
+		};
 		x?: (string | number | null)[] | (string | number | null)[][];
 		y?: (string | number | null)[] | (string | number | null)[][];
 		z?: (string | number | null)[] | (string | number | null)[][];
@@ -257,7 +267,8 @@ export type PlotlyVisualizationData = {
 			| "waterfall"
 			| "funnel"
 			| "funnelarea"
-			| "scattermapbox";
+			| "scattermapbox"
+			| "table";
 		mode?:
 			| "lines"
 			| "markers"

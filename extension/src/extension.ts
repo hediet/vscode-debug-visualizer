@@ -21,6 +21,7 @@ import { VisualizationWatchModelImpl } from "./VisualizationWatchModel";
 import {
 	ComposedVisualizationSupport,
 	JsEvaluationEngine,
+	PyEvaluationEngine,
 	GenericVisualizationSupport,
 	ConfigurableVisualizationSupport,
 } from "./VisualizationBackend";
@@ -32,7 +33,7 @@ export function activate(context: ExtensionContext) {
 	);
 }
 
-export function deactivate() {}
+export function deactivate() { }
 
 export class Extension {
 	public readonly dispose = Disposable.fn();
@@ -51,6 +52,7 @@ export class Extension {
 					this.debuggerView
 				),
 				new JsEvaluationEngine(this.debuggerView, this.config),
+				new PyEvaluationEngine(this.debuggerView, this.config),
 				new GenericVisualizationSupport(this.debuggerView),
 			]),
 			this.debuggerView
