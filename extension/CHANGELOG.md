@@ -1,6 +1,6 @@
 # Change Log
 
-## 2.2.4
+## 2.3.0
 
 -   [Improves support for python](https://github.com/hediet/vscode-debug-visualizer/pull/122)
 
