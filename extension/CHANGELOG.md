@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.2.4
+
+-   [Improves support for python](https://github.com/hediet/vscode-debug-visualizer/pull/122)
+
 ## 2.2.0
 
 -   Adds setting `debugVisualizer.js.customScriptPaths` to inject custom scripts when debugging JavaScript. Such scripts are reloaded automatically when changed.
