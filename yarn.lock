@@ -550,10 +550,10 @@
     "@hediet/std" "^0.6.0"
     io-ts "^1.8.6"
 
-"@hediet/visualization-bundle@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.3.tgz#8323706dcaaafc973fdc57da68e6527265e5bfcc"
-  integrity sha512-RpzAST/K5O9FaEaCshHEY7VeGRVlwoTLLcWPkgxzeuZlRr5CNTw8d7Lznh+RaLD1rbz/UEezq2pI3qFYnq/z4w==
+"@hediet/visualization-bundle@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.4.tgz#0c8c0ab8ca7153fd7b18aafa94b2ef813a1482e3"
+  integrity sha512-pknFiLcQ4B8EEgjp5aImZyP+Jgz+imSKfncFZT0NfJH3BCvFkCcmzeR6IbWB+70oDJfTRHFIhr40pNuHESQUWA==
   dependencies:
     "@finos/perspective-viewer" "^0.5.2"
     "@finos/perspective-viewer-d3fc" "^0.5.2"
