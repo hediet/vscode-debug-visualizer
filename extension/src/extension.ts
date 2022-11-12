@@ -22,6 +22,7 @@ import {
 	ComposedVisualizationSupport,
 	JsEvaluationEngine,
 	PyEvaluationEngine,
+	RbEvaluationEngine,
 	GenericVisualizationSupport,
 	ConfigurableVisualizationSupport,
 } from "./VisualizationBackend";
@@ -53,6 +54,7 @@ export class Extension {
 				),
 				new JsEvaluationEngine(this.debuggerView, this.config),
 				new PyEvaluationEngine(this.debuggerView, this.config),
+				new RbEvaluationEngine(this.debuggerView, this.config),
 				new GenericVisualizationSupport(this.debuggerView),
 			]),
 			this.debuggerView
@@ -102,7 +104,7 @@ export class Extension {
 							if (
 								match.index <= selection.start.character &&
 								selection.start.character <=
-									match.index + match[0].length
+								match.index + match[0].length
 							) {
 								selectedText = match[1];
 							}
