@@ -111,7 +111,7 @@ export class PyVisualizationBackend extends VisualizationBackendBase {
 					kind: "error",
 					message: {
 						kind: "list",
-						items: ["Pleas make sure vscodedebugvisualizer is installed: `pip install vscodedebugvisualizer`"],
+						items: ["Please make sure vscodedebugvisualizer is installed: `pip install vscodedebugvisualizer`"],
 					},
 				};
 			}
