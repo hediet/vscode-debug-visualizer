@@ -25,7 +25,7 @@ See [demos](../demos/) for demos. These languages and debuggers are verified to 
 -   C++ using `cppdbg` debug adapter: [✅ Basic Support](../demos/cpp)
 -   Swift using `lldb` debug adapter: [✅ Basic Support](../demos/swift)
 -   Rust using `lldb` debug adapter: [✅ Basic Support](../demos/rust)
--   Ruby using `rdbg` debug adapter: [✅ Basic Support]
+-   Ruby using `rdbg` debug adapter: [✅ Basic Support](../demos/ruby)
 
 All other languages and debuggers might work too.
 For languages with _Basic Support_, only JSON strings can be visualized - you must implement some logic that builds this JSON for your data structure!
