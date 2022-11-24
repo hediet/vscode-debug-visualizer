@@ -1,4 +1,4 @@
-import { DataExtractionResult, DataExtractorId, DataResult } from "@hediet/debug-visualizer-data-extraction";
+import { DataExtractionResult, DataResult } from "@hediet/debug-visualizer-data-extraction";
 import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
 import { Config } from "../Config";
 import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
@@ -96,9 +96,10 @@ class RbVisualizationBackend extends VisualizationBackendBase {
 					}
 				};
 			}
-
-			const wrappedExpr = await this._getExpression(preferredExtractorId || '', expression, frameId);
-
+			const preferredId = preferredExtractorId || '';
+			const wrappedExpr = `
+				DebugVisualizer.to_debug_visualizer_protocol_json("${preferredId}", ${expression})
+			`;
 			const reply = await this.debugSession.evaluate({
 				expression: wrappedExpr,
 				frameId,
@@ -136,23 +137,6 @@ class RbVisualizationBackend extends VisualizationBackendBase {
 				kind: "error",
 				message: error.message
 			};
-		}
-	}
-
-	private async _getExpression(preferredId: string | DataExtractorId, expression: string, frameId: number | undefined) {
-		// From version 1.7, `::DEBUGGER__::NaiveString` class is introduced to get whole body of String.
-		// https://github.com/ruby/debug/commit/2f510f0ed685da2f78b370fb8898ffbd2a4f1cf7
-		const reply = await this.debugSession.evaluate({
-			expression: "defined? ::DEBUGGER__::NaiveString",
-			frameId,
-			context: this.defaultContext
-		});
-		const wrappedExpr = `DebugVisualizer.to_debug_visualizer_protocol_json("${preferredId}", ${expression})`;
-		// Because reply.result is '"constant"', we use includes method here.
-		if (reply.result.includes('constant')) {
-			return `::DEBUGGER__::NaiveString.new(${wrappedExpr})`;
-		} else {
-			return wrappedExpr;
 		}
 	}
 }
