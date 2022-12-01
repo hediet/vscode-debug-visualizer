@@ -1,7 +1,7 @@
 import {
 	DataExtractionResult,
 	DataResult,
-	 getExpressionForDataExtractorApi,
+	getExpressionForDataExtractorApi,
 	getExpressionToInitializeDataExtractorApi,
 	ApiHasNotBeenInitializedCode,
 } from "@hediet/debug-visualizer-data-extraction";
@@ -20,6 +20,8 @@ import {
 	VisualizationBackendBase,
 } from "./VisualizationBackend";
 import { Disposable } from "@hediet/std/disposable";
+import { DebouncedRunner } from "../utils/DebouncedRunner";
+import { FileWatcher } from "../webview/WebviewConnection";
 
 registerUpdateReconciler(module);
 
@@ -232,199 +234,76 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 	private async initializeCustomScripts(): Promise<void> {
 		this.dispose.untrack(this.customScripts);
 		this.customScripts?.dispose();
-		this.customScripts = this.dispose.track(new CustomScripts(this.debugSession, this.config, () => this.onChangeEmitter.emit()));
+		this.customScripts = this.dispose.track(
+			new CustomScripts(this.debugSession, this.config, () =>
+				this.onChangeEmitter.emit()
+			)
+		);
 	}
 }
 
 class CustomScripts {
 	public readonly dispose = Disposable.fn();
 
-	@observable
-	private filesVersionId: number = 0;
-
-	private readonly fileChangeDebouncedScheduler = new DebouncedScheduler(100);
-
-	constructor(private readonly debugSession: DebugSessionProxy, private readonly config: Config, private readonly changeHandler: () => void) {
-		this.init();
-	}
-
-	private init(): void {
-		const watchers = new Map<string, WatchedFile>();
-		this.dispose.track({
-			dispose: () => {
-				for (const w of watchers.values()) {
-					w.dispose();
-				}
-			},
-		});
-
-		this.dispose.track({
-			dispose: reaction(
-				() => ({
-					customScriptPaths: [...this.config.customScriptPaths],
-					version: this.filesVersionId,
-				}),
-				async ({ customScriptPaths }) => {
-					const promises = new Array<
-						Promise<[Result, WatchedFile]>
-					>();
-
-					const activePaths = new Set<string>();
-					for (const fsPath of customScriptPaths) {
-						activePaths.add(fsPath);
-						let entry = watchers.get(fsPath);
-						if (!entry) {
-							entry = new WatchedFile(
-								fsPath,
-								this.debugSession,
-								() => {
-									this.fileChangeDebouncedScheduler.run(
-										() => {
-											this.filesVersionId++;
-										}
-									);
-								}
-							);
-							watchers.set(fsPath, entry);
-						}
-
-						promises.push(entry.update().then((e) => [e, entry!]));
-					}
-
-					for (const [fsPath, entry] of watchers) {
-						if (!activePaths.has(fsPath)) {
-							promises.push(
-								entry.remove().then((e) => [e, entry])
-							);
-							entry.dispose();
-							watchers.delete(fsPath);
-						}
-					}
-
-					const results = await Promise.all(promises);
-					const errors = results.filter(([r]) => r.error);
-					for (const [e, watcher] of errors) {
-						window.showErrorMessage(
-							`Error while evaluating "${watcher.fsPath}": ${
-								e.error!.message
-							}`
-						);
-					}
-
-					if (promises.length > 0) {
-						this.changeHandler();
-					}
-				},
-				{
-					fireImmediately: true,
-				}
-			),
-		});
-	}
-}
-
-interface Result {
-	error?: { message: string };
-}
-
-class WatchedFile {
-	public static nextId = 0;
-	private readonly watcher = watch(
-		this.fsPath,
-		{ encoding: "utf-8" },
-		this.changeHandler
-	);
-	public readonly id = WatchedFile.nextId++;
-	public lastContent: string | undefined = undefined;
-
 	constructor(
-		public readonly fsPath: string,
-		private readonly debugSession: DebugSessionProxy,
-		private readonly changeHandler: () => void
-	) {}
+		debugSession: DebugSessionProxy,
+		config: Config,
+		changeHandler: () => void
+	) {
+		this.dispose.track(
+			new FileWatcher(
+				() => config.customScriptPaths,
+				async (files) => {
+					for (const file of files) {
+						if (!file.fileExists) {
+							window.showErrorMessage(
+								`The file ${file.path} does not exist.`
+							);
+							continue;
+						}
 
-	public dispose(): void {
-		this.watcher.close();
-	}
+						let expression = `
+						(
+							runCode => {
+								let fn = undefined;
+								if (runCode) {
+									const module = {};
+									runCode(module);
+									fn = module.exports;
+								}
+								${getExpressionForDataExtractorApi()}.setDataExtractorFn(
+									${JSON.stringify(file.path)},
+									fn
+								);
+							}
+						)
+						(
+							${
+								file.content === undefined
+									? "undefined"
+									: `function (module) { ${file.content} }`
+							}
+						)`;
 
-	public async update(): Promise<Result> {
-		if (!existsSync(this.fsPath)) {
-			return {
-				error: { message: `File does not exist.` },
-			};
-		}
+						try {
+							await debugSession.evaluate({
+								expression,
+								frameId: undefined,
+								context: "repl",
+							});
+						} catch (e) {
+							window.showErrorMessage(
+								'Error while running custom visualization extractor script "' +
+									file.path +
+									'": ' +
+									e.message
+							);
+						}
+					}
 
-		const scriptContent = readFileSync(this.fsPath, {
-			encoding: "utf-8",
-		});
-
-		if (this.lastContent === scriptContent) {
-			return {};
-		}
-		this.lastContent = scriptContent;
-
-		const expression = `
-			(
-				load => {
-					var module = {};
-					load(module);
-					${getExpressionForDataExtractorApi()}.registerDataExtractorsSource("${
-			this.id
-		}", module.exports);
+					changeHandler();
 				}
 			)
-			(
-				function (module) { ${scriptContent} }
-			)`;
-		try {
-			await this.debugSession.evaluate({
-				expression,
-				frameId: undefined,
-				context: "repl",
-			});
-		} catch (e) {
-			return { error: { message: e.message } };
-		}
-
-		return {};
-	}
-
-	public async remove(): Promise<Result> {
-		const expression = `${getExpressionForDataExtractorApi()}.unregisterDataExtractorsSource("${
-			this.id
-		}")`;
-		try {
-			await this.debugSession.evaluate({
-				expression,
-				frameId: undefined,
-				context: "repl",
-			});
-		} catch (e) {
-			return { error: { message: e.message } };
-		}
-
-		return {};
-	}
-}
-
-class DebouncedScheduler {
-	private timeout: NodeJS.Timeout | undefined;
-
-	constructor(private readonly debounceTimeout: number) {}
-
-	public run(action: () => void): void {
-		this.clear();
-		this.timeout = setTimeout(action, this.debounceTimeout);
-	}
-
-	private clear() {
-		if (this.timeout) {
-			clearTimeout(this.timeout);
-			this.timeout = undefined;
-		}
-	}
-
-	public dispose(): void {
-		this.clear();
+		);
 	}
 }

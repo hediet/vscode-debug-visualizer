@@ -76,6 +76,6 @@
 			"request": "launch",
 			"name": "Run Dart samples",
 			"program": "demos/dart/demo.dart"
-		},
+		}
 	]
 }

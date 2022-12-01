@@ -109,14 +109,14 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 		registerDefaultExtractors(this);
 	}
 
-	public registerDataExtractorsSource(
+	public setDataExtractorFn(
 		id: string,
-		fn: LoadDataExtractorsFn
+		fn: LoadDataExtractorsFn | undefined
 	): void {
-		this.extractorSources.set(id, fn);
-	}
-
-	public unregisterDataExtractorsSource(id: string): void {
-		this.extractorSources.delete(id);
+		if (fn) {
+			this.extractorSources.set(id, fn);
+		} else {
+			this.extractorSources.delete(id);
+		}
 	}
 }

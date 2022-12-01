@@ -7,12 +7,11 @@ import { CreateGraphEdge, createGraph } from "./createGraph";
  */
 export function createGraphFromPointers<T>(
 	roots: Record<string, T | undefined | null>,
-	infoSelector: (
-		item: T
-	) => {
+	infoSelector: (item: T) => {
 		id?: string | number;
 		edges: CreateGraphEdge<T>[];
-	} & Omit<GraphNode, "id">
+	} & Omit<GraphNode, "id">,
+	options: { maxSize?: number } = {}
 ): GraphVisualizationData {
 	const marker = {};
 
@@ -28,18 +27,22 @@ export function createGraphFromPointers<T>(
 		value,
 	}));
 
-	return createGraph<T | Pointer>(items, item => {
-		if ("marker" in item && item["marker"] === marker) {
-			return {
-				id: "label____" + item.name,
-				color: "orange",
-				label: item.name,
-				edges: [{ to: item.value!, color: "orange", label: "" }].filter(
-					t => !!t.to
-				),
-			};
-		} else {
-			return infoSelector(item as T);
-		}
-	});
+	return createGraph<T | Pointer>(
+		items,
+		(item) => {
+			if ("marker" in item && item["marker"] === marker) {
+				return {
+					id: "label____" + item.name,
+					color: "orange",
+					label: item.name,
+					edges: [
+						{ to: item.value!, color: "orange", label: "" },
+					].filter((t) => !!t.to),
+				};
+			} else {
+				return infoSelector(item as T);
+			}
+		},
+		options
+	);
 }

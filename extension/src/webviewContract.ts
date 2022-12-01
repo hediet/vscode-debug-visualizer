@@ -54,6 +54,13 @@ export const webviewContract = contract({
 				]),
 			}),
 		}),
+
+		setCustomVisualizerScript: notificationContract({
+			params: types.type({
+				id: types.string,
+				jsSource: types.union([types.string, types.null]),
+			}),
+		}),
 	},
 	server: {
 		authenticate: requestContract({
@@ -90,8 +97,8 @@ function unchecked<T>(): types.Type<T, any, unknown> {
 	return new types.Type<T, T, unknown>(
 		"unchecked",
 		(u): u is T => true,
-		value => types.success(value as T),
-		value => value
+		(value) => types.success(value as T),
+		(value) => value
 	);
 }
 

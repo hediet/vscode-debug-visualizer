@@ -16,7 +16,9 @@ export class TableDataExtractor implements DataExtractor {
 		if (!Array.isArray(data)) {
 			return;
 		}
-		if (!data.every(d => typeof d === "object" && d)) {
+		if (
+			!data.every((d) => typeof d === "object" && d && !Array.isArray(d))
+		) {
 			return;
 		}
 		assert<object[]>(data);
@@ -44,7 +46,7 @@ export class TableDataExtractor implements DataExtractor {
 					kind: {
 						table: true,
 					},
-					rows: data.map(d => ({ type: d.constructor.name, ...d })),
+					rows: data.map((d) => ({ type: d.constructor.name, ...d })),
 				});
 			},
 		});

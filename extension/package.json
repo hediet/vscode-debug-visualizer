@@ -4,7 +4,7 @@
 	"displayName": "Debug Visualizer",
 	"description": "A visual watch window that lets you visualize your data structures while debugging.",
 	"icon": "docs/logo.drawio.png",
-	"version": "2.3.1",
+	"version": "2.4.0",
 	"license": "GPL-3.0",
 	"engines": {
 		"vscode": "^1.46.0"
@@ -70,10 +70,18 @@
 			"properties": {
 				"debugVisualizer.js.customScriptPaths": {
 					"type": "array",
-					"description": "Defines JavaScript sources that are injected into the debuggee.",
+					"description": "Defines JavaScript sources that are injected into the debuggee to provide custom data extractors.",
 					"items": {
 						"type": "string",
-						"description": "The file path to a custom js script. Must be absolute. You can use ${workspaceFolder}."
+						"description": "The file path to a custom js script. Must be absolute. You can use ${workspaceFolder}. Must assign `module.exports` an object of type `import('@hediet/debug-visualizer-data-extraction').LoadDataExtractorsFn`."
+					}
+				},
+				"debugVisualizer.customVisualizerScriptPaths": {
+					"type": "array",
+					"description": "Defines JavaScript sources that are injected into the visualizer to provide custom visualizations.",
+					"items": {
+						"type": "string",
+						"description": "The file path to a custom js script. Must be absolute. You can use ${workspaceFolder}. Must assign `module.exports` an object of type `import('@hediet/visualization-core').RegisterVisualizerFn`."
 					}
 				},
 				"debugVisualizer.useChromeKioskMode": {
@@ -105,9 +113,9 @@
 		}
 	},
 	"scripts": {
-		"pub": "vsce publish --yarn --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension --baseContentUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
-		"package": "vsce package --yarn",
-		"vscode:prepublish": "yarn build",
+		"pub": "vsce publish --packagePath extension.vsix",
+		"package": "vsce package --no-dependencies -o extension.vsix --yarn --baseImagesUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension --baseContentUrl https://github.com/hediet/vscode-debug-visualizer/raw/master/extension",
+		"vscode:prepublish": "",
 		"build": "webpack --mode production",
 		"dev": "shx rm -rf dist && tsc -watch -p ./"
 	},
@@ -137,6 +145,12 @@
 		"webpack-cli": "^3.3.11",
 		"ts-loader": "^6.2.1",
 		"shx": "^0.3.2",
-		"vsce": "^1.93.0"
+		"vsce": "2.9.3"
+	},
+	"__metadata": {
+		"id": "bce78737-8848-49f7-a27d-97004928fe41",
+		"publisherDisplayName": "Henning Dieterichs",
+		"publisherId": "4d8048f9-07cf-483a-b27b-1fdc29cea931",
+		"isPreReleaseVersion": false
 	}
 }

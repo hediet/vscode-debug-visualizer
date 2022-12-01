@@ -11,9 +11,15 @@ import { WebviewServer } from "./WebviewServer";
 import * as open from "open";
 import chromeLauncher = require("chrome-launcher");
 import { Config } from "../Config";
+import { IncrementalMap } from "../utils/IncrementalMap";
+import { watch, existsSync, readFileSync } from "fs";
+import { DebouncedRunner } from "../utils/DebouncedRunner";
+import { getExpressionForDataExtractorApi } from "@hediet/debug-visualizer-data-extraction";
+import { window } from "vscode";
 
 export class WebviewConnection {
 	public readonly dispose = Disposable.fn();
+
 	@observable
 	private watcher: VisualizationWatch | undefined = undefined;
 
@@ -57,8 +63,8 @@ export class WebviewConnection {
 
 					let oldPreferredDataExtractor: VisualizationWatch["preferredDataExtractor"];
 					if (this.watcher) {
-						oldPreferredDataExtractor = this.watcher
-							.preferredDataExtractor;
+						oldPreferredDataExtractor =
+							this.watcher.preferredDataExtractor;
 						this.dispose.untrack(this.watcher).dispose();
 					}
 					this.watcher = this.dispose.track(
@@ -95,10 +101,11 @@ export class WebviewConnection {
 				getCompletions: async ({ text, column }) => {
 					throwIfNotAuthenticated();
 
-					const completions = await evaluationWatchService.getCompletions(
-						text,
-						column
-					);
+					const completions =
+						await evaluationWatchService.getCompletions(
+							text,
+							column
+						);
 					return {
 						completions,
 					};
@@ -107,6 +114,36 @@ export class WebviewConnection {
 		);
 
 		this.client = client;
+
+		this.dispose.track(
+			new FileWatcher(
+				() => config.customVisualizerScriptPaths,
+				async (files) => {
+					for (const file of files) {
+						if (!file.fileExists) {
+							window.showErrorMessage(
+								`The file ${file.path} does not exist.`
+							);
+							continue;
+						}
+
+						try {
+							await client.setCustomVisualizerScript({
+								id: file.path,
+								jsSource: file.content || null,
+							});
+						} catch (e) {
+							window.showErrorMessage(
+								'Error while running custom visualization extractor script "' +
+									file.path +
+									'": ' +
+									e.message
+							);
+						}
+					}
+				}
+			)
+		);
 
 		this.dispose.track([
 			Disposable.create(
@@ -150,6 +187,98 @@ async function launchChrome(url: string): Promise<boolean> {
 		});
 		return true;
 	} catch (e) {
+		return false;
+	}
+}
+
+export class FileWatcher {
+	public readonly dispose = Disposable.fn();
+
+	constructor(
+		getFilePaths: () => string[],
+		handleFileContents: (
+			files: {
+				path: string;
+				fileExists: boolean;
+				content: string | undefined;
+			}[]
+		) => void
+	) {
+		const scheduleRefresh = new Set<SingleFileWatcher>();
+		const debouncer = new DebouncedRunner(200);
+
+		const map = this.dispose.track(
+			new IncrementalMap(
+				getFilePaths,
+				(path) =>
+					new SingleFileWatcher(path, (w) => {
+						scheduleRefresh.add(w);
+						debouncer.run(() => {
+							const changedWatchers = [...scheduleRefresh].filter(
+								(w) => w.refresh()
+							);
+							handleFileContents(
+								changedWatchers.map((w) => ({
+									path: w.path,
+									content: w.content,
+									fileExists: w.exists,
+								}))
+							);
+						});
+					})
+			)
+		);
+
+		handleFileContents(
+			[...map.map].map(([path, o]) => {
+				return {
+					path,
+					content: o.content,
+					fileExists: o.exists,
+				};
+			})
+		);
+	}
+}
+
+class SingleFileWatcher {
+	private readonly watcher = watch(this.path, { encoding: "utf-8" }, () =>
+		this.scheduleRefresh(this)
+	);
+	private isDisposed = false;
+	public content: string | undefined;
+	public exists: boolean = true;
+
+	constructor(
+		public readonly path: string,
+		private readonly scheduleRefresh: (self: SingleFileWatcher) => void
+	) {
+		this.scheduleRefresh(this);
+	}
+
+	public dispose() {
+		this.isDisposed = true;
+		this.content = undefined;
+		this.scheduleRefresh(this);
+		this.watcher.close();
+	}
+
+	public refresh() {
+		if (this.isDisposed) {
+			return true;
+		}
+
+		if (!existsSync(this.path)) {
+			this.exists = false;
+			this.content = undefined;
+			return;
+		}
+
+		const newContent = readFileSync(this.path, "utf-8");
+		if (newContent !== this.content) {
+			this.content = newContent;
+			return true;
+		}
 		return false;
 	}
 }

@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.4.0
+
+-   [Ruby support](https://github.com/hediet/vscode-debug-visualizer/pull/159)
+-   New setting `debugVisualizer.customVisualizerScriptPaths` to support custom visualizations
+-   Added JS data extractors
+
 ## 2.3.0
 
 -   [Improves support for python](https://github.com/hediet/vscode-debug-visualizer/pull/122)

@@ -33,8 +33,7 @@ export interface DataExtractorApi {
 	 */
 	registerDefaultExtractors(preferExisting?: boolean): void;
 
-	registerDataExtractorsSource(id: string, fn: LoadDataExtractorsFn): void;
-	unregisterDataExtractorsSource(id: string): void;
+	setDataExtractorFn(id: string, fn: LoadDataExtractorsFn | undefined): void;
 }
 
 export type DataResult =

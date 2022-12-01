@@ -27,7 +27,30 @@ export class Config {
 	);
 
 	public get customScriptPaths(): string[] {
-		return this._customScriptPaths.get().map(p => {
+		return this._customScriptPaths.get().map((p) => {
+			const tpl = new SimpleTemplate(p);
+			return tpl.render({
+				workspaceFolder: () => {
+					const workspaceFolder = (workspace.workspaceFolders ||
+						[])[0];
+					if (!workspaceFolder) {
+						throw new Error(
+							`Cannot get workspace folder - '${p}' cannot be evaluated!`
+						);
+					}
+					return workspaceFolder.uri.fsPath;
+				},
+			});
+		});
+	}
+
+	private readonly _customVisualizerScriptPaths = new VsCodeSetting(
+		"debugVisualizer.customVisualizerScriptPaths",
+		{ serializer: serializerWithDefault<string[]>([]) }
+	);
+
+	public get customVisualizerScriptPaths(): string[] {
+		return this._customVisualizerScriptPaths.get().map((p) => {
 			const tpl = new SimpleTemplate(p);
 			return tpl.render({
 				workspaceFolder: () => {

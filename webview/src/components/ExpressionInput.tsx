@@ -8,11 +8,18 @@ import * as monaco from "monaco-editor";
 export class ExpressionInput extends React.Component<{ model: Model }> {
 	@observable private editor: monaco.editor.IStandaloneCodeEditor | undefined;
 	@observable private contentHeight: number | undefined = undefined;
-	private model = monaco.editor.createModel(
-		"",
-		"javascript",
-		monaco.Uri.parse(`file:///main.ts`)
-	);
+
+	private _model: monaco.editor.ITextModel | undefined = undefined;
+	private get model() {
+		if (!this._model) {
+			this._model = monaco.editor.createModel(
+				"",
+				"javascript",
+				monaco.Uri.parse(`file:///main.ts`)
+			);
+		}
+		return this._model;
+	}
 
 	render() {
 		return (
@@ -83,7 +90,7 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 			},
 		});
 
-		this.editor.onDidContentSizeChange(e => {
+		this.editor.onDidContentSizeChange((e) => {
 			this.contentHeight = e.contentHeight;
 		});
 
@@ -91,7 +98,7 @@ export class ExpressionInput extends React.Component<{ model: Model }> {
 			this.submit();
 		});
 
-		this.editor.onKeyDown(e => {
+		this.editor.onKeyDown((e) => {
 			if (e.keyCode == monaco.KeyCode.Enter) {
 				if (
 					(this.model.getLineCount() <= 1 || e.ctrlKey) &&

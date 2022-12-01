@@ -6,7 +6,14 @@ import {
 } from "debug-visualizer/src/webviewContract";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import { observable, action, computed, when, runInAction } from "mobx";
+import {
+	observable,
+	action,
+	computed,
+	when,
+	runInAction,
+	ObservableMap,
+} from "mobx";
 import {
 	DataExtractorId,
 	VisualizationData,
@@ -16,6 +23,10 @@ import {
 	globalVisualizationFactory,
 	VisualizationId,
 	Visualization,
+	RegisterVisualizerFn,
+	createVisualizer,
+	libImplementation,
+	VisualizationFactory,
 } from "@hediet/visualization-core";
 import { getApi as getVsCodeApi } from "./VsCodeApi";
 import { MonacoBridge } from "./MonacoBridge";
@@ -47,9 +58,8 @@ export class Model {
 
 	@observable languageId: string = "text";
 
-	@observable private preferredVisualizationId:
-		| VisualizationId
-		| undefined = undefined;
+	@observable private preferredVisualizationId: VisualizationId | undefined =
+		undefined;
 
 	@observable isPolling = false;
 	private readonly pollingTimer = this.dispose.track(
@@ -83,10 +93,12 @@ export class Model {
 		  }
 		| undefined {
 		if (this.state.kind === "data") {
-			const vis = globalVisualizationFactory.getVisualizations(
-				this.state.result.data,
-				this.preferredVisualizationId
-			);
+			const vis = visualizerRegistry
+				.get()
+				.getVisualizations(
+					this.state.result.data,
+					this.preferredVisualizationId
+				);
 			return {
 				visualization: vis.bestVisualization,
 				allVisualizations: vis.allVisualizations,
@@ -97,9 +109,8 @@ export class Model {
 	}
 
 	@observable.ref
-	public server:
-		| typeof webviewContract.TServerInterface
-		| undefined = undefined;
+	public server: typeof webviewContract.TServerInterface | undefined =
+		undefined;
 
 	private readonly vsCodeApi = getVsCodeApi<{ expression: string }>();
 
@@ -126,9 +137,9 @@ export class Model {
 			}
 		} else {
 			const url = new URL(window.location.href);
-			const urlParams = (Object.fromEntries(
+			const urlParams = Object.fromEntries(
 				url.searchParams.entries()
-			) as unknown) as WebviewUrlParams;
+			) as unknown as WebviewUrlParams;
 			const portStr = urlParams.serverPort;
 			if (!portStr) {
 				throw new Error("No port given.");
@@ -161,7 +172,7 @@ export class Model {
 
 		this.stayConnected();
 
-		this.vsCodeApi.getState().then(state => {
+		this.vsCodeApi.getState().then((state) => {
 			if (state) {
 				this.setExpression(state.expression);
 			}
@@ -230,6 +241,21 @@ export class Model {
 						setTheme: async ({ theme }) => {
 							this.theme = theme;
 						},
+						setCustomVisualizerScript: async ({ id, jsSource }) => {
+							eval(`
+								((load) => {
+									let fn = undefined;
+									if (load) {
+										const module = {};
+										load(module);
+										fn = module.exports;
+									}
+									setVisualizationModule(${JSON.stringify(id)}, fn);
+								})(
+									${jsSource ? `function (module) { ${jsSource} }` : "undefined"}
+								)
+							`);
+						},
 					}
 				);
 				try {
@@ -254,3 +280,34 @@ export class Model {
 		throw new Error("Method not implemented.");
 	}
 }
+
+const fns = new ObservableMap<string, RegisterVisualizerFn>();
+const visualizerRegistry = computed(() => {
+	const result = new VisualizationFactory();
+	for (const visualization of globalVisualizationFactory.getRegisteredVisualizers()) {
+		result.addVisualizer(visualization);
+	}
+	for (const visualization of globalVisualizationFactory.getRegisteredHiddenVisualizer()) {
+		result.addHiddenVisualizer(visualization);
+	}
+	fns.forEach((fn) => {
+		fn(
+			(options) => result.addVisualizer(createVisualizer(options)),
+			libImplementation
+		);
+	});
+	return result;
+});
+
+function setVisualizationModule(
+	id: string,
+	moduleFn: RegisterVisualizerFn | undefined
+) {
+	if (moduleFn) {
+		fns.set(id, moduleFn);
+	} else {
+		fns.delete(id);
+	}
+}
+
+(globalThis as any).setVisualizationModule = setVisualizationModule;
