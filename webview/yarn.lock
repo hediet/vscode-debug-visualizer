@@ -304,15 +304,15 @@
   resolved "https://registry.yarnpkg.com/@hediet/debug-visualizer-data-extraction/-/debug-visualizer-data-extraction-0.12.0.tgz#8ef588355b67df8af839c2ba98ef638ba015ed9e"
   integrity sha512-e0d8HRfRm4jsv+7f/WSm6DOZWQiAKYvvz8tH04MsqIScIHoT8jhb8xBcdMHlZRaGeBzU4RD048Lj5J2s5owL4Q==
 
-"@hediet/monaco-editor-react@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@hediet/monaco-editor-react/-/monaco-editor-react-0.1.0.tgz#b00dfa28e2ffa09ecc748e35f4befc0e887947f2"
-  integrity sha512-EFAmKW1u9ks2iqTP63qqLPUezKMAnK+UvZrvoRmUMCpRRxG9uduYGPQfASaHcIQYzOqzWaVKvCQN5wQQ+lSxIQ==
+"@hediet/monaco-editor-react@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@hediet/monaco-editor-react/-/monaco-editor-react-0.2.0.tgz#4a98102baf1942f210fc19fd406b6c82da3bf583"
+  integrity sha512-EA71+iv9sV25+YgBQDJ4Ou17sOJCXQat7r5AOD5STZHcUQdSuQufI2t9ue+wJIm4048P9sQ/ruW3pYmwxF9Amw==
 
-"@hediet/semantic-json@^0.3.11":
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.11.tgz#9420a89d30645ba333dfd4f3f2c120f973297ee2"
-  integrity sha512-KKw6ZcYHiyfhanNmln/WlG4KvZnMi/Ojy8O6HB6sqfDC5XCcNYjccUMMtaX23F/Hox0dWJPFqXYs54KJAA5itg==
+"@hediet/semantic-json@^0.3.15":
+  version "0.3.15"
+  resolved "https://registry.yarnpkg.com/@hediet/semantic-json/-/semantic-json-0.3.15.tgz#e38f799b1a7dd2624a3ee2e05bca58cfe76cb58d"
+  integrity sha512-8t1NXiYDF2wqIt1jEknxNnpucdtgFAI2MGSWnnewDhaYqWOJLMY/MxH60gDX03vycf2ySb6vEYpEwsiB6r0O3Q==
 
 "@hediet/std@^0.6.0":
   version "0.6.0"
@@ -325,22 +325,22 @@
     mobx "^5.10.0"
     sinon "^7.2.7"
 
-"@hediet/visualization-bundle@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.1.1.tgz#dc36d772def977cb97292890afb3b369760c620b"
-  integrity sha512-X0Y0MQQHpZkMDSM9naLC5F3LVlSq+nQ6dNYkNz+3sF6PdvSf6xxUbRL4qbum2QCLqNRoiEu/HO6fjCU/gBvysA==
+"@hediet/visualization-bundle@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.4.tgz#0c8c0ab8ca7153fd7b18aafa94b2ef813a1482e3"
+  integrity sha512-pknFiLcQ4B8EEgjp5aImZyP+Jgz+imSKfncFZT0NfJH3BCvFkCcmzeR6IbWB+70oDJfTRHFIhr40pNuHESQUWA==
   dependencies:
     "@finos/perspective-viewer" "^0.5.2"
     "@finos/perspective-viewer-d3fc" "^0.5.2"
     "@finos/perspective-viewer-datagrid" "^0.5.2"
-    "@hediet/monaco-editor-react" "^0.1.0"
-    "@hediet/semantic-json" "^0.3.11"
+    "@hediet/monaco-editor-react" "^0.2.0"
+    "@hediet/semantic-json" "^0.3.15"
     "@hediet/std" "^0.6.0"
     classnames "^2.2.6"
     line-column "^1.0.2"
     mobx "^5.15.4"
     mobx-react "^6.1.8"
-    monaco-editor "^0.20.0"
+    monaco-editor "^0.25.2"
     plotly.js "^1.54.7"
     react "^16.12.0"
     react-dom "^16.12.0"
@@ -351,12 +351,12 @@
     vis-network "^8.0.0"
     viz.js "^2.1.2"
 
-"@hediet/visualization-core@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.1.0.tgz#f23706cbc6a9ffd411c300767077ca4c0c494c15"
-  integrity sha512-v7aZnyJ0ax09x6mBqhVaJQVwos1X7nyEfymr85/wbvLuleDjisKUuLHBxGpmWYSBRFMZUKIHllaY48DEHjP8Ug==
+"@hediet/visualization-core@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.2.0.tgz#8fca0044d5d91e8c45354984ae9c131ef7850a76"
+  integrity sha512-r/SYDUipaUSdu1JXL1X0Le5ZkBXVGbKXo6jkX0jFq3NPz/60+B4MnIQnk8D7TCWLXftGFtE6MSFejrE+miup4w==
   dependencies:
-    "@hediet/semantic-json" "^0.3.11"
+    "@hediet/semantic-json" "^0.3.15"
     "@hediet/std" "^0.6.0"
     react "^16.12.0"
     react-dom "^16.12.0"
@@ -1700,6 +1700,11 @@ clone-deep@^4.0.1:
     kind-of "^6.0.2"
     shallow-clone "^3.0.0"
 
+clone@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
+  integrity sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==
+
 collection-visit@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/collection-visit/-/collection-visit-1.0.0.tgz#4bc0373c164bc3291b4d368c829cf1a80a59dca0"
@@ -1941,6 +1946,13 @@ cookie@0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.4.0.tgz#beb437e7022b3b6d49019d088665303ebe9c14ba"
   integrity sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==
+
+copy-anything@^2.0.1:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/copy-anything/-/copy-anything-2.0.6.tgz#092454ea9584a7b7ad5573062b2a87f5900fc480"
+  integrity sha512-1j20GZTsvKNkc4BY3NpMOM8tt///wY3FpIzozTOFO2ffuZcV61nojHXVKIy3WM+7ADCy5FVhdZYHYDdgTU0yJw==
+  dependencies:
+    is-what "^3.14.1"
 
 copy-concurrently@^1.0.0:
   version "1.0.5"
@@ -2556,9 +2568,9 @@ decamelize@^1.2.0:
   integrity sha1-9lNNFRSCabIDUue+4m9QH5oZEpA=
 
 decode-uri-component@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.0.tgz#eb3913333458775cb84cd1a1fae062106bb87545"
-  integrity sha1-6zkTMzRYd1y4TNGh+uBiEGu4dUU=
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.2.2.tgz#e69dbe25d37941171dd540e024c444cd5188e1e9"
+  integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
 
 deep-eql@^3.0.1:
   version "3.0.1"
@@ -2916,6 +2928,13 @@ entities@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.3.tgz#5c487e5742ab93c15abb5da22759b8590ec03b7f"
   integrity sha512-MyoZ0jgnLvB2X3Lg5HqpFmn1kybDiIfEQmKzTb5apr51Rb+T3KdmMiqa70T+bhGnyv7bQ6WMj2QMHpGMmlrUYQ==
+
+errno@^0.1.1:
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/errno/-/errno-0.1.8.tgz#8bb3e9c7d463be4976ff888f76b4809ebc2e811f"
+  integrity sha512-dJ6oBr5SQ1VSd9qkk7ByRgb/1SH4JZjCHSW/mr63/QcXO9zLVxvJ6Oy13nio03rxpSnVDDjFor75SjVeZWPW/A==
+  dependencies:
+    prr "~1.0.1"
 
 errno@^0.1.3, errno@~0.1.7:
   version "0.1.7"
@@ -4380,6 +4399,11 @@ image-palette@^2.1.0:
     pxls "^2.0.0"
     quantize "^1.0.2"
 
+image-size@~0.5.0:
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.5.5.tgz#09dfd4ab9d20e29eb1c3e80b8990378df9e3cb9c"
+  integrity sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==
+
 import-local@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/import-local/-/import-local-2.0.0.tgz#55070be38a5993cf18ef6db7e961f5bee5c5a09d"
@@ -4734,6 +4758,11 @@ is-symbol@^1.0.2:
   dependencies:
     has-symbols "^1.0.1"
 
+is-what@^3.14.1:
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/is-what/-/is-what-3.14.1.tgz#e1222f46ddda85dead0fd1c9df131760e77755c1"
+  integrity sha512-sNxgpk9793nzSs7bA6JQJGeIuRBQhAaNGG77kzYQgMkrID+lS6SlK07K5LaptscDlSaIgH+GPFzf+d75FVxozA==
+
 is-windows@^1.0.1, is-windows@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-windows/-/is-windows-1.0.2.tgz#d1850eb9791ecd18e6182ce12a30f396634bb19d"
@@ -4869,6 +4898,32 @@ lerp@^1.0.3:
   resolved "https://registry.yarnpkg.com/lerp/-/lerp-1.0.3.tgz#a18c8968f917896de15ccfcc28d55a6b731e776e"
   integrity sha1-oYyJaPkXiW3hXM/MKNVaa3Med24=
 
+less-loader@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/less-loader/-/less-loader-6.2.0.tgz#8b26f621c155b342eefc24f5bd6e9dc40c42a719"
+  integrity sha512-Cl5h95/Pz/PWub/tCBgT1oNMFeH1WTD33piG80jn5jr12T4XbxZcjThwNXDQ7AG649WEynuIzO4b0+2Tn9Qolg==
+  dependencies:
+    clone "^2.1.2"
+    less "^3.11.3"
+    loader-utils "^2.0.0"
+    schema-utils "^2.7.0"
+
+less@^3.11.3:
+  version "3.13.1"
+  resolved "https://registry.yarnpkg.com/less/-/less-3.13.1.tgz#0ebc91d2a0e9c0c6735b83d496b0ab0583077909"
+  integrity sha512-SwA1aQXGUvp+P5XdZslUOhhLnClSLIjWvJhmd+Vgib5BFIr9lMNlQwmwUNOjXThF/A0x+MCYYPeWEfeWiLRnTw==
+  dependencies:
+    copy-anything "^2.0.1"
+    tslib "^1.10.0"
+  optionalDependencies:
+    errno "^0.1.1"
+    graceful-fs "^4.1.2"
+    image-size "~0.5.0"
+    make-dir "^2.1.0"
+    mime "^1.4.1"
+    native-request "^1.0.5"
+    source-map "~0.6.0"
+
 levn@~0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/levn/-/levn-0.3.0.tgz#3b09924edf9f083c0490fdd4c0bc4421e04764ee"
@@ -4979,7 +5034,7 @@ magic-string@^0.25.3, magic-string@^0.25.7:
   dependencies:
     sourcemap-codec "^1.4.4"
 
-make-dir@^2.0.0:
+make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-2.1.0.tgz#5f0310e18b8be898cc07009295a30ae41e91e6f5"
   integrity sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==
@@ -5180,7 +5235,7 @@ mime-types@~2.1.17, mime-types@~2.1.24:
   dependencies:
     mime-db "1.44.0"
 
-mime@1.6.0:
+mime@1.6.0, mime@^1.4.1:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
@@ -5270,17 +5325,17 @@ moment@^2.19.1:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
 
-monaco-editor-webpack-plugin@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.9.0.tgz#5b547281b9f404057dc5d8c5722390df9ac90be6"
-  integrity sha512-tOiiToc94E1sb50BgZ8q8WK/bxus77SRrwCqIpAB5er3cpX78SULbEBY4YPOB8kDolOzKRt30WIHG/D6gz69Ww==
+monaco-editor-webpack-plugin@^4.0.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-4.2.0.tgz#2be76cde9cca7bd8c3418503625990f86886927b"
+  integrity sha512-/P3sFiEgBl+Y50he4mbknMhbLJVop5gBUZiPS86SuHUDOOnQiQ5rL1jU5lwt1XKAwMEkhwZbUwqaHxTPkb1Utw==
   dependencies:
-    loader-utils "^1.2.3"
+    loader-utils "^2.0.0"
 
-monaco-editor@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.20.0.tgz#5d5009343a550124426cb4d965a4d27a348b4dea"
-  integrity sha512-hkvf4EtPJRMQlPC3UbMoRs0vTAFAYdzFQ+gpMb8A+9znae1c43q8Mab9iVsgTcg/4PNiLGGn3SlDIa8uvK1FIQ==
+monaco-editor@^0.25.2:
+  version "0.25.2"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.25.2.tgz#119e2b15bbd968a1a99c03cac9c329316d7c37e9"
+  integrity sha512-5iylzSJevCnzJn9UVsW8yOZ3yHjmAs4TfvH3zsbftKiFKmHG0xirGN6DK9Kk04VSWxYCZZAIafYJoNJJMAU1KA==
 
 monotone-convex-hull-2d@^1.0.1:
   version "1.0.1"
@@ -5388,6 +5443,11 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+native-request@^1.0.5:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/native-request/-/native-request-1.1.0.tgz#acdb30fe2eefa3e1bc8c54b3a6852e9c5c0d3cb0"
+  integrity sha512-uZ5rQaeRn15XmpgE0xoPL8YWqcX90VtCFglYwAgkvKM5e8fog+vePLAhHxuuv/gRkrQxIeh5U3q9sMNUrENqWw==
 
 ndarray-extract-contour@^1.0.0:
   version "1.0.1"
@@ -7824,6 +7884,11 @@ ts-node@^8.6.2:
     make-error "^1.1.1"
     source-map-support "^0.5.17"
     yn "3.1.1"
+
+tslib@^1.10.0:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
+  integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
 tslib@^1.9.0, tslib@^1.9.3, tslib@~1.13.0:
   version "1.13.0"
