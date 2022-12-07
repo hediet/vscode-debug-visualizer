@@ -1,7 +1,7 @@
 import { DataExtractionResult, DataResult } from "@hediet/debug-visualizer-data-extraction";
 import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
 import { Config } from "../Config";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { DebuggerViewProxy, FrameIdGetter } from "../proxies/DebuggerViewProxy";
 import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
 import { FormattedMessage } from "../webviewContract";
 import { DebugSessionVisualizationSupport, GetVisualizationDataArgs, VisualizationBackend, VisualizationBackendBase } from "./VisualizationBackend";
@@ -12,7 +12,8 @@ registerUpdateReconciler(module);
 export class RbEvaluationEngine implements DebugSessionVisualizationSupport {
 	constructor(
 		private readonly debuggerView: DebuggerViewProxy,
-		private readonly config: Config
+		private readonly config: Config,
+		private readonly frameIdGetter: FrameIdGetter
 	) { }
 
 	createBackend(
@@ -24,7 +25,8 @@ export class RbEvaluationEngine implements DebugSessionVisualizationSupport {
 			return new RbVisualizationBackend(
 				session,
 				this.debuggerView,
-				this.config
+				this.config,
+				this.frameIdGetter
 			);
 		}
 		return undefined;
@@ -36,9 +38,10 @@ class RbVisualizationBackend extends VisualizationBackendBase {
 	constructor(
 		debugSession: DebugSessionProxy,
 		debuggerView: DebuggerViewProxy,
-		private readonly config: Config
+		private readonly config: Config,
+		frameIdGetter: FrameIdGetter
 	) {
-		super(debugSession, debuggerView)
+		super(debugSession, debuggerView, frameIdGetter)
 	}
 
 	private readonly defaultContext = "repl";
@@ -63,7 +66,7 @@ class RbVisualizationBackend extends VisualizationBackendBase {
 		try {
 			if (expression.length === 0) throw new Error("No extractors");
 
-			const frameId = this.debuggerView.getActiveStackFrameId(
+			const frameId = this.frameIdGetter.frameId || this.debuggerView.getActiveStackFrameId(
 				this.debugSession
 			);
 			const initialReply = await this.debugSession.evaluate({

@@ -7,7 +7,7 @@ import {
 import { Config, DebugAdapterConfig } from "../Config";
 import { GenericVisualizationBackend } from "./GenericVisualizationSupport";
 import { registerUpdateReconciler, hotClass } from "@hediet/node-reload";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { DebuggerViewProxy, FrameIdGetter } from "../proxies/DebuggerViewProxy";
 
 registerUpdateReconciler(module);
 
@@ -16,7 +16,8 @@ export class ConfigurableVisualizationSupport
 	implements DebugSessionVisualizationSupport {
 	constructor(
 		private readonly config: Config,
-		private readonly debuggerView: DebuggerViewProxy
+		private readonly debuggerView: DebuggerViewProxy,
+		private readonly frameIdGetter: FrameIdGetter
 	) {}
 
 	createBackend(
@@ -29,7 +30,8 @@ export class ConfigurableVisualizationSupport
 		return new ConfiguredVisualizationBackend(
 			session,
 			this.debuggerView,
-			config
+			config,
+			this.frameIdGetter
 		);
 	}
 }
@@ -38,9 +40,10 @@ class ConfiguredVisualizationBackend extends GenericVisualizationBackend {
 	constructor(
 		debugSession: DebugSessionProxy,
 		debuggerView: DebuggerViewProxy,
-		private readonly config: DebugAdapterConfig
+		private readonly config: DebugAdapterConfig,
+		frameIdGetter: FrameIdGetter
 	) {
-		super(debugSession, debuggerView);
+		super(debugSession, debuggerView, frameIdGetter);
 	}
 
 	protected getContext() {

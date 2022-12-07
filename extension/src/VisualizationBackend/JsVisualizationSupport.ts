@@ -10,7 +10,7 @@ import { existsSync, readFileSync, watch } from "fs";
 import { observable, reaction } from "mobx";
 import { window, workspace } from "vscode";
 import { Config } from "../Config";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { DebuggerViewProxy, FrameIdGetter } from "../proxies/DebuggerViewProxy";
 import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
 import { FormattedMessage } from "../webviewContract";
 import {
@@ -29,7 +29,8 @@ registerUpdateReconciler(module);
 export class JsEvaluationEngine implements DebugSessionVisualizationSupport {
 	constructor(
 		private readonly debuggerView: DebuggerViewProxy,
-		private readonly config: Config
+		private readonly config: Config,
+		private readonly frameIdGetter: FrameIdGetter
 	) {}
 
 	createBackend(
@@ -51,7 +52,8 @@ export class JsEvaluationEngine implements DebugSessionVisualizationSupport {
 			return new JsVisualizationBackend(
 				session,
 				this.debuggerView,
-				this.config
+				this.config,
+				this.frameIdGetter
 			);
 		}
 		return undefined;
@@ -65,9 +67,10 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 	constructor(
 		debugSession: DebugSessionProxy,
 		debuggerView: DebuggerViewProxy,
-		private readonly config: Config
+		private readonly config: Config,
+		frameIdGetter: FrameIdGetter
 	) {
-		super(debugSession, debuggerView);
+		super(debugSession, debuggerView, frameIdGetter);
 	}
 
 	private getContext(): "copy" | "repl" {
@@ -112,7 +115,7 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 		| { kind: "not-initialized" }
 	> {
 		try {
-			const frameId = this.debuggerView.getActiveStackFrameId(
+			const frameId = this.frameIdGetter.frameId || this.debuggerView.getActiveStackFrameId(
 				this.debugSession
 			);
 

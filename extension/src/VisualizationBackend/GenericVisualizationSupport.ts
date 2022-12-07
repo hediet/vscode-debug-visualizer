@@ -14,19 +14,22 @@ import {
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
 import { FormattedMessage } from "../webviewContract";
 import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { DebuggerViewProxy, FrameIdGetter } from "../proxies/DebuggerViewProxy";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
 export class GenericVisualizationSupport
 	implements DebugSessionVisualizationSupport {
-	constructor(private readonly debuggerView: DebuggerViewProxy) {}
+	constructor(
+		private readonly debuggerView: DebuggerViewProxy,
+		private readonly frameIdGetter: FrameIdGetter
+	) {}
 
 	createBackend(
 		session: DebugSessionProxy
 	): VisualizationBackend | undefined {
-		return new GenericVisualizationBackend(session, this.debuggerView);
+		return new GenericVisualizationBackend(session, this.debuggerView, this.frameIdGetter);
 	}
 }
 
@@ -35,9 +38,10 @@ export class GenericVisualizationBackend extends VisualizationBackendBase {
 
 	constructor(
 		debugSession: DebugSessionProxy,
-		debuggerView: DebuggerViewProxy
+		debuggerView: DebuggerViewProxy,
+		frameIdGetter: FrameIdGetter
 	) {
-		super(debugSession, debuggerView);
+		super(debugSession, debuggerView, frameIdGetter);
 	}
 
 	public async getVisualizationData({
@@ -47,7 +51,7 @@ export class GenericVisualizationBackend extends VisualizationBackendBase {
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	> {
-		const frameId = this.debuggerView.getActiveStackFrameId(
+		const frameId = this.frameIdGetter.frameId || this.debuggerView.getActiveStackFrameId(
 			this.debugSession
 		);
 

@@ -1,5 +1,5 @@
 import { Disposable } from "@hediet/std/disposable";
-import { debug, DebugSession } from "vscode";
+import { CancellationToken, debug, DebugSession, InlineValue, InlineValueContext, InlineValuesProvider, ProviderResult, Range, TextDocument } from "vscode";
 import { observable, action } from "mobx";
 import { DebuggerProxy } from "./DebuggerProxy";
 import { DebugSessionProxy } from "./DebugSessionProxy";
@@ -38,4 +38,16 @@ export class DebuggerViewProxy {
 			? this.debuggerProxy.getDebugSessionProxy(activeSession)
 			: undefined;
 	}
+}
+
+export class FrameIdGetter implements InlineValuesProvider, CurFrameIdGetter {
+	frameId: number | undefined;
+	provideInlineValues(document: TextDocument, viewPort: Range, context: InlineValueContext, token: CancellationToken): ProviderResult<InlineValue[]> {
+		this.frameId = context.frameId;
+		return []
+	}
+}
+
+interface CurFrameIdGetter {
+	readonly frameId: number | undefined;
 }

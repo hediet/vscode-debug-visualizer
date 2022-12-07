@@ -6,7 +6,7 @@ import { Disposable } from "@hediet/std/disposable";
 import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
 import { CompletionItem, FormattedMessage } from "../webviewContract";
 import { reaction } from "mobx";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { DebuggerViewProxy, FrameIdGetter } from "../proxies/DebuggerViewProxy";
 import { EventEmitter, EventSource } from "@hediet/std/events";
 
 export interface DebugSessionVisualizationSupport {
@@ -44,7 +44,8 @@ export abstract class VisualizationBackendBase implements VisualizationBackend {
 
 	constructor(
 		protected readonly debugSession: DebugSessionProxy,
-		protected readonly debuggerView: DebuggerViewProxy
+		protected readonly debuggerView: DebuggerViewProxy,
+		protected readonly frameIdGetter: FrameIdGetter
 	) {
 		this.dispose.track({
 			dispose: reaction(

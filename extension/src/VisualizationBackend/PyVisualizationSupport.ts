@@ -15,7 +15,7 @@ import { Config } from "../Config";
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
 import { FormattedMessage } from "../webviewContract";
 import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { DebuggerViewProxy, FrameIdGetter } from "../proxies/DebuggerViewProxy";
 
 registerUpdateReconciler(module);
 
@@ -24,7 +24,8 @@ export class PyEvaluationEngine
 	implements DebugSessionVisualizationSupport {
 	constructor(
 		private readonly debuggerView: DebuggerViewProxy,
-		private readonly config: Config
+		private readonly config: Config,
+		private readonly frameIdGetter: FrameIdGetter
 	) { }
 
 	createBackend(
@@ -39,7 +40,8 @@ export class PyEvaluationEngine
 			return new PyVisualizationBackend(
 				session,
 				this.debuggerView,
-				this.config
+				this.config,
+				this.frameIdGetter
 			);
 		}
 		return undefined;
@@ -52,9 +54,10 @@ export class PyVisualizationBackend extends VisualizationBackendBase {
 	constructor(
 		debugSession: DebugSessionProxy,
 		debuggerView: DebuggerViewProxy,
-		private readonly config: Config
+		private readonly config: Config,
+		frameIdGetter: FrameIdGetter
 	) {
-		super(debugSession, debuggerView);
+		super(debugSession, debuggerView, frameIdGetter);
 	}
 
 	protected getContext(): "watch" | "repl" {
@@ -69,7 +72,7 @@ export class PyVisualizationBackend extends VisualizationBackendBase {
 		| { kind: "data"; result: DataExtractionResult }
 		| { kind: "error"; message: FormattedMessage }
 	> {
-		const frameId = this.debuggerView.getActiveStackFrameId(
+		const frameId = this.frameIdGetter.frameId || this.debuggerView.getActiveStackFrameId(
 			this.debugSession
 		);
 
