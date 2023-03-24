@@ -146,7 +146,7 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 				: "undefined";
 
 			const body = `${getExpressionForDataExtractorApi()}.getData(
-                    e => (${expression}),
+                    () => (${expression}),
                     expr => eval(expr),
                     ${preferredExtractorExpr},
 					{${variableNames.map((n) => `${n}: () => ${n}`).join(",")}},
@@ -181,7 +181,7 @@ class JsVisualizationBackend extends VisualizationBackendBase {
 			if (result.kind === "NoExtractors") {
 				throw new Error("No extractors");
 			} else if (result.kind === "Error") {
-				throw new Error(result.message);
+				throw new Error(result.message + "\n" + (result as any).stack);
 			} else if (result.kind === "Data") {
 				return {
 					kind: "data",

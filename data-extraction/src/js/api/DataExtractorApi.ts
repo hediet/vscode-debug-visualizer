@@ -53,6 +53,11 @@ export interface DataExtractor {
 	 * Must be unique among all data extractors.
 	 */
 	id: string;
+
+	/**
+	 * Filters the data to be extracted.
+	 */
+	dataCtor?: string;
 	getExtractions(
 		data: unknown,
 		extractionCollector: ExtractionCollector,
@@ -73,7 +78,11 @@ export interface DataExtractorContext {
 	 */
 	evalFn: <TEval>(expression: string) => TEval;
 
+	expression: string | undefined;
+
 	variablesInScope: Record<string, () => unknown>;
+
+	extract(value: unknown): VisualizationData | undefined;
 }
 
 export interface DataExtraction {
@@ -86,10 +95,12 @@ export interface DataExtraction {
 	 * A unique id identifying this extraction among all extractions.
 	 * Required to express extraction preferences.
 	 */
-	id: string;
+	id?: string;
+
 	/**
 	 * A user friendly name of this extraction.
 	 */
-	name: string;
+	name?: string;
+
 	extractData(): VisualizationData;
 }

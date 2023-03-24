@@ -50,7 +50,11 @@ export class StringRangeExtractor implements DataExtractor {
 
 		for (let item of (data as (number | [number, number])[]).slice(1)) {
 			if (typeof item === "string") {
-				item = context.evalFn(item);
+				try {
+					item = context.evalFn(item);
+				} catch (e) {
+					return;
+				}
 				if (item === undefined) {
 					continue;
 				}

@@ -7,7 +7,10 @@ import {
 	ExtractionCollector,
 	DataExtractorContext,
 } from "./DataExtractorApi";
-import { DataExtractorInfo } from "../../DataExtractionResult";
+import {
+	DataExtractorInfo,
+	VisualizationData,
+} from "../../DataExtractionResult";
 import { registerDefaultExtractors } from "./default-extractors";
 import { LoadDataExtractorsFn } from "./LoadDataExtractorsFn";
 import * as helpers from "../helpers";
@@ -41,36 +44,56 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 		preferredDataExtractorId: string | undefined,
 		variablesInScope: Record<string, () => unknown>
 	): JSONString<DataResult> {
-		const extractions = new Array<DataExtraction>();
-		const extractionCollector: ExtractionCollector = {
-			addExtraction(extraction) {
-				extractions.push(extraction);
-			},
-		};
+		class ContextImpl implements DataExtractorContext {
+			constructor(
+				public readonly variablesInScope: Record<string, () => unknown>,
+				public readonly expression: string | undefined,
+				public readonly evalFn: <T>(expression: string) => T,
+				private readonly _api: DataExtractorApiImpl,
+				private readonly _parent: ContextImpl | undefined
+			) {}
 
-		const context: DataExtractorContext = {
-			evalFn,
+			get _level(): number {
+				return this._parent ? this._parent._level + 1 : 0;
+			}
+
+			extract(value: any): VisualizationData | undefined {
+				if (this._level > 10) {
+					throw new Error(
+						"extract() called too many times recursively"
+					);
+				}
+
+				const extractions = this._api.getExtractions(
+					value,
+					new ContextImpl(
+						this.variablesInScope,
+						undefined,
+						this.evalFn,
+						this._api,
+						this
+					)
+				);
+				if (extractions.length === 0) {
+					return undefined;
+				}
+				return extractions[0].extractData();
+			}
+		}
+
+		const rootContext = new ContextImpl(
 			variablesInScope,
-		};
+			removeEnd(removeStart(valueFn.toString(), "() => ("), ")").trim(),
+			evalFn,
+			this,
+			undefined
+		);
 
-		DataExtractorApiImpl.lastContext = context;
+		DataExtractorApiImpl.lastContext = rootContext;
 		const value = valueFn();
-
-		const extractors = new Array<DataExtractor>();
-
-		for (const fn of this.extractorSources.values()) {
-			fn((extractor) => {
-				extractors.push(extractor);
-			}, helpers);
-		}
-
-		for (const e of [...this.extractors.values(), ...extractors]) {
-			e.getExtractions(value, extractionCollector, context);
-		}
-
+		const extractions = this.getExtractions(value, rootContext);
 		DataExtractorApiImpl.lastContext = undefined;
 
-		extractions.sort((a, b) => b.priority - a.priority);
 		let usedExtraction = extractions[0];
 		if (!usedExtraction) {
 			return this.toJson({ kind: "NoExtractors" } as DataResult);
@@ -87,8 +110,8 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 
 		function mapExtractor(e: DataExtraction): DataExtractorInfo {
 			return {
-				id: e.id as any,
-				name: e.name,
+				id: e.id! as any,
+				name: e.name!,
 				priority: e.priority,
 			};
 		}
@@ -102,6 +125,50 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 				availableExtractors: extractions.map(mapExtractor),
 			},
 		} as DataResult);
+	}
+
+	public getExtractions(
+		value: unknown,
+		context: DataExtractorContext
+	): DataExtraction[] {
+		const extractions = new Array<DataExtraction>();
+		const extractors = new Array<DataExtractor>();
+
+		for (const fn of this.extractorSources.values()) {
+			fn((extractor) => {
+				extractors.push(extractor);
+			}, helpers);
+		}
+
+		for (const e of [...this.extractors.values(), ...extractors]) {
+			if (e.dataCtor !== undefined) {
+				if (
+					typeof value !== "object" ||
+					value === null ||
+					value.constructor.name !== e.dataCtor
+				) {
+					continue;
+				}
+			}
+			e.getExtractions(
+				value,
+				{
+					addExtraction(extraction) {
+						if (extraction.id === undefined) {
+							extraction.id = e.id;
+						}
+						if (extraction.name === undefined) {
+							extraction.name = e.id;
+						}
+						extractions.push(extraction);
+					},
+				},
+				context
+			);
+		}
+		extractions.sort((a, b) => b.priority - a.priority);
+
+		return extractions;
 	}
 
 	public registerDefaultExtractors(preferExisting: boolean = false): void {
@@ -119,4 +186,18 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 			this.extractorSources.delete(id);
 		}
 	}
+}
+
+function removeStart(str: string, start: string): string {
+	if (str.startsWith(start)) {
+		return str.substr(start.length);
+	}
+	return str;
+}
+
+function removeEnd(str: string, end: string): string {
+	if (str.endsWith(end)) {
+		return str.substr(0, str.length - end.length);
+	}
+	return str;
 }
