@@ -6,6 +6,5 @@ export function getGlobal(): any {
 	} else if (typeof window === "object") {
 		return window;
 	}
-
 	throw new Error("No global available");
 }

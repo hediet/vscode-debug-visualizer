@@ -1,9 +1,9 @@
 import * as fs from "fs";
+import { getGlobal } from "../../getGlobal";
+import * as globalHelpers from "../global-helpers";
+import * as helpers from "../helpers";
 import { DataExtractorApi } from "./DataExtractorApi";
 import { DataExtractorApiImpl } from "./DataExtractorApiImpl";
-import * as helpers from "../helpers";
-import * as globalHelpers from "../global-helpers";
-import { getGlobal } from "../../getGlobal";
 
 /**
  * Returns standalone JS code representing an expression that initializes the data extraction API.
@@ -50,8 +50,18 @@ export function getDataExtractorApi(): DataExtractorApi {
   * @internal
   */
  function selfContainedGetInitializedDataExtractorApi(): DataExtractorApi {
-	 const globalObj =
-		 typeof window === "object" ? (window as any) : (global as any);
+	function getGlobal(): any {
+		if (typeof globalThis === "object") {
+			return globalThis;
+		} else if (typeof global === "object") {
+			return global;
+		} else if (typeof window === "object") {
+			return window;
+		}
+		throw new Error("No global available");
+	}
+
+	 const globalObj = getGlobal();
 	 const key: typeof apiKey = "@hediet/data-extractor-api/v3";
 	 let api: DataExtractorApi | undefined = globalObj[key];
 	 if (!api) {

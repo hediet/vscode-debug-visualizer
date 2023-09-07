@@ -1,21 +1,17 @@
 import { Disposable } from "@hediet/std/disposable";
-import { webviewContract } from "../webviewContract";
 import { ConsoleRpcLogger, RequestHandlingError } from "@hediet/typed-json-rpc";
-import {
-	VisualizationWatch,
-	VisualizationWatchModel,
-} from "../VisualizationWatchModel";
 import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
-import { observable, autorun } from "mobx";
-import { WebviewServer } from "./WebviewServer";
+import { existsSync, readFileSync, watch } from "fs";
+import { autorun, observable } from "mobx";
 import * as open from "open";
-import chromeLauncher = require("chrome-launcher");
-import { Config } from "../Config";
-import { IncrementalMap } from "../utils/IncrementalMap";
-import { watch, existsSync, readFileSync } from "fs";
-import { DebouncedRunner } from "../utils/DebouncedRunner";
-import { getExpressionForDataExtractorApi } from "@hediet/debug-visualizer-data-extraction";
 import { window } from "vscode";
+import { Config } from "../Config";
+import { VisualizationWatch, VisualizationWatchModel } from "../VisualizationWatchModel";
+import { DebouncedRunner } from "../utils/DebouncedRunner";
+import { IncrementalMap } from "../utils/IncrementalMap";
+import { webviewContract } from "../webviewContract";
+import { WebviewServer } from "./WebviewServer";
+import chromeLauncher = require("chrome-launcher");
 
 export class WebviewConnection {
 	public readonly dispose = Disposable.fn();
@@ -23,7 +19,7 @@ export class WebviewConnection {
 	@observable
 	private watcher: VisualizationWatch | undefined = undefined;
 
-	private readonly client: typeof webviewContract["TClientInterface"];
+	private readonly client: (typeof webviewContract)["TClientInterface"];
 
 	constructor(
 		evaluationWatchService: VisualizationWatchModel,
@@ -40,78 +36,74 @@ export class WebviewConnection {
 			}
 		}
 
-		const { client, channel } = webviewContract.registerServerToStream(
-			stream,
-			new ConsoleRpcLogger(),
-			{
-				authenticate: async ({ secret }, { newErr }) => {
-					if (secret !== serverSecret) {
-						return newErr({ errorMessage: "Invalid Secret" });
-					} else {
-						authenticated = true;
-					}
-				},
-				refresh: async () => {
-					throwIfNotAuthenticated();
+		const { client, channel } = webviewContract.registerServerToStream(stream, new ConsoleRpcLogger(), {
+			authenticate: async ({ secret }, { newErr }) => {
+				if (secret !== serverSecret) {
+					return newErr({ errorMessage: "Invalid Secret" });
+				} else {
+					authenticated = true;
+				}
+			},
+			refresh: async () => {
+				throwIfNotAuthenticated();
 
-					if (this.watcher) {
-						this.watcher.refresh();
-					}
-				},
-				setExpression: async ({ newExpression }) => {
-					throwIfNotAuthenticated();
+				if (this.watcher) {
+					this.watcher.refresh();
+				}
+			},
+			setExpression: async ({ newExpression }) => {
+				throwIfNotAuthenticated();
 
-					let oldPreferredDataExtractor: VisualizationWatch["preferredDataExtractor"];
-					if (this.watcher) {
-						oldPreferredDataExtractor =
-							this.watcher.preferredDataExtractor;
-						this.dispose.untrack(this.watcher).dispose();
-					}
-					this.watcher = this.dispose.track(
-						evaluationWatchService.createWatch(newExpression, {
-							preferredDataExtractor: oldPreferredDataExtractor,
-						})
-					);
-				},
-				openInBrowser: async ({}) => {
-					throwIfNotAuthenticated();
+				if (this.watcher?.expression === newExpression) {
+					return;
+				}
 
-					const url = server.getWebviewPageUrl({
-						mode: "standalone",
-						expression: this.watcher
-							? this.watcher.expression
-							: undefined,
-					});
+				let oldPreferredDataExtractor: VisualizationWatch["preferredDataExtractor"];
+				let oldSessionState: unknown;
+				if (this.watcher) {
+					oldPreferredDataExtractor = this.watcher.preferredDataExtractor;
+					oldSessionState = this.watcher.sessionState;
+					this.dispose.untrack(this.watcher).dispose();
+				}
+				this.watcher = this.dispose.track(
+					evaluationWatchService.createWatch(newExpression, {
+						preferredDataExtractor: oldPreferredDataExtractor,
+						sessionState: oldSessionState,
+					})
+				);
+			},
+			openInBrowser: async ({}) => {
+				throwIfNotAuthenticated();
 
-					let opened = false;
-					if (config.useChromeKioskMode) {
-						opened = await launchChrome(url);
-					}
-					if (!opened) {
-						open(url);
-					}
-				},
-				setPreferredDataExtractor: async ({ dataExtractorId }) => {
-					throwIfNotAuthenticated();
+				const url = server.getWebviewPageUrl({
+					mode: "standalone",
+					expression: this.watcher ? this.watcher.expression : undefined,
+				});
 
-					if (this.watcher) {
-						this.watcher.setPreferredDataExtractor(dataExtractorId);
-					}
-				},
-				getCompletions: async ({ text, column }) => {
-					throwIfNotAuthenticated();
+				let opened = false;
+				if (config.useChromeKioskMode) {
+					opened = await launchChrome(url);
+				}
+				if (!opened) {
+					open(url);
+				}
+			},
+			setPreferredDataExtractor: async ({ dataExtractorId }) => {
+				throwIfNotAuthenticated();
 
-					const completions =
-						await evaluationWatchService.getCompletions(
-							text,
-							column
-						);
-					return {
-						completions,
-					};
-				},
-			}
-		);
+				if (this.watcher) {
+					this.watcher.setPreferredDataExtractor(dataExtractorId);
+				}
+			},
+			getCompletions: async ({ text, column }) => {
+				throwIfNotAuthenticated();
+
+				const completions = await evaluationWatchService.getCompletions(text, column);
+				return {
+					completions,
+				};
+			},
+		});
 
 		this.client = client;
 
@@ -121,9 +113,7 @@ export class WebviewConnection {
 				async (files) => {
 					for (const file of files) {
 						if (!file.fileExists) {
-							window.showErrorMessage(
-								`The file ${file.path} does not exist.`
-							);
+							window.showErrorMessage(`The file ${file.path} does not exist.`);
 							continue;
 						}
 
@@ -132,7 +122,7 @@ export class WebviewConnection {
 								id: file.path,
 								jsSource: file.content || null,
 							});
-						} catch (e) {
+						} catch (e: any) {
 							window.showErrorMessage(
 								'Error while running custom visualization extractor script "' +
 									file.path +
@@ -214,9 +204,7 @@ export class FileWatcher {
 					new SingleFileWatcher(path, (w) => {
 						scheduleRefresh.add(w);
 						debouncer.run(() => {
-							const changedWatchers = [...scheduleRefresh].filter(
-								(w) => w.refresh()
-							);
+							const changedWatchers = [...scheduleRefresh].filter((w) => w.refresh());
 							handleFileContents(
 								changedWatchers.map((w) => ({
 									path: w.path,
@@ -242,18 +230,13 @@ export class FileWatcher {
 }
 
 class SingleFileWatcher {
-	private readonly watcher = watch(this.path, { encoding: "utf-8" }, () =>
-		this.scheduleRefresh(this)
-	);
+	private readonly watcher = watch(this.path, { encoding: "utf-8" }, () => this.scheduleRefresh(this));
 	private isDisposed = false;
 	public content: string | undefined;
 	public exists: boolean = true;
 
-	constructor(
-		public readonly path: string,
-		private readonly scheduleRefresh: (self: SingleFileWatcher) => void
-	) {
-		this.scheduleRefresh(this);
+	constructor(public readonly path: string, private readonly scheduleRefresh: (self: SingleFileWatcher) => void) {
+		this.refresh();
 	}
 
 	public dispose() {

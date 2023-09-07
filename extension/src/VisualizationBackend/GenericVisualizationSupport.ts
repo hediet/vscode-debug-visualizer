@@ -4,23 +4,24 @@ import {
 	GraphNode,
 	GraphVisualizationData,
 } from "@hediet/debug-visualizer-data-extraction";
+import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
 import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
+import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { FormattedMessage } from "../webviewContract";
 import {
 	DebugSessionVisualizationSupport,
-	VisualizationBackend,
 	GetVisualizationDataArgs,
+	VisualizationBackend,
 	VisualizationBackendBase,
 } from "./VisualizationBackend";
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
-import { FormattedMessage } from "../webviewContract";
-import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
 export class GenericVisualizationSupport
-	implements DebugSessionVisualizationSupport {
+	implements DebugSessionVisualizationSupport
+{
 	constructor(private readonly debuggerView: DebuggerViewProxy) {}
 
 	createBackend(
@@ -87,12 +88,12 @@ export class GenericVisualizationBackend extends VisualizationBackendBase {
 				return parseEvaluationResultFromGenericDebugAdapter(
 					reply.result,
 					{
-						debugAdapterType: this.debugSession.session
-							.configuration.type,
+						debugAdapterType:
+							this.debugSession.session.configuration.type,
 					}
 				);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			return {
 				kind: "error",
 				message: {

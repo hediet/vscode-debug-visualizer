@@ -1,39 +1,33 @@
 import {
 	DataExtractionResult,
 	DataExtractorId,
-	GraphNode,
-	GraphVisualizationData,
 } from "@hediet/debug-visualizer-data-extraction";
+import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
+import { Config } from "../Config";
 import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
+import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { FormattedMessage } from "../webviewContract";
 import {
 	DebugSessionVisualizationSupport,
-	VisualizationBackend,
 	GetVisualizationDataArgs,
+	VisualizationBackend,
 	VisualizationBackendBase,
 } from "./VisualizationBackend";
-import { Config } from "../Config";
 import { parseEvaluationResultFromGenericDebugAdapter } from "./parseEvaluationResultFromGenericDebugAdapter";
-import { FormattedMessage } from "../webviewContract";
-import { hotClass, registerUpdateReconciler } from "@hediet/node-reload";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
 
 registerUpdateReconciler(module);
 
 @hotClass(module)
-export class PyEvaluationEngine
-	implements DebugSessionVisualizationSupport {
+export class PyEvaluationEngine implements DebugSessionVisualizationSupport {
 	constructor(
 		private readonly debuggerView: DebuggerViewProxy,
 		private readonly config: Config
-	) { }
+	) {}
 
 	createBackend(
 		session: DebugSessionProxy
 	): VisualizationBackend | undefined {
-
-		const supportedDebugAdapters = [
-			"python",
-		];
+		const supportedDebugAdapters = ["python"];
 
 		if (supportedDebugAdapters.indexOf(session.session.type) !== -1) {
 			return new PyVisualizationBackend(
@@ -81,7 +75,8 @@ export class PyVisualizationBackend extends VisualizationBackendBase {
 		try {
 			// inject vscodedebugvisualizer for python
 			await this.debugSession.evaluate({
-				expression: 'from vscodedebugvisualizer import visualize\ntry:\n  import debugvisualizer\nexcept ImportError:\n  pass',
+				expression:
+					"from vscodedebugvisualizer import visualize\ntry:\n  import debugvisualizer\nexcept ImportError:\n  pass",
 				frameId,
 				context: this.getContext(),
 			});
@@ -97,21 +92,23 @@ export class PyVisualizationBackend extends VisualizationBackendBase {
 			result = result.replace(/\\'/g, "'");
 			result = result.replace(/\\\\/g, "\\");
 
-			return parseEvaluationResultFromGenericDebugAdapter(
-				result,
-				{
-					debugAdapterType: this.debugSession.session
-						.configuration.type,
-				}
-			);
+			return parseEvaluationResultFromGenericDebugAdapter(result, {
+				debugAdapterType: this.debugSession.session.configuration.type,
+			});
 		} catch (error) {
 			let errorTyped = error as Error;
-			if (errorTyped.message.includes("ModuleNotFoundError: No module named 'vscodedebugvisualizer'")) {
+			if (
+				errorTyped.message.includes(
+					"ModuleNotFoundError: No module named 'vscodedebugvisualizer'"
+				)
+			) {
 				return {
 					kind: "error",
 					message: {
 						kind: "list",
-						items: ["Please make sure vscodedebugvisualizer is installed: `pip install vscodedebugvisualizer`"],
+						items: [
+							"Please make sure vscodedebugvisualizer is installed: `pip install vscodedebugvisualizer`",
+						],
 					},
 				};
 			}
@@ -145,5 +142,4 @@ export class PyVisualizationBackend extends VisualizationBackendBase {
 		pythonInject += "visualize(" + args.expression + ")";
 		return pythonInject;
 	}
-
 }

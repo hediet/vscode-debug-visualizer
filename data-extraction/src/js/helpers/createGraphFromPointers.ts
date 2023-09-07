@@ -30,7 +30,12 @@ export function createGraphFromPointers<T>(
 	return createGraph<T | Pointer>(
 		items,
 		(item) => {
-			if ("marker" in item && item["marker"] === marker) {
+			if (
+				typeof item === "object" &&
+				item &&
+				"marker" in item &&
+				item["marker"] === marker
+			) {
 				return {
 					id: "label____" + item.name,
 					color: "orange",

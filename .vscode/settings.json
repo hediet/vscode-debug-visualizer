@@ -7,11 +7,15 @@
 	"plantuml.exportOutDir": "docs/exported",
 	"typescript.updateImportsOnFileMove.enabled": "prompt",
 	"mochaExplorer.files": "./data-extraction/test/**/*.test.ts",
-	"mochaExplorer.require": [
-		"ts-node/register",
-		"source-map-support/register"
-	],
+	"mochaExplorer.require": ["ts-node/register", "source-map-support/register"],
 	"tasksStatusbar.taskLabelFilter": "dev",
 	"editor.formatOnSave": true,
-	"typescript.tsdk": "node_modules\\typescript\\lib"
+	"typescript.tsdk": "node_modules\\typescript\\lib",
+
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"prettier.prettierPath": "node_modules/prettier",
+	"prettier.printWidth": 120,
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }

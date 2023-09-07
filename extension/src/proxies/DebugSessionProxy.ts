@@ -1,17 +1,17 @@
+import { observable } from "mobx";
 import { DebugSession } from "vscode";
 import { CompletionItem } from "../webviewContract";
-import { observable } from "mobx";
 
 export class DebugSessionProxy {
 	@observable private _activeStackFrameId: number | undefined;
 
 	constructor(public readonly session: DebugSession) {}
 
-	protected async getStackTrace(args: {
+	public async getStackTrace(args: {
 		threadId: number;
 		startFrame?: number;
 		levels?: number;
-	}): Promise<{ totalFrames?: number; stackFrames: StackFrame[] }> {
+	}): Promise<StackTraceInfo> {
 		try {
 			const reply = (await this.session.customRequest("stackTrace", {
 				threadId: args.threadId,
@@ -61,9 +61,7 @@ export class DebugSessionProxy {
 		}
 	}
 
-	public async getVariables(args: {
-		variablesReference: number;
-	}): Promise<Variable[]> {
+	public async getVariables(args: { variablesReference: number }): Promise<Variable[]> {
 		try {
 			const reply = await this.session.customRequest("variables", {
 				variablesReference: args.variablesReference,
@@ -100,6 +98,11 @@ export class DebugSessionProxy {
 	}
 }
 
+export interface StackTraceInfo {
+	totalFrames?: number;
+	stackFrames: StackFrame[];
+}
+
 interface Scope {
 	name: string;
 	expensive: boolean;
@@ -112,7 +115,8 @@ interface Variable {
 	variablesReference: number;
 }
 
-interface StackFrame {
+export interface StackFrame {
 	id: number;
 	name: string;
+	source: { name: string; path: string };
 }

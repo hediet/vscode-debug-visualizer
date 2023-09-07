@@ -1,8 +1,8 @@
-import * as webpack from "webpack";
-import path = require("path");
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
-import CopyPlugin = require("copy-webpack-plugin");
+import * as CopyPlugin from "copy-webpack-plugin";
 import { readFileSync } from "fs";
+import * as path from "path";
+import * as webpack from "webpack";
 
 const r = (file: string) => path.resolve(__dirname, file);
 
@@ -21,7 +21,7 @@ module.exports = {
 		"@hediet/debug-visualizer-data-extraction":
 			"@hediet/debug-visualizer-data-extraction",
 		"debug-visualizer-webview": "debug-visualizer-webview",
-		fsevents: "require('fsevents')"
+		fsevents: "require('fsevents')",
 	},
 	resolve: {
 		extensions: [".ts", ".js"],
@@ -55,11 +55,15 @@ function includeDependency(location: string) {
 	});
 	const pkgName = JSON.parse(content).name;
 
-	return new CopyPlugin([
-		{
-			from: location,
-			to: r(`./dist/node_modules/${pkgName}`),
-			ignore: ["**/node_modules/**/*"],
-		},
-	]);
+	return new CopyPlugin({
+		patterns: [
+			{
+				from: location,
+				to: r(`./dist/node_modules/${pkgName}`),
+				globOptions: {
+					ignore: ["**/node_modules/**/*"],
+				},
+			},
+		],
+	});
 }

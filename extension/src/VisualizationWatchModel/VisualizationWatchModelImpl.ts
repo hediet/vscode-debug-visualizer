@@ -7,11 +7,7 @@ import { action, observable } from "mobx";
 import { CancellationToken, CancellationTokenSource } from "vscode";
 import { VisualizationBackend } from "../VisualizationBackend/VisualizationBackend";
 import { CompletionItem, DataExtractionState } from "../webviewContract";
-import {
-	VisualizationWatch,
-	VisualizationWatchModel,
-	VisualizationWatchOptions,
-} from "./VisualizationWatchModel";
+import { VisualizationWatch, VisualizationWatchModel, VisualizationWatchOptions } from "./VisualizationWatchModel";
 
 @hotClass(module)
 export class VisualizationWatchModelImpl implements VisualizationWatchModel {
@@ -22,23 +18,15 @@ export class VisualizationWatchModelImpl implements VisualizationWatchModel {
 		this.dispose.track(
 			visualizationBackend.onChange.sub(() => {
 				if (visualizationBackend.expressionLanguageId !== undefined) {
-					this.lastLanguageId =
-						visualizationBackend.expressionLanguageId;
+					this.lastLanguageId = visualizationBackend.expressionLanguageId;
 				}
 			})
 		);
 		this.lastLanguageId = visualizationBackend.expressionLanguageId;
 	}
 
-	public createWatch(
-		expression: string,
-		options: VisualizationWatchOptions
-	): VisualizationWatch {
-		const w = new ObservableVisualizationWatch(
-			expression,
-			options,
-			this.visualizationBackend
-		);
+	public createWatch(expression: string, options: VisualizationWatchOptions): VisualizationWatch {
+		const w = new ObservableVisualizationWatch(expression, options, this.visualizationBackend);
 		w.onDispose.sub(() => {
 			this.watchers.delete(w);
 		});
@@ -53,10 +41,7 @@ export class VisualizationWatchModelImpl implements VisualizationWatchModel {
 		return this.lastLanguageId;
 	}
 
-	public getCompletions(
-		text: string,
-		column: number
-	): Promise<CompletionItem[]> {
+	public getCompletions(text: string, column: number): Promise<CompletionItem[]> {
 		return this.visualizationBackend.getCompletions(text, column);
 	}
 }
@@ -115,31 +100,22 @@ class ObservableVisualizationWatch implements VisualizationWatch {
 		this._refresh(tokenSource.token);
 	}
 
+	public sessionState: unknown = undefined;
+
 	private async _refresh(token: CancellationToken): Promise<void> {
-		/*const session = this.debuggerView.activeDebugSession;
-		if (!session) {
-			this._state = { kind: "noDebugSession" };
-			return;
-		}*/
-
-		//const frameId = this.debuggerView.activeFrameId;
-
 		this._state = { kind: "loading" };
-
-		/*
-		const visualizationBackend = this.getVisualizationBackend();
-		if (!visualizationBackend) {
-			this._state = {
-				kind: "error",
-				message: `The debug adapter "${session.session.type}" is not supported.`,
-			};
-			return;
-		}*/
-
+		const that = this;
 		const result = await this.visualizationBackend.getVisualizationData({
 			expression: this.expression,
-			//frameId,
 			preferredExtractorId: this.preferredDataExtractor,
+			sessionStore: {
+				get data(): unknown {
+					return that.sessionState;
+				},
+				set data(value: unknown) {
+					that.sessionState = value;
+				},
+			},
 		});
 
 		if (result.kind === "error") {

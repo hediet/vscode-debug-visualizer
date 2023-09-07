@@ -3,11 +3,11 @@ import {
 	DataExtractorId,
 } from "@hediet/debug-visualizer-data-extraction";
 import { Disposable } from "@hediet/std/disposable";
-import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
-import { CompletionItem, FormattedMessage } from "../webviewContract";
-import { reaction } from "mobx";
-import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
 import { EventEmitter, EventSource } from "@hediet/std/events";
+import { reaction } from "mobx";
+import { DebugSessionProxy } from "../proxies/DebugSessionProxy";
+import { DebuggerViewProxy } from "../proxies/DebuggerViewProxy";
+import { CompletionItem, FormattedMessage } from "../webviewContract";
 
 export interface DebugSessionVisualizationSupport {
 	createBackend(session: DebugSessionProxy): VisualizationBackend | undefined;
@@ -32,8 +32,11 @@ export interface VisualizationBackend extends Disposable {
 }
 
 export interface GetVisualizationDataArgs {
-	expression: string;
-	preferredExtractorId: DataExtractorId | undefined;
+	readonly expression: string;
+	readonly preferredExtractorId: DataExtractorId | undefined;
+
+	// Can be used to attach data to the session.
+	readonly sessionStore: { data: unknown };
 }
 
 export abstract class VisualizationBackendBase implements VisualizationBackend {
@@ -49,7 +52,7 @@ export abstract class VisualizationBackendBase implements VisualizationBackend {
 		this.dispose.track({
 			dispose: reaction(
 				() => debuggerView.getActiveStackFrameId(debugSession),
-				activeStackFrameId => {
+				(activeStackFrameId) => {
 					if (activeStackFrameId !== undefined) {
 						this.onChangeEmitter.emit();
 					}

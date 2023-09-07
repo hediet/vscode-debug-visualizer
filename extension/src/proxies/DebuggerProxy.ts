@@ -1,7 +1,6 @@
 import { Disposable } from "@hediet/std/disposable";
-import { debug, DebugSession } from "vscode";
 import { EventEmitter } from "@hediet/std/events";
-import { runInAction } from "mobx";
+import { debug, DebugSession } from "vscode";
 import { DebugSessionProxy } from "./DebugSessionProxy";
 
 /**
@@ -14,7 +13,8 @@ export class DebuggerProxy {
 	private readonly _onDidStartDebugSession = new EventEmitter<{
 		session: DebugSessionProxy;
 	}>();
-	public readonly onDidStartDebugSession = this._onDidStartDebugSession.asEvent();
+	public readonly onDidStartDebugSession =
+		this._onDidStartDebugSession.asEvent();
 
 	public getDebugSessionProxy(session: DebugSession): DebugSessionProxy {
 		let result = this.sessions.get(session);
@@ -27,18 +27,18 @@ export class DebuggerProxy {
 
 	constructor() {
 		this.dispose.track([
-			debug.onDidStartDebugSession(session => {
+			debug.onDidStartDebugSession((session) => {
 				const e = this.sessions.get(session)!;
 				this._onDidStartDebugSession.emit({ session: e });
 			}),
-			debug.onDidTerminateDebugSession(session => {
+			debug.onDidTerminateDebugSession((session) => {
 				this.sessions.delete(session);
 			}),
 			debug.registerDebugAdapterTrackerFactory("*", {
-				createDebugAdapterTracker: session => {
+				createDebugAdapterTracker: (session) => {
 					const extendedSession = this.getDebugSessionProxy(session);
 					return {
-						onDidSendMessage: async msg => {
+						onDidSendMessage: async (msg) => {
 							type Message =
 								| StoppedEvent
 								| ThreadsResponse
@@ -79,13 +79,12 @@ export class DebuggerProxy {
 							if (m.type === "event") {
 								if (m.event === "stopped") {
 									const threadId = m.body.threadId;
-									const r = await extendedSession[
-										"getStackTrace"
-									]({
-										threadId,
-										startFrame: 0,
-										levels: 1,
-									});
+									const r =
+										await extendedSession.getStackTrace({
+											threadId,
+											startFrame: 0,
+											levels: 1,
+										});
 									extendedSession["_activeStackFrameId"] =
 										r.stackFrames.length > 0
 											? r.stackFrames[0].id
@@ -98,9 +97,8 @@ export class DebuggerProxy {
 									m.command === "stepIn" ||
 									m.command === "stepOut"
 								) {
-									extendedSession[
-										"_activeStackFrameId"
-									] = undefined;
+									extendedSession["_activeStackFrameId"] =
+										undefined;
 								}
 							}
 						},

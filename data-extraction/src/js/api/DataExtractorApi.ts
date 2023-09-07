@@ -1,7 +1,4 @@
-import {
-	VisualizationData,
-	DataExtractionResult,
-} from "../../DataExtractionResult";
+import { DataExtractionResult, VisualizationData } from "../../DataExtractionResult";
 import { LoadDataExtractorsFn } from "./LoadDataExtractorsFn";
 
 export interface DataExtractorApi {
@@ -24,7 +21,8 @@ export interface DataExtractorApi {
 		valueFn: () => unknown,
 		evalFn: <T>(expression: string) => T,
 		preferredDataExtractorId: string | undefined,
-		variablesInScope: Record<string, unknown>
+		variablesInScope: Record<string, unknown>,
+		callFramesSnapshot: CallFramesSnapshot | null
 	): JSONString<DataResult>;
 
 	/**
@@ -42,10 +40,39 @@ export type DataResult =
 			extractionResult: DataExtractionResult;
 	  }
 	| { kind: "NoExtractors" }
-	| { kind: "Error"; message: string };
+	| { kind: "Error"; message: string }
+	| {
+			kind: "OutdatedCallFrameSnapshot";
+			callFramesRequest: CallFramesRequest;
+	  };
 
 export interface JSONString<T> extends String {
 	__brand: { json: T };
+}
+
+export interface CallFramesRequest {
+	requestId: string;
+	requestedCallFrames: CallFrameRequest[];
+}
+
+export interface CallFrameRequest {
+	methodName: string;
+	pathRegExp: string | undefined;
+}
+
+export interface CallFramesSnapshot {
+	requestId: string;
+	frames: (CallFrameInfo | SkippedCallFrames)[];
+}
+
+export interface SkippedCallFrames {
+	skippedFrames: number;
+}
+
+export interface CallFrameInfo {
+	methodName: string;
+	source: { name: string; path: string };
+	vars: Record<string, any>;
 }
 
 export interface DataExtractor {
@@ -58,11 +85,7 @@ export interface DataExtractor {
 	 * Filters the data to be extracted.
 	 */
 	dataCtor?: string;
-	getExtractions(
-		data: unknown,
-		extractionCollector: ExtractionCollector,
-		context: DataExtractorContext
-	): void;
+	getExtractions(data: unknown, extractionCollector: ExtractionCollector, context: DataExtractorContext): void;
 }
 
 export interface ExtractionCollector {
@@ -78,11 +101,15 @@ export interface DataExtractorContext {
 	 */
 	evalFn: <TEval>(expression: string) => TEval;
 
-	expression: string | undefined;
+	readonly expression: string | undefined;
 
-	variablesInScope: Record<string, () => unknown>;
+	readonly variablesInScope: Record<string, () => unknown>;
 
 	extract(value: unknown): VisualizationData | undefined;
+
+	readonly callFrameInfos: readonly (CallFrameInfo | SkippedCallFrames)[];
+
+	addCallFrameRequest(request: CallFrameRequest): void;
 }
 
 export interface DataExtraction {

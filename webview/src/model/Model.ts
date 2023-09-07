@@ -1,37 +1,27 @@
-import {
-	webviewContract,
-	DataExtractionState,
-	WindowWithWebviewData,
-	WebviewUrlParams,
-} from "debug-visualizer/src/webviewContract";
-import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
+import { DataExtractorId, VisualizationData } from "@hediet/debug-visualizer-data-extraction";
+import { Disposable } from "@hediet/std/disposable";
+import { EventTimer } from "@hediet/std/timer";
 import { ConsoleRpcLogger } from "@hediet/typed-json-rpc";
-import {
-	observable,
-	action,
-	computed,
-	when,
-	runInAction,
-	ObservableMap,
-} from "mobx";
-import {
-	DataExtractorId,
-	VisualizationData,
-} from "@hediet/debug-visualizer-data-extraction";
+import { WebSocketStream } from "@hediet/typed-json-rpc-websocket";
 import "@hediet/visualization-bundle";
 import {
-	globalVisualizationFactory,
-	VisualizationId,
-	Visualization,
 	RegisterVisualizerFn,
-	createVisualizer,
-	libImplementation,
+	Visualization,
 	VisualizationFactory,
+	VisualizationId,
+	createVisualizer,
+	globalVisualizationFactory,
+	libImplementation,
 } from "@hediet/visualization-core";
-import { getApi as getVsCodeApi } from "./VsCodeApi";
+import {
+	DataExtractionState,
+	WebviewUrlParams,
+	WindowWithWebviewData,
+	webviewContract,
+} from "debug-visualizer/src/webviewContract";
+import { ObservableMap, action, computed, observable, runInAction, when } from "mobx";
 import { MonacoBridge } from "./MonacoBridge";
-import { Disposable } from "@hediet/std/disposable";
-import { startInterval, EventTimer } from "@hediet/std/timer";
+import { getApi as getVsCodeApi } from "./VsCodeApi";
 
 declare const window: Window & WindowWithWebviewData;
 
@@ -39,8 +29,7 @@ declare let __webpack_public_path__: string;
 
 export class Model {
 	public readonly dispose = Disposable.fn();
-	public readonly runningMode: "standalone" | "webview" | "webviewIFrame" =
-		"webview";
+	public readonly runningMode: "standalone" | "webview" | "webviewIFrame" = "webview";
 
 	@observable
 	public theme: "dark" | "light" = "light";
@@ -58,13 +47,10 @@ export class Model {
 
 	@observable languageId: string = "text";
 
-	@observable private preferredVisualizationId: VisualizationId | undefined =
-		undefined;
+	@observable private preferredVisualizationId: VisualizationId | undefined = undefined;
 
 	@observable isPolling = false;
-	private readonly pollingTimer = this.dispose.track(
-		new EventTimer(500, "stopped")
-	);
+	private readonly pollingTimer = this.dispose.track(new EventTimer(500, "stopped"));
 
 	@action
 	public setPreferredVisualizationId(id: VisualizationId) {
@@ -95,10 +81,7 @@ export class Model {
 		if (this.state.kind === "data") {
 			const vis = visualizerRegistry
 				.get()
-				.getVisualizations(
-					this.state.result.data,
-					this.preferredVisualizationId
-				);
+				.getVisualizations(this.state.result.data, this.preferredVisualizationId);
 			return {
 				visualization: vis.bestVisualization,
 				allVisualizations: vis.allVisualizations,
@@ -109,8 +92,7 @@ export class Model {
 	}
 
 	@observable.ref
-	public server: typeof webviewContract.TServerInterface | undefined =
-		undefined;
+	public server: typeof webviewContract.TServerInterface | undefined = undefined;
 
 	private readonly vsCodeApi = getVsCodeApi<{ expression: string }>();
 
@@ -137,9 +119,7 @@ export class Model {
 			}
 		} else {
 			const url = new URL(window.location.href);
-			const urlParams = Object.fromEntries(
-				url.searchParams.entries()
-			) as unknown as WebviewUrlParams;
+			const urlParams = Object.fromEntries(url.searchParams.entries()) as unknown as WebviewUrlParams;
 			const portStr = urlParams.serverPort;
 			if (!portStr) {
 				throw new Error("No port given.");
@@ -220,29 +200,26 @@ export class Model {
 					host: "localhost",
 					port: this.port,
 				});
-				const { server } = webviewContract.getServerFromStream(
-					stream,
-					new ConsoleRpcLogger(),
-					{
-						updateState: async ({ newState }) => {
-							runInAction(() => {
-								this._loading = newState.kind === "loading";
-								if (!this._loading) {
-									this.state = newState;
-								}
-							});
-						},
-						setExpression: async ({ expression }) => {
-							this.setExpression(expression);
-						},
-						updateLanguageId: async ({ languageId }) => {
-							this.languageId = languageId || "text";
-						},
-						setTheme: async ({ theme }) => {
-							this.theme = theme;
-						},
-						setCustomVisualizerScript: async ({ id, jsSource }) => {
-							eval(`
+				const { server } = webviewContract.getServerFromStream(stream, new ConsoleRpcLogger(), {
+					updateState: async ({ newState }) => {
+						runInAction(() => {
+							this._loading = newState.kind === "loading";
+							if (!this._loading) {
+								this.state = newState;
+							}
+						});
+					},
+					setExpression: async ({ expression }) => {
+						this.setExpression(expression);
+					},
+					updateLanguageId: async ({ languageId }) => {
+						this.languageId = languageId || "text";
+					},
+					setTheme: async ({ theme }) => {
+						this.theme = theme;
+					},
+					setCustomVisualizerScript: async ({ id, jsSource }) => {
+						eval(`
 								((load) => {
 									let fn = undefined;
 									if (load) {
@@ -255,9 +232,8 @@ export class Model {
 									${jsSource ? `function (module) { ${jsSource} }` : "undefined"}
 								)
 							`);
-						},
-					}
-				);
+					},
+				});
 				try {
 					await server.authenticate({ secret: this.serverSecret });
 				} catch (e) {
@@ -291,18 +267,12 @@ const visualizerRegistry = computed(() => {
 		result.addHiddenVisualizer(visualization);
 	}
 	fns.forEach((fn) => {
-		fn(
-			(options) => result.addVisualizer(createVisualizer(options)),
-			libImplementation
-		);
+		fn((options) => result.addVisualizer(createVisualizer(options)), libImplementation);
 	});
 	return result;
 });
 
-function setVisualizationModule(
-	id: string,
-	moduleFn: RegisterVisualizerFn | undefined
-) {
+function setVisualizationModule(id: string, moduleFn: RegisterVisualizerFn | undefined) {
 	if (moduleFn) {
 		fns.set(id, moduleFn);
 	} else {

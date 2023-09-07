@@ -1,6 +1,6 @@
-import * as webpack from "webpack";
-import path = require("path");
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import * as path from "path";
+import * as webpack from "webpack";
 
 const r = (file: string) => path.resolve(__dirname, file);
 

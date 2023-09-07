@@ -65,7 +65,7 @@ export function parseEvaluationResultFromGenericDebugAdapter(
 				},
 			};
 		}
-	} catch (e) {
+	} catch (e: any) {
 		return {
 			kind: "error",
 			message: e.message,
@@ -93,7 +93,7 @@ function isEnclosedWith(str: string, char: string): boolean {
 function parseJson(str: string, context: ParseEvaluationResultContext) {
 	try {
 		return JSON.parse(str);
-	} catch (error) {
+	} catch (error: any) {
 		throw new FormattedError({
 			kind: "list",
 			items: [

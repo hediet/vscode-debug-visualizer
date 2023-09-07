@@ -1,5 +1,5 @@
 import { DataExtractorId } from "@hediet/debug-visualizer-data-extraction";
-import { DataExtractionState, CompletionItem } from "../webviewContract";
+import { CompletionItem, DataExtractionState } from "../webviewContract";
 
 export interface VisualizationWatchModel {
 	createWatch(
@@ -19,6 +19,7 @@ export interface VisualizationWatchModel {
 
 export interface VisualizationWatchOptions {
 	preferredDataExtractor?: DataExtractorId | undefined;
+	sessionState?: unknown;
 }
 
 export interface VisualizationWatch {
@@ -30,6 +31,8 @@ export interface VisualizationWatch {
 
 	/** This field is observable */
 	readonly preferredDataExtractor: DataExtractorId | undefined;
+
+	readonly sessionState: unknown;
 
 	setPreferredDataExtractor(id: DataExtractorId | undefined): void;
 	refresh(): void;

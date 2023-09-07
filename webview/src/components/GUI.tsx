@@ -1,12 +1,12 @@
-import * as React from "react";
 import { Button, Spinner } from "@blueprintjs/core";
-import { observable, action } from "mobx";
+import { action, observable } from "mobx";
 import { observer } from "mobx-react";
+import * as React from "react";
 import { Model } from "../model/Model";
 import { ExpressionInput } from "./ExpressionInput";
 import { Visualizer } from "./Visualizer";
-import classnames = require("classnames");
 import { VisualizerHeaderDetails } from "./VisualizerHeaderDetails";
+import classnames = require("classnames");
 
 @observer
 export class GUI extends React.Component<{ model: Model }> {
@@ -25,10 +25,7 @@ export class GUI extends React.Component<{ model: Model }> {
 				<div className="part-Header">
 					<VisualizerHeader model={m} />
 				</div>
-				<div
-					className="part-Visualizer"
-					style={{ flex: 1, minHeight: 0 }}
-				>
+				<div className="part-Visualizer" style={{ flex: 1, minHeight: 0 }}>
 					<Visualizer model={m} />
 				</div>
 			</div>
@@ -43,15 +40,9 @@ export class VisualizerHeader extends React.Component<{ model: Model }> {
 	render() {
 		const m = this.props.model;
 		return (
-			<div
-				className="component-VisualizerHeader"
-				style={{ display: "flex", flexDirection: "row" }}
-			>
+			<div className="component-VisualizerHeader" style={{ display: "flex", flexDirection: "row" }}>
 				<div
-					className={classnames(
-						"part-ExpandButton",
-						this.expanded && "expanded"
-					)}
+					className={classnames("part-ExpandButton", this.expanded && "expanded")}
 					onClick={this.toggleExpanded}
 				/>
 				<div
@@ -96,10 +87,7 @@ export class VisualizerHeaderMain extends React.Component<{ model: Model }> {
 					alignItems: "center",
 				}}
 			>
-				<div
-					className="part-ExpressionInput "
-					style={{ flex: 1, minWidth: 0 }}
-				>
+				<div className="part-ExpressionInput " style={{ flex: 1, minWidth: 0 }}>
 					<ExpressionInput model={m} />
 				</div>
 				<div style={{ width: 4 }} />
@@ -109,21 +97,9 @@ export class VisualizerHeaderMain extends React.Component<{ model: Model }> {
 							<Spinner size={Spinner.SIZE_SMALL} />
 						</div>
 					) : (
-						<Button
-							minimal
-							small
-							className="part-Icon"
-							icon="refresh"
-							onClick={() => m.refresh()}
-						/>
+						<Button minimal small className="part-Icon" icon="refresh" onClick={() => m.refresh()} />
 					))}
-				<Button
-					minimal
-					small
-					className="part-Icon"
-					icon="log-in"
-					onClick={() => m.openBrowser()}
-				/>
+				<Button minimal small className="part-Icon" icon="log-in" onClick={() => m.openBrowser()} />
 				{/*
 					TODO
 					<Button
