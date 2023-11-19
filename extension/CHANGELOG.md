@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.6.0
+
+-   Improved JS data extractors
+-   Uses the active stack frame (instead of the top-most) for evaluating expressions
+
 ## 2.4.0
 
 -   [Ruby support](https://github.com/hediet/vscode-debug-visualizer/pull/159)

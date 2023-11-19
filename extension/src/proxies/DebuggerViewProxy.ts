@@ -1,5 +1,5 @@
 import { Disposable } from "@hediet/std/disposable";
-import { debug, DebugSession } from "vscode";
+import { CancellationToken, debug, DebugSession, InlineValue, InlineValueContext, InlineValuesProvider, languages, ProviderResult, Range, TextDocument } from "vscode";
 import { observable, action } from "mobx";
 import { DebuggerProxy } from "./DebuggerProxy";
 import { DebugSessionProxy } from "./DebugSessionProxy";
@@ -30,6 +30,8 @@ export class DebuggerViewProxy {
 			})
 		);
 		this.updateActiveDebugSession(debug.activeDebugSession);
+
+		this.dispose.track(languages.registerInlineValuesProvider('*', new FrameIdGetter(this)));
 	}
 
 	@action
@@ -37,5 +39,20 @@ export class DebuggerViewProxy {
 		this._activeDebugSession = activeSession
 			? this.debuggerProxy.getDebugSessionProxy(activeSession)
 			: undefined;
+	}
+}
+
+export class FrameIdGetter implements InlineValuesProvider {
+	constructor(
+		private readonly debuggerViewProxy: DebuggerViewProxy,
+	) {
+	}
+
+	provideInlineValues(document: TextDocument, viewPort: Range, context: InlineValueContext, token: CancellationToken): ProviderResult<InlineValue[]> {
+		const a = this.debuggerViewProxy.activeDebugSession;
+		if (a) {
+			a['_activeStackFrameId'] = context.frameId;
+		}
+		return []
 	}
 }
