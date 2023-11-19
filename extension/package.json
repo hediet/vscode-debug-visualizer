@@ -4,10 +4,10 @@
 	"displayName": "Debug Visualizer",
 	"description": "A visual watch window that lets you visualize your data structures while debugging.",
 	"icon": "docs/logo.drawio.png",
-	"version": "2.5.0",
+	"version": "2.6.0",
 	"license": "GPL-3.0",
 	"engines": {
-		"vscode": "^1.46.0"
+		"vscode": "^1.79.1"
 	},
 	"publisher": "hediet",
 	"keywords": [
