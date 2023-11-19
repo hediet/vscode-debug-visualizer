@@ -78,6 +78,7 @@ export class VisualizerHeader extends React.Component<{ model: Model }> {
 @observer
 export class VisualizerHeaderMain extends React.Component<{ model: Model }> {
 	render() {
+		const Spinner_ = Spinner as any; // WTF typescript??
 		const m = this.props.model;
 		return (
 			<div
@@ -94,7 +95,7 @@ export class VisualizerHeaderMain extends React.Component<{ model: Model }> {
 				{!m.isPolling &&
 					(m.loading ? (
 						<div style={{ padding: "0 4px" }}>
-							<Spinner size={Spinner.SIZE_SMALL} />
+							<Spinner_ size={Spinner.SIZE_SMALL} />
 						</div>
 					) : (
 						<Button minimal small className="part-Icon" icon="refresh" onClick={() => m.refresh()} />

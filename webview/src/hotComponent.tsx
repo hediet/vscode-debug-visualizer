@@ -43,7 +43,8 @@ export function hotComponent(
 
 		return observer((props: any) => {
 			const C = result!.component;
-			return <C {...props} />;
+			const C_ = C as any; // WTF typescript/yarn??
+			return <C_ {...props} />;
 		}) as any;
 	};
 }
