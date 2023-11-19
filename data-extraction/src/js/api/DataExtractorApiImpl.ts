@@ -92,15 +92,28 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 			}
 		}
 
-		const data = usedExtraction.extractData();
-		return this.toJson({
-			kind: "Data",
-			extractionResult: {
-				data,
-				usedExtractor: mapExtractor(usedExtraction),
-				availableExtractors: extractions.map(mapExtractor),
-			},
-		} as DataResult);
+		try {
+			const data = usedExtraction.extractData();
+
+			return this.toJson({
+				kind: "Data",
+				extractionResult: {
+					data,
+					usedExtractor: mapExtractor(usedExtraction),
+					availableExtractors: extractions.map(mapExtractor),
+				},
+			} as DataResult);
+
+		} catch (e) {
+			return this.toJson({
+				kind: "Data",
+				extractionResult: {
+					data: visualizeError(e),
+					usedExtractor: mapExtractor(usedExtraction),
+					availableExtractors: extractions.map(mapExtractor),
+				},
+			} as DataResult);
+		}
 	}
 
 	public getExtractions(
@@ -111,36 +124,52 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 		const extractors = new Array<DataExtractor>();
 
 		for (const fn of this.extractorSources.values()) {
-			fn((extractor) => {
-				extractors.push(extractor);
-			}, helpers);
+			try {
+				fn((extractor) => {
+					extractors.push(extractor);
+				}, helpers);
+			} catch (e) {
+				console.error('Error in data extractor source', fn, e);
+			}
 		}
 
-		for (const e of [...this.extractors.values(), ...extractors]) {
-			if (e.dataCtor !== undefined) {
+		for (const extractor of [...this.extractors.values(), ...extractors]) {
+			if (extractor.dataCtor !== undefined) {
 				if (
 					typeof value !== "object" ||
 					value === null ||
-					value.constructor.name !== e.dataCtor
+					value.constructor.name !== extractor.dataCtor
 				) {
 					continue;
 				}
 			}
-			e.getExtractions(
-				value,
-				{
-					addExtraction(extraction) {
-						if (extraction.id === undefined) {
-							extraction.id = e.id;
-						}
-						if (extraction.name === undefined) {
-							extraction.name = e.id;
-						}
-						extractions.push(extraction);
+
+			try {
+				extractor.getExtractions(
+					value,
+					{
+						addExtraction(extraction) {
+							if (extraction.id === undefined) {
+								extraction.id = extractor.id;
+							}
+							if (extraction.name === undefined) {
+								extraction.name = extractor.id;
+							}
+							extractions.push(extraction);
+						},
 					},
-				},
-				context
-			);
+					context
+				);
+			} catch (e) {
+				extractions.push({
+					id: extractor.id,
+					name: extractor.id,
+					priority: 0,
+					extractData() {
+						return visualizeError(e);
+					},
+				});
+			}
 		}
 		extractions.sort((a, b) => b.priority - a.priority);
 
@@ -164,6 +193,21 @@ export class DataExtractorApiImpl implements DataExtractorApi {
 	}
 }
 
+function visualizeError(e: unknown | Error): VisualizationData {
+	return helpers.asData({
+		kind: { text: true },
+		fileName: 'error.md',
+		text: `# Error while running data extractor\n\n${formatErrorStr(e)}`,
+	});
+}
+
+function formatErrorStr(e: unknown | Error): string {
+	if (e instanceof Error) {
+		return `${e.message}\n\nStack:\n${e.stack}`;
+	}
+	return "" + e;
+}
+
 function mapExtractor(e: DataExtraction): DataExtractorInfo {
 	return {
 		id: e.id! as any,
@@ -184,7 +228,7 @@ class ContextImpl implements DataExtractorContext {
 			| SkippedCallFrames
 		)[],
 		private readonly _callFrameRequests: CallFrameRequest[]
-	) {}
+	) { }
 
 	addCallFrameRequest(request: CallFrameRequest): void {
 		this._callFrameRequests.push(request);
