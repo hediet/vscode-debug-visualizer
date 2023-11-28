@@ -1,6 +1,22 @@
 {
 	"version": "0.2.0",
 	"configurations": [
+		ActiveXObject
+		name
+		empty
+		json
+		Bash
+		defaultProfile
+		
+
+
+
+
+
+
+
+
+
 		{
 			"type": "chrome",
 			"request": "launch",
