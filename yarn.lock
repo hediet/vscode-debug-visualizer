@@ -557,10 +557,10 @@
     "@hediet/std" "^0.6.0"
     io-ts "^1.8.6"
 
-"@hediet/visualization-bundle@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.4.tgz#0c8c0ab8ca7153fd7b18aafa94b2ef813a1482e3"
-  integrity sha512-pknFiLcQ4B8EEgjp5aImZyP+Jgz+imSKfncFZT0NfJH3BCvFkCcmzeR6IbWB+70oDJfTRHFIhr40pNuHESQUWA==
+"@hediet/visualization-bundle@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-bundle/-/visualization-bundle-0.2.5.tgz#451dc9f4e5f0edf8043fa203c7a82a992fd2c465"
+  integrity sha512-M87UlSc/NDikiqrkbuhcnmvqVaWSgCjD+YX47Yxuv9a+puK5dS7+YuvepAq6FmowrDgsoTeMRTQ4yCLUXtr87Q==
   dependencies:
     "@finos/perspective-viewer" "^0.5.2"
     "@finos/perspective-viewer-d3fc" "^0.5.2"
@@ -583,13 +583,14 @@
     vis-network "^8.0.0"
     viz.js "^2.1.2"
 
-"@hediet/visualization-core@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.2.0.tgz#8fca0044d5d91e8c45354984ae9c131ef7850a76"
-  integrity sha512-r/SYDUipaUSdu1JXL1X0Le5ZkBXVGbKXo6jkX0jFq3NPz/60+B4MnIQnk8D7TCWLXftGFtE6MSFejrE+miup4w==
+"@hediet/visualization-core@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@hediet/visualization-core/-/visualization-core-0.3.1.tgz#5523853e09e5d414619f9d9b9111985b2e0723a7"
+  integrity sha512-c67OF4iVcEIDIDzxNvBiIsvd80QxdFwYCvZc7ogj3oyv8pH9br9B4T/RXon3Zl7aYQgfR4ksSVMF35Y0UMDMqg==
   dependencies:
     "@hediet/semantic-json" "^0.3.15"
     "@hediet/std" "^0.6.0"
+    mobx "^5.15.4"
     react "^16.12.0"
     react-dom "^16.12.0"
     react-measure "^2.3.0"
