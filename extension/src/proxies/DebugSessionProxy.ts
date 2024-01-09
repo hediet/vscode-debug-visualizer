@@ -91,8 +91,6 @@ export class DebugSessionProxy {
 			frameId: args.frameId,
 			context: args.context,
 		});
-		// console.log("reply: ")
-		console.log(reply)
 		return {
 			result: reply.result,
 			variablesReference: this.isJsonString(reply.result) ? 0 : reply.variablesReference,
@@ -103,12 +101,7 @@ export class DebugSessionProxy {
 		try {
 			if (this.isEnclosedWith(str, '"') || this.isEnclosedWith(str, "'")) str = str.substring(1, str.length - 1);
 			JSON.parse(str);
-		} catch (e) {
-			console.log("not valid json");
-			console.error(e);
-			return false;
-		}
-		console.log("valid json");
+		} catch (e) {}
 		return true;
 	}
 	
