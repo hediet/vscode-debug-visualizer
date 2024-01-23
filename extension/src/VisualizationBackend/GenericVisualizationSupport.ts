@@ -20,9 +20,8 @@ registerUpdateReconciler(module);
 
 @hotClass(module)
 export class GenericVisualizationSupport
-	implements DebugSessionVisualizationSupport
-{
-	constructor(private readonly debuggerView: DebuggerViewProxy) {}
+	implements DebugSessionVisualizationSupport {
+	constructor(private readonly debuggerView: DebuggerViewProxy) { }
 
 	createBackend(
 		session: DebugSessionProxy
@@ -64,6 +63,18 @@ export class GenericVisualizationBackend extends VisualizationBackendBase {
 				context: this.getContext(),
 			});
 
+			const result = parseEvaluationResultFromGenericDebugAdapter(
+				reply.result,
+				{
+					debugAdapterType:
+						this.debugSession.session.configuration.type,
+				}
+			);
+
+			if (result.kind === "data") {
+				return result;
+			}
+
 			// Use structural information about variables
 			// from the evaluation response if present.
 			if (reply.variablesReference) {
@@ -84,15 +95,9 @@ export class GenericVisualizationBackend extends VisualizationBackendBase {
 						data: graph,
 					},
 				};
-			} else {
-				return parseEvaluationResultFromGenericDebugAdapter(
-					reply.result,
-					{
-						debugAdapterType:
-							this.debugSession.session.configuration.type,
-					}
-				);
 			}
+
+			return result;
 		} catch (error: any) {
 			return {
 				kind: "error",
@@ -147,13 +152,13 @@ export class GenericVisualizationBackend extends VisualizationBackendBase {
 			variablesReference: number;
 			depth: number;
 		}[] = [
-			{
-				source: undefined,
-				label: rootLabel,
-				variablesReference: rootVariablesReference,
-				depth: 0,
-			},
-		];
+				{
+					source: undefined,
+					label: rootLabel,
+					variablesReference: rootVariablesReference,
+					depth: 0,
+				},
+			];
 
 		let knownCount: number = 0;
 
