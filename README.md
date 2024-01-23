@@ -8,6 +8,26 @@ See [README.md](./extension/README.md) for the readme of the extension.
 
 You can get the extension in the [marketplace](https://marketplace.visualstudio.com/items?itemName=hediet.debug-visualizer).
 
+---
+
+## Who/What is this extension for
+
+- **Educators** - You can easily visualize the code which makes some difficult concepts easier to understand for your students.
+- **Self-teaching** - Help yourself understand and debug code
+- **Research**
+- **Presentation**
+- **Anyone who likes fun graphs** - Seriously, who doesn't!
+
+## What is this extension not good with
+
+- **Ease of use with compiled languages** - There's not yet good support for pre-compiled languages. The "data extractors" of the debug-visualizer work well with JS based languages but there are no "data extractors" yet for any pre-compiled languages.
+
+  What this means for you, is if you want to use it with pre-compiled languages, you'll have to integrate code inside your codebase; code that returns data only the **debug-visualizer** understands.
+
+  If you're interested in helping to solve this issue, you can help by [contributing](./CONTRIBUTING.md) :)
+  
+  ---
+
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for build instructions and implementation details.
 
 ![](./docs/doubly-linked-list-reverse-demo.gif)
