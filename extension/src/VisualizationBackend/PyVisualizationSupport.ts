@@ -27,7 +27,7 @@ export class PyEvaluationEngine implements DebugSessionVisualizationSupport {
 	createBackend(
 		session: DebugSessionProxy
 	): VisualizationBackend | undefined {
-		const supportedDebugAdapters = ["python"];
+		const supportedDebugAdapters = ["python", "debugpy"];
 
 		if (supportedDebugAdapters.indexOf(session.session.type) !== -1) {
 			return new PyVisualizationBackend(
