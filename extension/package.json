@@ -123,7 +123,7 @@
 		"@hediet/typed-json-rpc-websocket-server": "^0.7.7",
 		"chrome-launcher": "^0.12.0",
 		"@hediet/node-reload": "^0.7.3",
-		"express": "^4.17.1",
+		"express": "^4.19.2",
 		"open": "^7.0.2",
 		"serve-static": "^1.14.1",
 		"ws": "^7.2.1",
