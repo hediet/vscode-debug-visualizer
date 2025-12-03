@@ -2,7 +2,7 @@ import numpy as np
 
 
 # put "x" in the Debug Visualizer and use step by step
-# debugging to see the diffrent types of data visualization
+# debugging to see the different types of data visualization
 
 
 x = 5
